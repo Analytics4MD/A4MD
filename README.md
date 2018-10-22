@@ -2,7 +2,7 @@
 
 ## Getting Started
 ```
-git clone git@github.com:Analytics4MD/A4MD-project-a4md.git a4md
+git clone --recursive git@github.com:Analytics4MD/A4MD-project-a4md.git a4md
 ```
 
 ## Compiling
@@ -10,7 +10,9 @@ git clone git@github.com:Analytics4MD/A4MD-project-a4md.git a4md
 cd a4md
 mkdir build
 cd build
-cmake ..
+cmake .. \
+-DPYTHON_INCLUDE_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")  \
+-DPYTHON_LIBRARY=$(python -c "import distutils.sysconfig as sysconfig; print(sysconfig.get_config_var('LIBDIR'))")
 make
 ```
 Now the executable a4md is in build/a4md.
