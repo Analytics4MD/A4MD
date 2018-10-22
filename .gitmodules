@@ -1,0 +1,3 @@
+[submodule "a4md/extern/argparse"]
+	path = a4md/extern/argparse
+	url = https://github.com/hbristow/argparse.git
