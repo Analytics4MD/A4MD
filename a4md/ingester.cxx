@@ -1,16 +1,9 @@
 #include "ingester.h"
 
-Ingester::Ingester()
+int main (int argc, const char** argv)
 {
-    //Nothing for now
-}
+  Ingester ingester;
+  ingester.run();
 
-Ingester::~Ingester()
-{
-    //Nothing for now
-}
-
-void Ingester::run()
-{
-    printf("In Ingester Run\n");
+  return 0;
 }
