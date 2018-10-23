@@ -11,8 +11,8 @@ cd a4md
 mkdir build
 cd build
 cmake .. \
--DPYTHON_INCLUDE_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")  \
--DPYTHON_LIBRARY=$(python -c "import distutils.sysconfig as sysconfig; print(sysconfig.get_config_var('LIBDIR'))")
+-DPYTHON_INCLUDE_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
+-DPYTHON_LIBRARY=$(python -c "import distutils.sysconfig as sysconfig; import os; print(os.path.join(sysconfig.get_config_var('LIBDIR'), sysconfig.get_config_var('LDLIBRARY')))")
 make
 ```
 Now the executable a4md is in build/a4md.
@@ -28,7 +28,14 @@ def run(arguments):
 ```
 
 2) Add the path to test_module.py to PYTHONPATH
+```
+# Typically done using export
+export PYTHONPATH={PATH TO test_module.py}:$PYTHONPATH
+```
+
 3) Invoke the "run" function in "test_module" from a4md
 ```
-./a4md/a4md -p test_module run 123
+./a4md/retriever -p test_module run 123
 ```
+
+This should output "Hello world 123"
