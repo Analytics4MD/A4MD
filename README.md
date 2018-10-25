@@ -11,6 +11,7 @@ cd a4md
 mkdir build
 cd build
 cmake .. \
+-DCMAKE_INSTALL_PREFIX=../_install \
 -DPYTHON_INCLUDE_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
 -DPYTHON_LIBRARY=$(python -c "import distutils.sysconfig as sysconfig; import os; print(os.path.join(sysconfig.get_config_var('LIBDIR'), sysconfig.get_config_var('LDLIBRARY')))")
 make

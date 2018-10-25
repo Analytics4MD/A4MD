@@ -1,22 +1,22 @@
-#include "retriever.h"
+#include "retrieve.h"
 #include <unistd.h>
 
-Retriever::Retriever()
+Retrieve::Retrieve()
 {
     //Nothing for now
 }
 
-Retriever::~Retriever()
+Retrieve::~Retrieve()
 {
     //Nothing for now
 }
 
-void Retriever::run()
+void Retrieve::run()
 {
-    printf("In Retriever Run\n");
+    printf("In Retrieve Run\n");
 }
 
-int Retriever::call_py(int argc, const char** argv)
+int Retrieve::call_py(int argc, const char** argv)
 {
     PyObject *pName, *pModule, *pFunc;
     PyObject *pArgs, *pValue;

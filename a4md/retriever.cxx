@@ -1,8 +1,8 @@
-#include "retriever.h"
+#include "retrieve.h"
 
 int main (int argc, const char** argv)
 {
-  Retriever retriever;
-  retriever.run();
-  return retriever.call_py(argc, argv);
+  Retrieve retrieve;
+  retrieve.run();
+  return retrieve.call_py(argc, argv);
 }

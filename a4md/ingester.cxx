@@ -1,9 +1,9 @@
-#include "ingester.h"
+#include "ingest.h"
 
 int main (int argc, const char** argv)
 {
-  Ingester ingester;
-  ingester.run();
+  Ingest ingest;
+  ingest.run();
 
   return 0;
 }

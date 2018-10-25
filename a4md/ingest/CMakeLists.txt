@@ -5,5 +5,5 @@ set(_ingest_headers_
 
 add_library(ingest ingest.cxx)
 
-install (TARGETS ingest DESTINATION bin)
+install (TARGETS ingest DESTINATION lib)
 install (FILES ${_ingest_headers_} DESTINATION include)

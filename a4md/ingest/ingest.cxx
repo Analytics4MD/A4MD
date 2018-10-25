@@ -1,16 +1,16 @@
-#include "ingester.h"
+#include "ingest.h"
 
-Ingester::Ingester()
+Ingest::Ingest()
 {
     //Nothing for now
 }
 
-Ingester::~Ingester()
+Ingest::~Ingest()
 {
     //Nothing for now
 }
 
-void Ingester::run()
+void Ingest::run()
 {
-    printf("In Ingester Run\n");
+    printf("In Ingest Run\n");
 }
