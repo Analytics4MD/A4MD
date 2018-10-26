@@ -2,12 +2,40 @@
 find_package(PythonLibs REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
 
+# adding MPI
+find_package(MPI REQUIRED)
+if (MPI_FOUND)
+    include_directories(SYSTEM ${MPI_INCLUDE_PATH})
+else (MPI_FOUND)
+    message(SEND_ERROR "This application cannot compile without MPI")
+endif (MPI_FOUND)
+
+# adding Dataspaces library
+message(STATUS "Adding Dataspaces library to project")
+include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
+ExternalProject_Add(project_dataspaces
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/a4md/extern/dataspaces
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND ./autogen.sh COMMAND ./configure CC=mpicc FC=mpif90 --prefix=${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces
+  BUILD_COMMAND ${MAKE}
+)
+add_library(dataspaces STATIC IMPORTED)
+add_dependencies(dataspaces project_dataspaces)
+set_property(TARGET dataspaces PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/lib/libdspaces.a)
+set_property(TARGET dataspaces PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/include)
+
+#message("dataspaces include directory " ${CMAKE_CURRENT_BINARY_DIR}/dataspaces/include)
+#include_directories(${PROJECT_SOURCE_DIR}/extern/dataspaces/include)
+
 # add libraries
 include_directories("${PROJECT_SOURCE_DIR}/a4md/ingest")
 include_directories("${PROJECT_SOURCE_DIR}/a4md/retrieve")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/include")
+
 add_subdirectory(ingest)
 add_subdirectory(retrieve)
 add_subdirectory(extern)
+
 
 
 # add project level sources
