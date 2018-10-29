@@ -60,3 +60,7 @@ add_executable(ingester ingester.cxx)
 add_executable(retriever retriever.cxx)
 target_link_libraries(ingester ingest)
 target_link_libraries(retriever retrieve)
+
+install (TARGETS ingester DESTINATION bin)
+install (TARGETS retriever DESTINATION bin)
+
