@@ -10,7 +10,7 @@ add_library(ingest ingest.cxx)
 
 
 add_dependencies(ingest dataspaces)
-target_link_libraries(ingest ${MPI_LIBRARIES})
+target_link_libraries(ingest dataspaces dataspaces_cmn dataspaces_dart m rdmacm ibverbs ${MPI_LIBRARIES})
 
 
 install (TARGETS ingest DESTINATION lib)

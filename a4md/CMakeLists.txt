@@ -22,7 +22,18 @@ ExternalProject_Add(project_dataspaces
 add_library(dataspaces STATIC IMPORTED)
 add_dependencies(dataspaces project_dataspaces)
 set_property(TARGET dataspaces PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/lib/libdspaces.a)
-set_property(TARGET dataspaces PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/include)
+
+add_library(dataspaces_cmn STATIC IMPORTED)
+add_dependencies(dataspaces_cmn project_dataspaces)
+set_property(TARGET dataspaces_cmn PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/lib/libdscommon.a)
+
+add_library(dataspaces_dart STATIC IMPORTED)
+add_dependencies(dataspaces_dart project_dataspaces)
+set_property(TARGET dataspaces_dart PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/lib/libdart.a)
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+
+#set_property(TARGET dataspaces PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/include)
 
 #message("dataspaces include directory " ${CMAKE_CURRENT_BINARY_DIR}/dataspaces/include)
 #include_directories(${PROJECT_SOURCE_DIR}/extern/dataspaces/include)
