@@ -1,3 +1,6 @@
 [submodule "a4md/extern/argparse"]
 	path = a4md/extern/argparse
 	url = https://github.com/hbristow/argparse.git
+[submodule "a4md/extern/dataspaces"]
+	path = a4md/extern/dataspaces
+	url = https://github.com/Analytics4MD/dataspaces.git
