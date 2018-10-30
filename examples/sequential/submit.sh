@@ -12,6 +12,7 @@
 #module load python
 #SBATCH --array=1-5
 
+
 module purge
 module load openmpi/2.1.3-gcc-8.1.0
 conda activate a4md
@@ -23,8 +24,9 @@ export TAU_TRACK_SIGNALS=1
 export THIS_DIR=`pwd`
 echo $THIS_DIR
 
+export DATA_DIR=$PWD/'T_1_N_2048_dump_'$dump_interval'_trial_'$SLURM_ARRAY_TASK_ID
 # Control will enter here if $DIRECTORY doesn't exist.
-echo "dump interval is $dump_interval"
+echo "DUMP_INTERVAL : $dump_interval"
 export DATA_DIR=$PWD/'T_1_N_2048_dump_'$dump_interval'_trial_'$SLURM_ARRAY_TASK_ID
 #
 
