@@ -14,7 +14,7 @@
 
 module purge
 module load openmpi/2.1.3-gcc-8.1.0
-
+conda activate a4md
 #export TAU_VERBOSE=1
 export TAU_TRACK_SIGNALS=1
 #export TAU_METRICS=TIME
@@ -31,9 +31,11 @@ export DATA_DIR=$PWD/'T_1_N_2048_dump_'$dump_interval'_trial_'$SLURM_ARRAY_TASK_
 if [ ! -d $DATA_DIR ]; then
   mkdir $DATA_DIR
   cp in.lj $DATA_DIR/
+  cp calc_voronoi_from_trajectory.py $DATA_DIR/ 
   cd $DATA_DIR
   START=$(date +%s.%N)
   mpirun -n 4 lmp_mpi -v T 1 -v d_int $dump_interval <in.lj 
+  python calc_voronoi_from_trajectory.py
   END=$(date +%s.%N)
   DIFF=$(echo "$END - $START" | bc)
   echo "SIM_TIME:" $DIFF

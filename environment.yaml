@@ -1,0 +1,10 @@
+name: a4md
+channels:
+  - defaults
+  - conda-forge
+
+dependencies:
+  - python=3.6
+  - numpy
+  - mdanalysis
+  - freud
