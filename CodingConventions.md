@@ -1,4 +1,6 @@
-# Source code formatting conventions (Borrowed from https://bitbucket.org/glotzer/hoomd-blue)
+# Source code formatting conventions 
+
+(Borrowed from https://bitbucket.org/glotzer/hoomd-blue)
 
 [TOC]
 
