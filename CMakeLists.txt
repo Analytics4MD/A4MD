@@ -1,8 +1,6 @@
 cmake_minimum_required (VERSION 2.8.12)
 
 project (a4md)
-add_subdirectory(a4md)
-
 #################################
 ## update submodules
 set (UPDATE_SUBMODULES 1 CACHE BOOL "Update git submodules for dependency projects")
@@ -26,5 +24,10 @@ else()
                    "The source directory is not a git clone or the git executable is not available.")
     endif()
 endif()
+
+# Custom CMake scripts
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
+
+add_subdirectory(a4md)
 
 

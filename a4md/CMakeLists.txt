@@ -1,6 +1,13 @@
-# adding python dependency 
-find_package(PythonLibs REQUIRED)
+# find python interpreter
+find_package(PythonInterp 3.6 REQUIRED)
+
+# find python libs
+find_package(PythonLibs 3.6 REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
+
+# find Numpy
+find_package(NumPy REQUIRED)
+include_directories(${NUMPY_INCLUDE_DIR})
 
 # adding MPI
 find_package(MPI REQUIRED)
