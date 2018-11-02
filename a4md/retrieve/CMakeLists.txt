@@ -5,7 +5,13 @@ set(_retrieve_headers_
 
 
 add_library(retrieve ${_retrieve_sources_})
-set_property(TARGET retrieve PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_target_properties(retrieve PROPERTIES
+    CXX_STANDARD 11
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF
+    POSITION_INDEPENDENT_CODE ON
+)
+
 target_link_libraries(retrieve ${PYTHON_LIBRARIES})
 
 install (TARGETS retrieve DESTINATION lib)

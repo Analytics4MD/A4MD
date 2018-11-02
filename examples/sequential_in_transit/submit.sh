@@ -32,7 +32,10 @@ if [ ! -d $DATA_DIR ]; then
   mkdir $DATA_DIR
   cp in.lj $DATA_DIR/
   cp calc_voronoi_for_frame.py $DATA_DIR/ 
-  cp plumed.dat $DATA_DIR/ 
+  #cp plumed.dat $DATA_DIR/ 
+  file="plumed.dat"
+  echo "p: DISPATCHATOMS ATOMS=@mdatoms STRIDE="$dump_interval" TARGET=LICHENS" > $file
+  cat $file
   cd $DATA_DIR
   START=$(date +%s.%N)
   srun -n 4 lmp_mpi -v T 1 -v d_int $dump_interval <in.lj 

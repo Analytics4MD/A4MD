@@ -10,7 +10,7 @@
 ##SBATCH -C haswell 
 ##SBATCH -t 00:60:00
 #module load python
-#SBATCH --array=1-5
+##SBATCH --array=1-5
 
 
 module purge
@@ -24,11 +24,8 @@ export TAU_TRACK_SIGNALS=1
 export THIS_DIR=`pwd`
 echo $THIS_DIR
 
-export DATA_DIR=$PWD/'T_1_N_2048_dump_'$dump_interval'_trial_'$SLURM_ARRAY_TASK_ID
 # Control will enter here if $DIRECTORY doesn't exist.
 echo "DUMP_INTERVAL : $dump_interval"
-export DATA_DIR=$PWD/'T_1_N_2048_dump_'$dump_interval'_trial_'$SLURM_ARRAY_TASK_ID
-#
 
 if [ ! -d $DATA_DIR ]; then
   mkdir $DATA_DIR
