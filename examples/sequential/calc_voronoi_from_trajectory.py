@@ -1,41 +1,26 @@
-import MDAnalysis
+import mdtraj as md 
 import numpy as np
 import os
 from glob import iglob
 import subprocess
 import freud
+import sys
 
-def get_box():
-    with open('lj.data') as fp:  
-        line = fp.readline()
-        print(line)
-        cnt = 1
-        while line:
-            if 'xhi' in line:
-                values = line.split(' ')
-                xlow = float(values[0])
-                xhi = float(values[1])
-            if 'yhi' in line:
-                values = line.split(' ')
-                ylow = float(values[0])
-                yhi = float(values[1])
-            if 'zhi' in line:
-                values = line.split(' ')
-                zlow = float(values[0])
-                zhi = float(values[1])
-                break
-            line = fp.readline()
-    box = freud.box.Box(xhi,yhi,zhi)
-    print('Made box:',box)
-    return box
-
-
+L=15
+if len(sys.argv) > 1:
+    L = sys.argv[1]
+    print('Using L={} for calc_voronoi script in python'.format(L))
 # This will return absolute paths
-if os.path.isfile('lj.data') and os.path.isfile('output.xyz'): 
-    u = MDAnalysis.Universe('output.xyz')
-    box = get_box()
-    all_atoms = u.select_atoms('all')
-    for frame in u.trajectory:
-        points = all_atoms.positions
-        voro = freud.voronoi.Voronoi(box, np.max(box.L)/2) 
-        voro.compute(box=box, positions=points)
+traj_ext = 'dcd'
+traj_file = 'output.{}'.format(traj_ext)
+top_file = 'top_L_{}.pdb'.format(L)
+if os.path.isfile(top_file) and os.path.isfile(traj_file): 
+    traj = md.load_dcd(traj_file,top=top_file)
+    if len(traj)>0:
+        box_L = traj[0].unitcell_lengths[0]
+        box = freud.box.Box(box_L[0],box_L[1],box_L[2])
+        for frame in range(traj.n_frames):
+            points = traj.xyz[frame]
+            voro = freud.voronoi.Voronoi(box, np.max(box.L)/2) 
+            cells = voro.compute(box=box, positions=points).polytopes
+        print('Number of voronoi cells',len(cells)) 

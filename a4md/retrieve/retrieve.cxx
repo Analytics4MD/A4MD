@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <iostream>
 
-#include <Python.h>
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <numpy/arrayobject.h>
 #include <numpy/ndarrayobject.h>
@@ -18,6 +17,8 @@ Retrieve::Retrieve()
 
 Retrieve::~Retrieve()
 {
+    Py_DECREF(m_py_module);
+    Py_DECREF(m_py_func); 
     Py_FinalizeEx(); 
 }
 
@@ -47,6 +48,12 @@ int Retrieve::initialize_python()
   PyObject* sysPath = PySys_GetObject((char*)"path");
   PyList_Append(sysPath, PyUnicode_FromString("."));
 
+  char* module_name = "calc_voronoi_for_frame";
+  char* function_name = "analyze";
+  m_py_module = PyImport_ImportModule(module_name);
+  m_py_func = PyObject_GetAttrString(m_py_module, function_name);
+
+  printf("-----===== Initialized python and the module ====-----\n");
   return 0;
 }
 
@@ -77,8 +84,7 @@ int Retrieve::analyze_frame(char* module_name,
                             double z_high)
 {
     int result = 0;
-    PyObject* py_module = PyImport_ImportModule(module_name);
-    if (!py_module)
+        if (!m_py_module)
     {
         PyErr_Print();
         fprintf(stderr,"import %s failed. See for an error message above\n",module_name);
@@ -86,12 +92,9 @@ int Retrieve::analyze_frame(char* module_name,
     }
     else
     {
-        Py_DECREF(py_module);
-        PyObject* py_func = PyObject_GetAttrString(py_module, function_name);
-        if (py_func && PyCallable_Check(py_func))
+        if (m_py_func && PyCallable_Check(m_py_func))
         {
             int count = positions.size();
-            Py_DECREF(py_func); 
             PyObject* py_args = PyTuple_New(3);
             npy_intp types_dims[] = {count};
             PyObject* py_types = PyArray_SimpleNewFromData(1, types_dims, NPY_DOUBLE, (void *)types);
@@ -104,7 +107,7 @@ int Retrieve::analyze_frame(char* module_name,
             //printf("C++ x_low %f %f %f %f %f %f\n",x_low,x_high,y_low,y_high,z_low,z_high);
             PyObject* py_box = Py_BuildValue("dddddd", x_low,x_high,y_low,y_high,z_low,z_high);
 	    PyTuple_SetItem(py_args, 2, py_box);
-            PyObject* py_return = PyObject_CallObject(py_func, py_args);
+            PyObject* py_return = PyObject_CallObject(m_py_func, py_args);
             Py_DECREF(py_args);
             if (py_return != NULL)
             {

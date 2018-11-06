@@ -3,12 +3,16 @@
 #include <vector>
 #include <tuple>
 
+#include <Python.h>
+
 
 typedef std::vector<std::tuple<double, double, double>> POS_VEC;
 class Retrieve
 {
     private:
         int initialize_python();
+        PyObject* m_py_module;
+        PyObject* m_py_func;
     public:
         Retrieve();
         ~Retrieve();
