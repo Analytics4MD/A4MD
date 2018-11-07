@@ -84,7 +84,7 @@ int Retrieve::analyze_frame(char* module_name,
                             double z_high)
 {
     int result = 0;
-        if (!m_py_module)
+    if (!m_py_module)
     {
         PyErr_Print();
         fprintf(stderr,"import %s failed. See for an error message above\n",module_name);
