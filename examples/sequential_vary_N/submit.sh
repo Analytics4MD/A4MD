@@ -28,6 +28,7 @@ echo $THIS_DIR
 
 # Control will enter here if $DIRECTORY doesn't exist.
 echo "DUMP_INTERVAL : $dump_interval"
+echo "DATA_DIR : $DATA_DIR"
 
 if [ ! -d $DATA_DIR ]; then
   mkdir $DATA_DIR
