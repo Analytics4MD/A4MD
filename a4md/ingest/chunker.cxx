@@ -2,10 +2,11 @@
 #include "pycall.h"
 
 Chunker::Chunker() {
-
+	initialize();
 }
 
 Chunker::~Chunker() {
+	finalize();
 
 }
 
@@ -13,15 +14,32 @@ PdbChunker::PdbChunker(std::string file_path, std::string log_path, std::string 
 {
     m_file_path = file_path;
     m_log_path = log_path;
+    m_py_path = py_path;
+    m_py_script = py_script;
+    m_py_def = py_def;
 
-    setenv("PYTHONPATH", py_path.c_str(), 1);
+    /*setenv("PYTHONPATH", py_path.c_str(), 1);
     if (!Py_IsInitialized())
         Py_Initialize();
 
-    m_py_func = load_py_function(py_script, py_def);
+    m_py_func = load_py_function(py_script, py_def);*/
 }
 
-PdbChunker::~PdbChunker() {
+PdbChunker::~PdbChunker() 
+{
+	/*Py_Finalize();*/
+}
+
+void PdbChunker::initialize() 
+{
+	setenv("PYTHONPATH", m_py_path.c_str(), 1);
+    if (!Py_IsInitialized())
+        Py_Initialize();
+
+    m_py_func = load_py_function(m_py_script, m_py_def);
+}
+
+void PdbChunker::finalize() {
 	Py_Finalize();
 }
 
