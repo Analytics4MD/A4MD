@@ -28,7 +28,8 @@ class Retrieve
                           double y_low,
                           double y_high,
                           double z_low,
-                          double z_high);
+                          double z_high,
+                          int step);
          int aanalyze_frame(POS_VEC module_name);
 
 };

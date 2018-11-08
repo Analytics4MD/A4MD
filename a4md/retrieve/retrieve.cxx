@@ -81,7 +81,8 @@ int Retrieve::analyze_frame(char* module_name,
                             double y_low,
                             double y_high,
                             double z_low,
-                            double z_high)
+                            double z_high,
+                            int step)
 {
     int result = 0;
     if (!m_py_module)
@@ -95,7 +96,7 @@ int Retrieve::analyze_frame(char* module_name,
         if (m_py_func && PyCallable_Check(m_py_func))
         {
             int count = positions.size();
-            PyObject* py_args = PyTuple_New(3);
+            PyObject* py_args = PyTuple_New(4);
             npy_intp types_dims[] = {count};
             PyObject* py_types = PyArray_SimpleNewFromData(1, types_dims, NPY_DOUBLE, (void *)types);
             PyTuple_SetItem(py_args, 0, py_types);
@@ -107,6 +108,10 @@ int Retrieve::analyze_frame(char* module_name,
             //printf("C++ x_low %f %f %f %f %f %f\n",x_low,x_high,y_low,y_high,z_low,z_high);
             PyObject* py_box = Py_BuildValue("dddddd", x_low,x_high,y_low,y_high,z_low,z_high);
 	    PyTuple_SetItem(py_args, 2, py_box);
+
+            PyObject* py_step = Py_BuildValue("i", step);
+	    PyTuple_SetItem(py_args, 3, py_step);
+
             PyObject* py_return = PyObject_CallObject(m_py_func, py_args);
             Py_DECREF(py_args);
             if (py_return != NULL)
@@ -120,8 +125,6 @@ int Retrieve::analyze_frame(char* module_name,
                 fprintf(stderr,"Call failed\n");
                 result = 1;
             }
-
-
         }
         else
         {
