@@ -97,6 +97,21 @@ def get_analysis_time(log_file, legend):
                 line = fp.readline()
     return analysis_time
 
+def get_data_dir(log_file):
+    LOG_FILE_DIR=os.path.dirname(log_file)
+    with open(log_file) as fp:
+            line = fp.readline()
+            #print(line)
+            while line:
+                if 'DATA_DIR' in line:
+                    values = line.split(':')
+                    DATA_DIR_FULL = values[1]
+                    DATA_DIR = values[1].split('/')[-1]
+                    break
+                    
+                line = fp.readline()
+    return os.path.join(LOG_FILE_DIR,DATA_DIR[:-1])
+
 def get_sim_time(log_file,legend): # Modify and Output is left out):
     sim_time=0
     DATA_DIR=None
