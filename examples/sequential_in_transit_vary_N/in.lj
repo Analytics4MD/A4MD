@@ -95,7 +95,7 @@ unfix 1
 #  initial temperature = 1.0
 #  final temperature = 1.0
 #  thermostat controller gain = 0.1 (units of time, bigger is less tight control)
-fix     2 all nvt temp $T $T 0.1 
+fix     2 all nvt temp $T $T 0.5 
 
 # run 1000 steps in the NVT ensemble
 # (this equilibrates thermostat)
@@ -108,9 +108,14 @@ run     1000
 #   save positions every 100 steps
 #   filename = output.xyz
 #
+
+#dump mf1 all molfile 1 top.pdb pdb .
+#run 1
+#undump mf1
 reset_timestep 0
-#dump    1       all xyz ${d_int} output.xyz
+#dump    1       all dcd ${d_int} output.dcd
 #dump_modify 1 element Ar
+
 write_data lj.data
 
 fix  3 all plumed plumedfile plumed.dat outfile plumed.out 
@@ -119,3 +124,5 @@ fix  3 all plumed plumedfile plumed.dat outfile plumed.out
 #write_data lj.data
 log log.prod
 run     20000
+# dump dumpxyz all xyz 1 final.xyz
+# run 1

@@ -124,3 +124,6 @@ write_data lj.data
 #write_data lj.data
 log log.prod
 run     20000
+# dump dumpxyz all xyz 1 final.xyz
+# run 1
+
