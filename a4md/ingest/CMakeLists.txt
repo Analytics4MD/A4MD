@@ -1,11 +1,25 @@
 set(_ingest_sources_
-        ingest.cxx)
+        plumed_ingest.cxx
+        ingest.cxx 
+        chunker.cxx
+        chunk_stager.cxx
+        chunk_writer.cxx
+        chunk_reader.cxx)
 set(_ingest_headers_
-        ingest.h)
+        plumed_ingest.h
+        ingest.h
+        chunker.h
+        chunk_stager.h
+        chunk_writer.h
+        chunk_reader.h
+        ims_reader.h
+        ims_writer.h
+        common.h
+        exceptions.h)
 
 include_directories(${PROJECT_SOURCE_DIR}/extern/dataspaces/include)
 
-add_library(ingest ingest.cxx)
+add_library(ingest ${_ingest_sources_})
 
 
 
