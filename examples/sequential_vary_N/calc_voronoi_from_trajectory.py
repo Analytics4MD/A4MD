@@ -23,4 +23,8 @@ if os.path.isfile(top_file) and os.path.isfile(traj_file):
             points = traj.xyz[frame]
             voro = freud.voronoi.Voronoi(box, np.max(box.L)/2) 
             cells = voro.compute(box=box, positions=points).polytopes
-        print('Number of voronoi cells',len(cells)) 
+        voro.computeVolumes()
+        frq,edges = np.histogram(voro.volumes,range=[0,0.5],bins=30)
+        np.savetxt('voro_freq.txt',frq)
+        np.savetxt('voro_edges.txt',edges)
+        print('Number of voronoi cells',len(cells))
