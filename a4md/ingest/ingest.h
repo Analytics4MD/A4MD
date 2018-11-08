@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "dataspaces.h"
 #include "mpi.h"
+#include <Python.h>
 
 typedef struct {
 	double *data = NULL;

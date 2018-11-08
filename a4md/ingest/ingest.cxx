@@ -14,7 +14,7 @@ PyObject *load_py_function(char *py_script, char *py_def){
   PyObject *py_name, *py_module, *py_dict, *py_func = NULL;
 
   // Building name object
-  py_name = PyString_FromString(py_script); 
+  py_name = PyUnicode_FromString(py_script); 
 
   // Loading module object
   py_module = PyImport_Import(py_name);
@@ -77,15 +77,15 @@ int Ingest::extract_frame(char *file_name, char *log_name) {
     double *data = NULL;
     PyObject *py_retValue;
     PyObject *py_args;
-    py_args = PyTuple_Pack(2, PyString_FromString(fileName), PyString_FromString(logName));
-    py_retValue = PyObject_CallObject(py_func, py_args);
+    py_args = PyTuple_Pack(2, PyUnicode_FromString(file_name), PyUnicode_FromString(log_name));
+    py_retValue = PyObject_CallObject(m_py_func, py_args);
     Py_DECREF(py_args);
     int nCA = 0;
 
     // Get partial CA coordinates 
     PyObject *py_num;
     py_num = PyList_GetItem(py_retValue, 0);
-    if (PyInt_AsSsize_t(py_num) < 0) {
+    if (PyLong_AsSsize_t(py_num) < 0) {
         Py_DECREF(py_retValue);
         return -1;
     } else {
