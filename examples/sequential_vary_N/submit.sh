@@ -37,7 +37,7 @@ if [ ! -d $DATA_DIR ]; then
   cp top_L_${L}.pdb $DATA_DIR/
   cd $DATA_DIR
   START=$(date +%s.%N)
-  mpirun -n 4 lmp_mpi -v T 1 -v d_int $dump_interval -v L $L <in.lj 
+  mpirun -n $NPROCS lmp_mpi -v T 1 -v d_int $dump_interval -v L $L <in.lj 
   ANALYZE_START=$(date +%s.%N)
   python calc_voronoi_from_trajectory.py $L
   END=$(date +%s.%N)

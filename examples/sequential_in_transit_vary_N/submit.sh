@@ -39,7 +39,7 @@ if [ ! -d $DATA_DIR ]; then
   cat $file
 
   START=$(date +%s.%N)
-  mpirun -n 4 lmp_mpi -v T 1 -v d_int $dump_interval -v L $L <in.lj 
+  mpirun -n $NPROCS lmp_mpi -v T 1 -v d_int $dump_interval -v L $L <in.lj 
   END=$(date +%s.%N)
   DIFF=$(echo "$END - $START" | bc)
   echo "ETE_TIME:" $DIFF
