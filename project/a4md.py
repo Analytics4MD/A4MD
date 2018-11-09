@@ -75,23 +75,24 @@ def analyze(types, points, box_points, step):
 @A4MDProject.pre(simulated)
 @A4MDProject.post.isfile('voro_freq.txt')
 def analyze_job(job):
-    with job:
-        import calc_voronoi_for_frame as calc_voro
-        traj_ext = 'dcd'
-        traj_file = 'output.{}'.format(traj_ext)
-        top_file = 'top_L_{}.pdb'.format(job.sp.L)
-        if job.isfile(top_file) and job.isfile(traj_file): 
-            traj = md.load_dcd(traj_file,top=top_file)
-            if len(traj)>0:
-                box_L = traj[0].unitcell_lengths[0]*10 # mul by 10 to compensate for mdtraj dividing by 10
-                print(box_L, type(box_L))
-                box_points=np.append(box_L,[0, 0, 0])
-                print("my box points are ", box_points)
-                print("total frames",traj.n_frames)
-                for frame in range(traj.n_frames):
-                    points = traj.xyz[frame]*10
-                    dummy=[]
-                    calc_voro.analyze(dummy, points, box_points, frame*job.sp.data_dump_interval) 
+    if job.sp.job_type == 'traditional':
+        with job:
+            import calc_voronoi_for_frame as calc_voro
+            traj_ext = 'dcd'
+            traj_file = 'output.{}'.format(traj_ext)
+            top_file = 'top_L_{}.pdb'.format(job.sp.L)
+            if job.isfile(top_file) and job.isfile(traj_file): 
+                traj = md.load_dcd(traj_file,top=top_file)
+                if len(traj)>0:
+                    box_L = traj[0].unitcell_lengths[0]*10 # mul by 10 to compensate for mdtraj dividing by 10
+                    print(box_L, type(box_L))
+                    box_points=np.append(box_L,[0, 0, 0])
+                    print("my box points are ", box_points)
+                    print("total frames",traj.n_frames)
+                    for frame in range(traj.n_frames):
+                        points = traj.xyz[frame]*10
+                        dummy=[]
+                        calc_voro.analyze(dummy, points, box_points, frame*job.sp.data_dump_interval) 
 
 
 if __name__ == '__main__':
