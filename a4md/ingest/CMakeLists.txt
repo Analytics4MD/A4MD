@@ -1,14 +1,18 @@
 set(_ingest_sources_
         ingest.cxx
-        chunker.cxx
-        pycall.cxx
+        chunk_stager.cxx
         chunk_reader.cxx
-        ims_reader.cxx)
+        chunk_writer.cxx
+        chunker.cxx
+        ims_reader.cxx
+        pycall.cxx)
 set(_ingest_headers_
         ingest.h
+        chunk_stager.h
+        chunk_reader.h
+        chunk_writer.h
         pycall.h
         chunker.h
-        chunk_reader.h
         ims_reader.h
         common.h
         exceptions.h)
