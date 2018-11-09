@@ -32,15 +32,19 @@ def analyzed(job):
 def initialize(job):
     import create_lammps_input as lmp
     from shutil import copyfile
-    source_file = 'files/top_L_{}.pdb'.format(job.sp.L)
-    dest_file = job.fn('top_L_{}.pdb'.format(job.sp.L))
-    print('Copying {} to {}'.format(source_file,dest_file))
-    copyfile(source_file,dest_file)
+    if job.sp.job_type == 'traditional':
+        source_file = 'files/top_L_{}.pdb'.format(job.sp.L)
+        dest_file = job.fn('top_L_{}.pdb'.format(job.sp.L))
+        print('Copying {} to {}'.format(source_file,dest_file))
+        copyfile(source_file,dest_file)
+    elif 'plumed' in job.sp.job_type:
+        with open(job.fn('plumed.dat'), 'w') as file:
+            file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} TARGET=LICHENS\n".format(job.sp.data_dump_interval))
+
+
     copyfile('analysis_codes/calc_voronoi_for_frame.py',job.fn('calc_voronoi_for_frame.py'))
     with job:
         lmp.create_lammps_script(job)
-    with open(job.fn('plumed.dat'), 'w') as file:
-        file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} TARGET=LICHENS\n".format(job.sp.data_dump_interval))
 
 @A4MDProject.operation
 @A4MDProject.pre(initialized)
