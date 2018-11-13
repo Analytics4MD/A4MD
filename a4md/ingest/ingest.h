@@ -1,24 +1,18 @@
 #ifndef __INGEST_H__
 #define __INGEST_H__
-#include <stdio.h>
-#include "dataspaces.h"
-#include "mpi.h"
-
-typedef struct {
-	double *data = NULL;
-	int size = 0;
-} Chunk;
+#include <vector>
+#include "chunk_stager.h"
 
 class Ingest
 {
-	private:
-		PyObject* m_py_func;
-		Chunk frame;
+    private:
+        std::vector<ChunkStager> m_stagers;
+        void initialize();
+    protected:
+        virtual std::vector<ChunkStager> get_stagers() = 0;
     public:
         Ingest();
         ~Ingest();
-        int extract_frame(char *file_name, char *log_name);
         void run();
 };
-
 #endif
