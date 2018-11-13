@@ -1,5 +1,6 @@
 #ifndef __INGEST_H__
 #define __INGEST_H__
+#include <vector>
 #include "chunk_stager.h"
 
 class Ingest
