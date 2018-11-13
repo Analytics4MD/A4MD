@@ -11,7 +11,7 @@ def get_parameters():
     parameters["NPROCS"] = [1]
     parameters["T"] = [1]
     parameters["L"] = [15] #, 30, 60]
-    parameters["data_dump_interval"] = [1000, 5000, 10000, 15000, 20000]
+    parameters["data_dump_interval"] = [1000, 5000, 10000, 20000]
     parameters["trials"] = [1, 2, 3, 4, 5]
     parameters["job_type"] = ['traditional','plumed_sequential']
     return list(parameters.keys()), list(itertools.product(*parameters.values()))

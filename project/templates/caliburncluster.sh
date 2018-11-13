@@ -16,7 +16,7 @@
 #SBATCH --error={{ job_output }}
 {% endif %}
 {% block tasks %}
-#SBATCH --ntasks={{ np_global }}
+SBATCH --ntasks={{ np_global }}
 {% endblock %}
 module purge
 module load openmpi/2.1.3-gcc-8.1.0

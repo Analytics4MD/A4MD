@@ -119,8 +119,8 @@ def create_lammps_script(job, file_name='in.lj'):
         if job.sp.job_type == 'traditional':
             f.write('dump    1       all dcd {} output.dcd\n'.format(job.sp.data_dump_interval))
             f.write('#dump_modify 1 element Ar\n')
-        elif 'plumed' in job.sp.job_type:
-            f.write('fix  3 all plumed plumedfile plumed.dat outfile plumed.out \n')
+        #elif 'plumed' in job.sp.job_type:
+        f.write('fix  3 all plumed plumedfile plumed.dat outfile plumed.out \n')
 
         f.write('\n')
         f.write('# run 1000 more steps in the NVT ensemble\n')
