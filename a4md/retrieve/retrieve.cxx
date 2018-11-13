@@ -116,7 +116,7 @@ int Retrieve::analyze_frame(char* module_name,
             Py_DECREF(py_args);
             if (py_return != NULL)
             {
-                printf("Result of call: %ld\n", PyLong_AsLong(py_return));
+                //printf("Result of call: %ld\n", PyLong_AsLong(py_return));
                 Py_DECREF(py_return);
             }
             else
