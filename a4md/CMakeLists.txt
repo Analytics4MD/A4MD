@@ -34,8 +34,8 @@ if (MPI_FOUND)
         message(STATUS "MPI_FORTRAN_INCLUDE_PATH" ${MPI_Fortran_INCLUDE_PATH})
         message(STATUS "MPI_FORTRAN_LIBRARIES" ${MPI_Fortran_INCLUDE_PATH})
 
-        message(FATAL_ERROR "---===MPI FORTRAN COMPILER (typically mpif90) WAS NOT FOUND===---.\
-                Dataspaces may not build successfully because of this. Not sure what to do about this yet.\
+        message(AUTHOR_WARNING "---===MPI FORTRAN COMPILER (typically mpif90) WAS NOT FOUND===---.
+                Dataspaces may not build successfully because of this. Not sure what to do about this yet.
                 If you are in a conda environment, switching to the system may work. Try it. Thats what worked for me.==--")
     endif (MPI_FORTRAN_FOUND)
 else (MPI_FOUND)
