@@ -1,11 +1,12 @@
 set(_ingest_sources_
-<<<<<<< HEAD
         plumed_ingest.cxx
         ingest.cxx 
         chunker.cxx
         chunk_stager.cxx
         chunk_writer.cxx
-        chunk_reader.cxx)
+        chunk_reader.cxx
+        ims_reader.cxx
+        pycall.cxx)
 set(_ingest_headers_
         plumed_ingest.h
         ingest.h
@@ -15,23 +16,7 @@ set(_ingest_headers_
         chunk_reader.h
         ims_reader.h
         ims_writer.h
-=======
-        ingest.cxx
-        chunk_stager.cxx
-        chunk_reader.cxx
-        chunk_writer.cxx
-        chunker.cxx
-        ims_reader.cxx
-        pycall.cxx)
-set(_ingest_headers_
-        ingest.h
-        chunk_stager.h
-        chunk_reader.h
-        chunk_writer.h
         pycall.h
-        chunker.h
-        ims_reader.h
->>>>>>> feat/ingest_library
         common.h
         exceptions.h)
 
