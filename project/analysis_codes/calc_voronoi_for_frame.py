@@ -23,6 +23,7 @@ def analyze(types, points, box_points, step):
     an_time = timer()-t
     an_times.append(an_time)
     if step>=20000:
+        t=timer()
         print("In analyze: step: ",step)
         print('last frame position[0]',points[0])
         print('freud box', box)
@@ -38,11 +39,13 @@ def analyze(types, points, box_points, step):
         np.savetxt('voro_freq.txt',frq)
         np.savetxt('voro_edges.txt',edges)
         print('Number of voronoi cells',len(cells))
+        an_write_time = timer()-t
         with open('signac_job_document.json', 'r') as f:
             job_document = json.load(f)
 
         job_document['analysis_time'] = np.sum(an_times)
         job_document['analysis_time_sem'] = stats.sem(an_times)
+        job_document['analysis_output_time'] = np.sum(an_write_time)
 
         with open('signac_job_document.json', 'w') as f:
             f.write(json.dumps(job_document))

@@ -79,12 +79,22 @@ def get_transfer_time(job):
             tt += job.document['read_frames_time']
         else:
             raise ValueError('read_frames_time not found in job document')
+        if 'analysis_output_time' in job.document:
+            tt += job.document['analysis_output_time']
+        else:
+            raise ValueError('analysis_output_time not found in job document')
+
     else:
         job.document['ete_analysis_time'] = get_ete_analysis_time(job)
         if 'analysis_time' in job.document: # analysis time is written from the analysis script
             tt = job.document['ete_analysis_time']-job.document['analysis_time']
         else:
             raise ValueError('analysis_time is not in the job document.')
+        if 'analysis_output_time' in job.document:
+            tt -= job.document['analysis_output_time']
+        else:
+            raise ValueError('analysis_output_time not found in job document')
+
     return tt
 
 
@@ -139,13 +149,19 @@ def analyze_job(job):
                 read_frame_times = []
                 start = timer()
                 import analysis_codes.calc_voronoi_for_frame as calc_voro
-                traj_ext = 'dcd'
+                traj_ext = job.sp.output_type
                 traj_file = 'output.{}'.format(traj_ext)
                 top_file = 'top_L_{}.pdb'.format(job.sp.L)
                 if job.isfile(top_file) and job.isfile(traj_file): 
-                    traj = md.load_dcd(traj_file,top=top_file)
+                    if job.sp.output_type =='dcd':
+                        traj = md.load_dcd(traj_file,top=top_file)
+                    elif job.sp.output_type == 'xyz':
+                        traj = md.load_xyz(traj_file,top=top_file)
+                    else:
+                        raise ValueError('Unrecognized output_type: {}'.format(job.sp.output_type))
                     if len(traj)>0:
-                        box_L = traj[0].unitcell_lengths[0]*10 # mul by 10 to compensate for mdtraj dividing by 10
+                        print('found',len(traj),'frames in',traj_file)
+                        box_L = [job.sp.L, job.sp.L, job.sp.L]#traj[0].unitcell_lengths[0]*10 # mul by 10 to compensate for mdtraj dividing by 10
                         #print(box_L, type(box_L))
                         box_points=np.append(box_L,[0, 0, 0])
                         #print("my box points are ", box_points)
@@ -157,11 +173,17 @@ def analyze_job(job):
                             dummy=[0]*len(points)
                             read_frame_times.append(timer()-start)
                             calc_voro.analyze(dummy, points, box_points, frame*job.sp.data_dump_interval) 
+                    else:
+                        raise ValueError('trajectory file {} does not contain any frames.'.format(traj_file))
+                else:
+                    raise ValueError('top file ({}) or traj file ({}) not found in job ({})'.format(top_file,traj_file,job))
+
                 job.document['read_frames_time']=np.sum(read_frame_times)        
 
     job.document['transfer_time'] = get_transfer_time(job)
     job.document['modify_time'] = get_modify_time(job)
     job.document['simulation_time'] = get_simulation_time(job)
+
 
 if __name__ == '__main__':
     A4MDProject().main()
