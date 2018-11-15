@@ -1,0 +1,15 @@
+This project is based on signac-flow.
+
+So the dependencies are signac and signac-flow packages. Ask Stephen Thomas (stephenthomas2018@gmail.com) if you are not sure.
+
+Once these are set up, set the parameters in init.py and run
+
+```
+python init.py
+```
+
+This will set up the workspace. Now to run the simulations:
+
+```
+python a4md.py submit
+```
