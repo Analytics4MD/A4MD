@@ -117,7 +117,13 @@ def create_lammps_script(job, file_name='in.lj'):
         f.write('\n')
 
         if job.sp.job_type == 'traditional':
-            f.write('dump    1       all dcd {} output.dcd\n'.format(job.sp.data_dump_interval))
+            #if 'output_type' not in job.sp:
+            #    job.sp['output_type']='dcd'
+            if 'output_type' in job.sp:
+                if job.sp.output_type == 'dcd':
+                    f.write('dump    1       all dcd {} output.dcd\n'.format(job.sp.data_dump_interval))
+                elif job.sp.output_type == 'xyz':
+                    f.write('dump    1       all xyz {} output.xyz\n'.format(job.sp.data_dump_interval))
             f.write('#dump_modify 1 element Ar\n')
         #elif 'plumed' in job.sp.job_type:
         f.write('fix  3 all plumed plumedfile plumed.dat outfile plumed.out \n')
