@@ -26,6 +26,39 @@ def analyzed(job):
            'simulation_time' in job.document and \
            'modify_time' in job.document
 
+def diskstats_parse(dev=None):
+    file_path = '/proc/diskstats'
+    result = {}
+
+    # ref: http://lxr.osuosl.org/source/Documentation/iostats.txt
+    columns_disk = ['m', 'mm', 'dev', 'reads', 'rd_mrg', 'rd_sectors',
+                    'ms_reading', 'writes', 'wr_mrg', 'wr_sectors',
+                    'ms_writing', 'cur_ios', 'ms_doing_io', 'ms_weighted']
+
+    columns_partition = ['m', 'mm', 'dev', 'reads', 'rd_sectors', 'writes', 'wr_sectors']
+
+    lines = open(file_path, 'r').readlines()
+    for line in lines:
+        if line == '': continue
+        split = line.split()
+        if len(split) == len(columns_disk):
+            columns = columns_disk
+        elif len(split) == len(columns_partition):
+            columns = columns_partition
+        else:
+            # No match
+            continue
+
+        data = dict(zip(columns, split))
+        if dev != None and dev != data['dev']:
+            continue
+        for key in data:
+            if key != 'dev':
+                data[key] = int(data[key])
+        result[data['dev']] = data
+
+    return result
+
 @A4MDProject.operation
 @A4MDProject.post(initialized)
 def initialize(job):
@@ -49,6 +82,8 @@ def initialize(job):
 
 
     copyfile('analysis_codes/calc_voronoi_for_frame.py',job.fn('calc_voronoi_for_frame.py'))
+    copyfile('checkio.sh',job.fn('checkio.sh'))
+
     with job:
         lmp.create_lammps_script(job)
 
@@ -128,7 +163,11 @@ def get_simulation_time(job):
 @flow.directives(np=18)
 #@flow.cmd
 def simulate(job):
-    with job, open("generate_stdout.log", "w+") as generate_stdout:
+    import time
+    with job, open("generate_stdout.log", "w+") as generate_stdout, open('iostats.log','w+') as iostat_out:
+        job_command = ['bash','checkio.sh']
+        generate_iostats = subprocess.Popen(job_command, stdout=iostat_out, stderr=iostat_out)
+        time.sleep(120)
         job_command = ['mpirun','-n',str(job.sp.NPROCS),'lmp_mpi','-i','in.lj']
         print("Executing job command:", job_command)
         start = timer()
@@ -136,6 +175,8 @@ def simulate(job):
         generate.wait()
         t = timer() - start
         job.document['ete_simulation_time'] = t
+        time.sleep(120)
+        generate_iostats.kill()
     
 
 @A4MDProject.operation
