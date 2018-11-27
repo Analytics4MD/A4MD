@@ -1,8 +1,17 @@
 #include "chunk_stager.h"
 
-std::vector<Chunk> ChunkStager::read_chunks(int num_chunks)
+
+ChunkStager::ChunkStager(ChunkReader* reader, ChunkWriter* writer)
 {
-    std::vector<Chunk> chunks;
-    throw NotImplementedException();
-    return chunks; 
+    m_chunk_reader = reader;
+    m_chunk_writer = writer;
+}
+
+bool ChunkStager::stage_chunks(int num_chunks)
+{
+    bool success = false;
+    auto chunks = m_chunk_reader->read_chunks(num_chunks);
+    success = m_chunk_writer->write_chunks(chunks);
+    //throw NotImplementedException();
+    return success; 
 }
