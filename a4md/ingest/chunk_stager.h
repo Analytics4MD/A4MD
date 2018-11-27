@@ -7,11 +7,13 @@
 class ChunkStager 
 {
     private:
-        ChunkReader m_chunk_reader;
-        ChunkWriter m_chunk_writer;
+        ChunkReader* m_chunk_reader;
+        ChunkWriter* m_chunk_writer;
 
     public:
-        std::vector<Chunk> read_chunks(int num_chunks);
+        ChunkStager(ChunkReader* reader, ChunkWriter* writer);
+        ~ChunkStager();
+        bool stage_chunks(int num_chunks);
 };
 
 #endif
