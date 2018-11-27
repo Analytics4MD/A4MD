@@ -13,7 +13,7 @@ class ChunkStager
     public:
         ChunkStager(ChunkReader* reader, ChunkWriter* writer);
         ~ChunkStager();
-        bool stage_chunks(int num_chunks);
+        bool stage_chunks(int num_chunks=1);
 };
 
 #endif

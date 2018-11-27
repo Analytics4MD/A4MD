@@ -1,5 +1,6 @@
 set(_ingest_sources_
         plumed_ingest.cxx
+        md_ingest.cxx
         ingest.cxx 
         chunker.cxx
         chunk_stager.cxx
@@ -9,6 +10,7 @@ set(_ingest_sources_
         pycall.cxx)
 set(_ingest_headers_
         plumed_ingest.h
+        md_ingest.h
         ingest.h
         chunker.h
         chunk_stager.h
