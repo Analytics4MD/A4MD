@@ -13,6 +13,7 @@ class PlumedChunker : public Chunker
         friend std::ostream & operator<<(std::ostream &os, const PlumedChunker &pc);
         //std::vector<Chunk> m_chunks;
         std::list<Chunk*> m_chunks;
+        ChunkArray m_chunk_array;
         template<class Archive>
         void serialize(Archive & ar, const unsigned int version) override
         {
@@ -25,6 +26,7 @@ class PlumedChunker : public Chunker
         void initialize() override;
         void finalize() override;
         std::vector<Chunk> chunks_from_file(int num_chunks=1) override;
+        ChunkArray get_chunk_array(int num_chunks=1);
         void append(int step,
                     std::vector<int> types,
                     std::vector<double> x_cords,

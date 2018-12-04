@@ -29,8 +29,13 @@ void PlumedChunker::append(int step,
 {
     PLMDChunk* chunk = new PLMDChunk(step, types);
     m_chunks.insert(m_chunks.end(), chunk);    
+    m_chunk_array.append(chunk);
 }
 
+ChunkArray PlumedChunker::get_chunk_array(int num_chunks)
+{
+    return m_chunk_array;
+}
 std::vector<Chunk> PlumedChunker::chunks_from_file(int num_chunks)
 {
     //if (m_chunks.size() > num_chunks)

@@ -80,6 +80,16 @@ class ChunkArray
         }
     public:
         ChunkArray(){}
+        void print()
+        {
+            for (auto i:m_chunks)
+                i->print();
+        }
+        void append(Chunk* chunk)
+        {
+            m_chunks.insert(m_chunks.end(), chunk);
+        }
+
 };
 
 #endif

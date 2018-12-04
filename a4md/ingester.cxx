@@ -34,7 +34,10 @@ int main (int argc, const char** argv)
                  z_positions);
   //std::vector<Chunk> chunks = chunker.chunks_from_file();
   //printf("chunks---- length %i\n",chunks.size());
-  dataspaces_writer_ptr.write_chunks(chunker);
+  auto chunk_array = chunker.get_chunk_array();
+  dataspaces_writer_ptr.write_chunks(chunk_array);
+
+  //dataspaces_writer_ptr.write_chunks(chunker);
  
   printf("Initialized dataspace writer\n");
   MPI_Finalize();

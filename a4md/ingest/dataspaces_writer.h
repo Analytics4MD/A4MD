@@ -13,5 +13,6 @@ class DataSpacesWriter : public IMSWriter
         DataSpacesWriter(char* var_name);
         void write_chunks(std::vector<Chunk> chunks);
         void write_chunks(PlumedChunker chunker);
+        void write_chunks(ChunkArray chunks);
 };
 #endif
