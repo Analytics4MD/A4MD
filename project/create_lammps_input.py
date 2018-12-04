@@ -132,4 +132,4 @@ def create_lammps_script(job, file_name='in.lj'):
         f.write('# run 1000 more steps in the NVT ensemble\n')
         f.write('# (this is data production, from which configurations are saved) \n')
         f.write('log log.prod\n')
-        f.write('run     20000\n')
+        f.write('run  {}\n'.format(job.sp.simulation_time))

@@ -23,6 +23,10 @@ module load openmpi/2.1.3-gcc-8.1.0
 module load python/3.6.3
 source /home1/st18003/scratch/a4md_env/bin/activate
 
+################## USER PATHS GO HERE ##########################
+export PATH="/home1/st18003/scratch/software/install/lammps:$PATH"
+export PATH="/home1/st18003/scratch/projects/a4md/_install/bin:$PATH"
+################################################################
 {% endblock %}
 
 {% block body %}
