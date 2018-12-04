@@ -30,6 +30,11 @@ class Chunk
         {
             std::cout << "step " << m_step << std::endl;
         }
+
+        int get_chunk_id()
+        {
+            return m_step;
+        }
 };
 
 class PLMDChunk : public Chunk
@@ -88,6 +93,14 @@ class ChunkArray
         void append(Chunk* chunk)
         {
             m_chunks.insert(m_chunks.end(), chunk);
+        }
+
+        int get_chunk_id()
+        {
+            if (m_chunks.size() > 0)
+                return m_chunks.back()->get_chunk_id();
+            else
+                return 0;
         }
 
 };

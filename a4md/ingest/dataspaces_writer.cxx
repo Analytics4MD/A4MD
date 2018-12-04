@@ -34,10 +34,10 @@ void DataSpacesWriter::write_chunks(ChunkArray chunks)
         // write class instance to archive
         oa << chunks;
     }
-    std::cout << "Serialized~!!!!!!" << oss.str()  << "\n";
+    //std::cout << "Serialized~!!!!!!" << oss.str()  << "\n";
 
     
-    dspaces_lock_on_write("my_test_lock", &m_gcomm);
+    //dspaces_lock_on_write("my_test_lock", &m_gcomm);
     //for (auto it = chunks.begin(); it!=chunks.end(); ++it)
     //{
     //    auto chunk = *it;
@@ -45,7 +45,7 @@ void DataSpacesWriter::write_chunks(ChunkArray chunks)
     //    printf("-== Chunk data %s ==-\n",chunk.data);
     int ndim = 1;
     uint64_t lb[3] = {0}, ub[3] = {0};
-    unsigned int ts = 1;
+    unsigned int ts = chunks.get_chunk_id();
     std::string data = oss.str();
     int error = dspaces_put(m_var_name.c_str(),
                             ts,
@@ -55,10 +55,10 @@ void DataSpacesWriter::write_chunks(ChunkArray chunks)
                             ub,
                             data.c_str());
     if (error == 0)
-        printf("Wrote char array of length %i to dataspacess successfull\n",data.length());
+        printf("Wrote char array of length %i for chunk id %i to dataspacess successfull\n",data.length(), ts);
     else
         printf("Did not write to dataspaces successfully\n");
-    dspaces_unlock_on_write("my_test_lock", &m_gcomm);
+    //dspaces_unlock_on_write("my_test_lock", &m_gcomm);
 
     //dspaces_lock_on_read("my_test_lock", &m_gcomm);
     int input_data_length = data.length();
@@ -71,7 +71,7 @@ void DataSpacesWriter::write_chunks(ChunkArray chunks)
                         ub,
                         input_data);
     if (error == 0)
-        printf("Read from dataspacess successfull\n");
+        printf("Read chunk id %i from dataspacess successfull\n",ts);
     else
         printf("Did not read from dataspaces successfully\n");
     
@@ -90,8 +90,8 @@ void DataSpacesWriter::write_chunks(ChunkArray chunks)
         boost::archive::text_oarchive oa(oss2);
         oa << chunksback;
 
-        std::cout << oss.str()  << "\n";
-        std::cout << oss2.str() << "\n";
+        //std::cout << oss.str()  << "\n";
+        //std::cout << oss2.str() << "\n";
     }
     //for (auto i:chunksback)
     //{

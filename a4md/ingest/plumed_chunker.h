@@ -1,12 +1,13 @@
 #ifndef __PLUMED_CHUNKER_H__
 #define __PLUMED_CHUNKER_H__
 #include <vector>
+#include <queue>
 #include "chunker.h"
 
 class PlumedChunker : public Chunker
 {
     private:
-        ChunkArray m_chunk_array;
+        std::queue<Chunk*> m_chunkq;
     public:
         PlumedChunker();
         ~PlumedChunker();

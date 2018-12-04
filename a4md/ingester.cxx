@@ -36,6 +36,8 @@ int main (int argc, const char** argv)
   //printf("chunks---- length %i\n",chunks.size());
   auto chunk_array = chunker.get_chunk_array();
   dataspaces_writer_ptr.write_chunks(chunk_array);
+  chunk_array = chunker.get_chunk_array();
+  dataspaces_writer_ptr.write_chunks(chunk_array);
 
   //dataspaces_writer_ptr.write_chunks(chunker);
  
