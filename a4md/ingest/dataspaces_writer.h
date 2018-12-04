@@ -2,7 +2,6 @@
 #define __DATASPACES_WRITER_H__
 #include "ims_writer.h"
 #include "mpi.h"
-#include "plumed_chunker.h"
 
 class DataSpacesWriter : public IMSWriter
 {
@@ -12,7 +11,6 @@ class DataSpacesWriter : public IMSWriter
     public:
         DataSpacesWriter(char* var_name);
         void write_chunks(std::vector<Chunk> chunks);
-        void write_chunks(PlumedChunker chunker);
         void write_chunks(ChunkArray chunks);
 };
 #endif

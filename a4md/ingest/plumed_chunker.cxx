@@ -1,8 +1,4 @@
 #include "plumed_chunker.h"
-#include <boost/iostreams/device/back_inserter.hpp>
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/iostreams/stream.hpp>
-#include <boost/serialization/vector.hpp>
 
 
 PlumedChunker::PlumedChunker()
@@ -28,7 +24,6 @@ void PlumedChunker::append(int step,
                            std::vector<double> z_cords)
 {
     PLMDChunk* chunk = new PLMDChunk(step, types);
-    m_chunks.insert(m_chunks.end(), chunk);    
     m_chunk_array.append(chunk);
 }
 
@@ -36,10 +31,10 @@ ChunkArray PlumedChunker::get_chunk_array(int num_chunks)
 {
     return m_chunk_array;
 }
+
 std::vector<Chunk> PlumedChunker::chunks_from_file(int num_chunks)
 {
-    //if (m_chunks.size() > num_chunks)
+    throw NotImplementedException();
     std::vector<Chunk> temp;
     return temp;//m_chunks;
-    //TODO else throw exception
 }

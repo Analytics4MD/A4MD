@@ -2,9 +2,8 @@
 #define __CHUNKER_H__
 #include <vector>
 #include <string>
-//#include <Python.h>
-
 #include "common.h"
+
 
 class Chunker 
 {
@@ -16,7 +15,6 @@ class Chunker
         virtual void initialize(){};
         virtual void finalize(){};
         virtual std::vector<Chunk> chunks_from_file(int num_chunks){}
-        //virtual void serialize(Archive & ar, const unsigned int version){}
         virtual void print(){}
 };
 
