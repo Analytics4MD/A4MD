@@ -78,7 +78,7 @@ class ChunkArray
         friend std::ostream & operator<<(std::ostream &os, const ChunkArray &ca);
         std::list<Chunk*> m_chunks;
         template<class Archive>
-        void serialize(Archive & ar, const unsigned int version) override
+        void serialize(Archive & ar, const unsigned int version)
         {
             ar.register_type(static_cast<PLMDChunk *>(NULL));
             ar & m_chunks;
