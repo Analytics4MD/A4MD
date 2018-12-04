@@ -7,12 +7,9 @@
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/serialization/vector.hpp>
+#include <boost/serialization/list.hpp>
 
-//typedef struct {
-//    const char *data;
-//    int size = 0;
-//    int chunk_id=0;
-//} Chunk;
+
 class Chunk
 {
     friend class boost::serialization::access;
@@ -34,6 +31,7 @@ class Chunk
             std::cout << "step " << m_step << std::endl;
         }
 };
+
 class PLMDChunk : public Chunk
 {
     private:
@@ -66,6 +64,22 @@ class PLMDChunk : public Chunk
                 std::cout << i << ' ';
             std::cout << std::endl;
         }
+};
+
+class ChunkArray
+{
+    private:
+        friend class boost::serialization::access;
+        friend std::ostream & operator<<(std::ostream &os, const ChunkArray &ca);
+        std::list<Chunk*> m_chunks;
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version) override
+        {
+            ar.register_type(static_cast<PLMDChunk *>(NULL));
+            ar & m_chunks;
+        }
+    public:
+        ChunkArray(){}
 };
 
 #endif
