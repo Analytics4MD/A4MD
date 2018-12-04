@@ -1,6 +1,5 @@
 #ifndef __CHUNK_READER_H__
 #define __CHUNK_READER_H__
-#include "common.h"
 #include "ims_reader.h"
 #include "chunker.h"
 

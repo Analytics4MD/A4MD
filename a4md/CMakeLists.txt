@@ -109,12 +109,10 @@ install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/include/"
         DESTINATION "${CMAKE_INSTALL_PREFIX}/include"
         USE_SOURCE_PERMISSIONS)
 
-
+add_subdirectory(common)
 add_subdirectory(ingest)
 add_subdirectory(retrieve)
 add_subdirectory(extern)
-
-
 
 # add project level sources
 set(_a4md_sources_

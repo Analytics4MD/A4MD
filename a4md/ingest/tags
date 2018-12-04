@@ -1,0 +1,95 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+Chunk	common.h	/^} Chunk;$/;"	t	typeref:struct:__anon1
+ChunkReader	chunk_reader.cxx	/^ChunkReader::ChunkReader(Chunker* chunker)$/;"	f	class:ChunkReader
+ChunkReader	chunk_reader.cxx	/^ChunkReader::ChunkReader(IMSReader* ims_reader)$/;"	f	class:ChunkReader
+ChunkReader	chunk_reader.h	/^class ChunkReader $/;"	c
+ChunkStager	chunk_stager.cxx	/^ChunkStager::ChunkStager(ChunkReader* reader, ChunkWriter* writer)$/;"	f	class:ChunkStager
+ChunkStager	chunk_stager.h	/^class ChunkStager $/;"	c
+ChunkWriter	chunk_writer.h	/^class ChunkWriter \/\/ Writes chunks into an IMS. No application logic here.$/;"	c
+Chunker	chunker.cxx	/^Chunker::Chunker()$/;"	f	class:Chunker
+Chunker	chunker.h	/^class Chunker $/;"	c
+DataSpacesWriter	dataspaces_writer.cxx	/^DataSpacesWriter::DataSpacesWriter(std::string var_name)$/;"	f	class:DataSpacesWriter
+DataSpacesWriter	dataspaces_writer.h	/^class DataSpacesWriter : public IMSWriter$/;"	c
+DataspacesReader	ims_reader.cxx	/^DataspacesReader::DataspacesReader() $/;"	f	class:DataspacesReader
+DataspacesReader	ims_reader.h	/^class DataspacesReader : public IMSReader $/;"	c
+IMSReader	ims_reader.cxx	/^IMSReader::IMSReader() $/;"	f	class:IMSReader
+IMSReader	ims_reader.h	/^class IMSReader $/;"	c
+IMSWriter	ims_writer.h	/^class IMSWriter $/;"	c
+Ingest	ingest.cxx	/^Ingest::Ingest(int max_chunk_id)$/;"	f	class:Ingest
+Ingest	ingest.h	/^class Ingest$/;"	c
+MDIngest	md_ingest.cxx	/^MDIngest::MDIngest(int max_chunk_id,$/;"	f	class:MDIngest
+MDIngest	md_ingest.h	/^class MDIngest : public Ingest$/;"	c
+NotImplementedException	exceptions.h	/^    NotImplementedException()$/;"	f	class:NotImplementedException
+NotImplementedException	exceptions.h	/^    NotImplementedException(const char* message)$/;"	f	class:NotImplementedException
+NotImplementedException	exceptions.h	/^    NotImplementedException(const char* message, const char* function)$/;"	f	class:NotImplementedException
+NotImplementedException	exceptions.h	/^class NotImplementedException : public std::logic_error$/;"	c
+PdbChunker	chunker.cxx	/^PdbChunker::PdbChunker(std::string file_path, std::string log_path, std::string py_path, std::string py_script, std::string py_def) $/;"	f	class:PdbChunker
+PdbChunker	chunker.h	/^class PdbChunker : public Chunker$/;"	c
+PlumedIngest	plumed_ingest.h	/^class PlumedIngest : public Ingest$/;"	c
+__CHUNKER_H__	chunker.h	2;"	d
+__CHUNK_READER_H__	chunk_reader.h	2;"	d
+__CHUNK_STAGER_H__	chunk_stager.h	2;"	d
+__CHUNK_WRITER_H__	chunk_writer.h	2;"	d
+__COMMON_H__	common.h	2;"	d
+__DATASPACES_WRITER_H__	dataspaces_writer.h	2;"	d
+__EXCEPTIONS_H__	exceptions.h	2;"	d
+__IMS_READER_H__	ims_reader.h	2;"	d
+__IMS_WRITER_H__	ims_writer.h	2;"	d
+__INGEST_H__	ingest.h	2;"	d
+__MD_INGEST_H__	md_ingest.h	2;"	d
+__PLUMED_INGEST_H__	plumed_ingest.h	2;"	d
+__PYCALL_H__	pycall.h	2;"	d
+_text	exceptions.h	/^    std::string _text;$/;"	m	class:NotImplementedException
+chunk_id	common.h	/^    int chunk_id = 0;$/;"	m	struct:__anon1
+chunks_from_file	chunker.cxx	/^std::vector<Chunk> PdbChunker::chunks_from_file(int num_chunks)$/;"	f	class:PdbChunker
+data	common.h	/^    std::vector<std::tuple<T> > data;$/;"	m	struct:__anon1
+extract_frame	chunker.cxx	/^int extract_frame(PyObject *py_func, std::string file_path, std::string log_path, double **data)$/;"	f
+finalize	chunker.cxx	/^void PdbChunker::finalize()$/;"	f	class:PdbChunker
+finalize	ims_reader.cxx	/^void DataspacesReader::finalize()$/;"	f	class:DataspacesReader
+get_chunks	ims_reader.cxx	/^std::vector<Chunk> DataspacesReader::get_chunks(int num_chunks)$/;"	f	class:DataspacesReader
+get_stagers	md_ingest.cxx	/^std::vector<ChunkStager> MDIngest::get_stagers()$/;"	f	class:MDIngest
+get_stagers	plumed_ingest.cxx	/^std::vector<ChunkStager> PlumedIngest::get_stagers()$/;"	f	class:PlumedIngest
+initialize	chunker.cxx	/^void PdbChunker::initialize() $/;"	f	class:PdbChunker
+initialize	ims_reader.cxx	/^void DataspacesReader::initialize()$/;"	f	class:DataspacesReader
+initialize	ingest.cxx	/^void Ingest::initialize()$/;"	f	class:Ingest
+load_py_function	pycall.cxx	/^PyObject *load_py_function(std::string py_script, std::string py_def){$/;"	f
+m_chunk_reader	chunk_stager.h	/^        ChunkReader* m_chunk_reader;$/;"	m	class:ChunkStager
+m_chunk_writer	chunk_stager.h	/^        ChunkWriter* m_chunk_writer;$/;"	m	class:ChunkStager
+m_chunker	chunk_reader.h	/^        Chunker* m_chunker; $/;"	m	class:ChunkReader
+m_file_path	chunker.h	/^        std::string m_file_path;$/;"	m	class:Chunker
+m_file_path	md_ingest.h	/^        std::string m_file_path;$/;"	m	class:MDIngest
+m_gcomm	dataspaces_writer.h	/^        MPI_Comm m_gcomm;$/;"	m	class:DataSpacesWriter
+m_ims_reader	chunk_reader.h	/^        IMSReader* m_ims_reader; $/;"	m	class:ChunkReader
+m_ims_writer	chunk_writer.h	/^        IMSWriter* m_ims_writer;$/;"	m	class:ChunkWriter
+m_log_path	chunker.h	/^        std::string m_log_path;$/;"	m	class:PdbChunker
+m_log_path	md_ingest.h	/^        std::string m_log_path;$/;"	m	class:MDIngest
+m_max_chunk_id	ingest.h	/^        int m_max_chunk_id;$/;"	m	class:Ingest
+m_py_def	chunker.h	/^        std::string m_py_def;$/;"	m	class:PdbChunker
+m_py_def	md_ingest.h	/^        std::string m_py_def;$/;"	m	class:MDIngest
+m_py_func	chunker.h	/^        PyObject *m_py_func;$/;"	m	class:PdbChunker
+m_py_path	chunker.h	/^        std::string m_py_path;$/;"	m	class:PdbChunker
+m_py_path	md_ingest.h	/^        std::string m_py_path;$/;"	m	class:MDIngest
+m_py_script	chunker.h	/^        std::string m_py_script;$/;"	m	class:PdbChunker
+m_py_script	md_ingest.h	/^        std::string m_py_script;$/;"	m	class:MDIngest
+m_stagers	ingest.h	/^        std::vector<ChunkStager> m_stagers;$/;"	m	class:Ingest
+m_var_name	dataspaces_writer.h	/^        std::string m_var_name;$/;"	m	class:DataSpacesWriter
+override	chunker.h	/^        void finalize() override;$/;"	m	class:PdbChunker
+override	chunker.h	/^        void initialize() override;$/;"	m	class:PdbChunker
+read_chunks	chunk_reader.cxx	/^std::vector<Chunk> ChunkReader::read_chunks(int num_chunks)$/;"	f	class:ChunkReader
+read_from_file	chunk_reader.h	/^        bool read_from_file;$/;"	m	class:ChunkReader
+run	ingest.cxx	/^void Ingest::run()$/;"	f	class:Ingest
+size	common.h	/^    int size(){ return sizeof(T) * data.size(); }$/;"	f	struct:__anon1
+stage_chunks	chunk_stager.cxx	/^bool ChunkStager::stage_chunks(int num_chunks)$/;"	f	class:ChunkStager
+write_chunks	chunk_writer.cxx	/^bool ChunkWriter::write_chunks(std::vector <Chunk> chunks)$/;"	f	class:ChunkWriter
+write_chunks	dataspaces_writer.cxx	/^void DataSpacesWriter::write_chunks(std::vector<Chunk> chunks)$/;"	f	class:DataSpacesWriter
+~ChunkReader	chunk_reader.cxx	/^ChunkReader::~ChunkReader()$/;"	f	class:ChunkReader
+~Chunker	chunker.cxx	/^Chunker::~Chunker()$/;"	f	class:Chunker
+~DataspacesReader	ims_reader.cxx	/^DataspacesReader::~DataspacesReader()$/;"	f	class:DataspacesReader
+~IMSReader	ims_reader.cxx	/^IMSReader::~IMSReader()$/;"	f	class:IMSReader
+~Ingest	ingest.cxx	/^Ingest::~Ingest()$/;"	f	class:Ingest
+~PdbChunker	chunker.cxx	/^PdbChunker::~PdbChunker() $/;"	f	class:PdbChunker

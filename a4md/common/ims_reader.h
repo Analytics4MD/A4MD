@@ -1,6 +1,6 @@
 #ifndef __IMS_READER_H__
 #define __IMS_READER_H__
-#include "common.h"
+#include "chunk.h"
 
 // Read chunks from an IMS. No application logic here.
 class IMSReader 

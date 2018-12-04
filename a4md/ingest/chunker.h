@@ -2,7 +2,7 @@
 #define __CHUNKER_H__
 #include <vector>
 #include <string>
-#include "common.h"
+#include "chunk.h"
 
 
 class Chunker 

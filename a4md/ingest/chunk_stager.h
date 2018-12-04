@@ -1,6 +1,5 @@
 #ifndef __CHUNK_STAGER_H__
 #define __CHUNK_STAGER_H__
-#include "common.h"
 #include "chunk_writer.h"
 #include "chunk_reader.h"
 
