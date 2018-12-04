@@ -9,6 +9,20 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 find_package(NumPy REQUIRED)
 include_directories(${NUMPY_INCLUDE_DIR})
 
+# find Boost
+find_package(Boost 1.53 REQUIRED COMPONENTS
+             date_time filesystem iostreams serialization)
+if (Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+
+    message(STATUS "Boost_INCLUDE_DIRS" ${Boost_INCLUDE_DIRS})
+    message(STATUS "Boost_LIBRARY_DIRS" ${Boost_LIBRARY_DIRS})
+    message(STATUS "Boost_LIBRARIES" ${Boost_LIBRARIES})
+    
+else (Boost_FOUND)
+    message(SEND_ERROR "This application cannot compile without Boost")
+endif (Boost_FOUND)
+
 # adding MPI
 find_package(MPI REQUIRED)
 if (MPI_FOUND)
@@ -45,15 +59,23 @@ endif (MPI_FOUND)
 # adding Dataspaces library
 message(STATUS "Adding Dataspaces library to project")
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
+
 ExternalProject_Add(project_dataspaces
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/a4md/extern/dataspaces
   BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND ./autogen.sh COMMAND ./configure CC=mpicc FC=mpif90 --prefix=${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces
+  CONFIGURE_COMMAND ./autogen.sh COMMAND ./configure CC=mpicc FC=mpif90 CFLAGS=-fPIC --enable-dart-tcp LIBS=-lm --prefix=${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces
   BUILD_COMMAND ${MAKE}
 )
 add_library(dataspaces STATIC IMPORTED)
 add_dependencies(dataspaces project_dataspaces)
 set_property(TARGET dataspaces PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/lib/libdspaces.a)
+set_target_properties(dataspaces PROPERTIES
+    CXX_STANDARD 11
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF
+    POSITION_INDEPENDENT_CODE ON
+)
+
 
 add_library(dataspaces_cmn STATIC IMPORTED)
 add_dependencies(dataspaces_cmn project_dataspaces)
@@ -80,6 +102,12 @@ install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/bin/"
         DESTINATION "${CMAKE_INSTALL_PREFIX}/bin"
         USE_SOURCE_PERMISSIONS
         FILES_MATCHING PATTERN "dataspaces_server")
+install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/lib/" 
+        DESTINATION "${CMAKE_INSTALL_PREFIX}/lib"
+        USE_SOURCE_PERMISSIONS)
+install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/include/" 
+        DESTINATION "${CMAKE_INSTALL_PREFIX}/include"
+        USE_SOURCE_PERMISSIONS)
 
 
 add_subdirectory(ingest)
