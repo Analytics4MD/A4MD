@@ -18,7 +18,7 @@ module load openmpi/2.1.3-gcc-4.8.5
 module load boost/1.68-gcc-4.8.5
 cmake .. \
 -DCMAKE_INSTALL_PREFIX=../_install \
--DBOOST_ROOT=/software/boost/1.68-gcc-4.8.5
+-DBOOST_ROOT=/software/boost/1.68-gcc-4.8.5 \
 -DPYTHON_INCLUDE_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
 -DPYTHON_LIBRARY=$(python -c "import distutils.sysconfig as sysconfig; import os; print(os.path.join(sysconfig.get_config_var('LIBDIR'), sysconfig.get_config_var('LDLIBRARY')))")
 ----------==============  Caliburn cluster ==============--------------
