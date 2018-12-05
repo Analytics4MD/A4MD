@@ -6,21 +6,7 @@
 class IMSReader 
 {
     public:
-        IMSReader();
-    	~IMSReader();
-    	virtual void initialize();
-    	virtual void finalize();
-        virtual std::vector<Chunk> get_chunks(int num_chunks) = 0;
-};
+        virtual ChunkArray get_chunks(int num_chunks) = 0;
 
-class DataspacesReader : public IMSReader 
-{
-	public:
-		DataspacesReader();
-		~DataspacesReader();
-		void initialize();
-		void finalize();
-		std::vector<Chunk> get_chunks(int num_chunks);
 };
-
 #endif

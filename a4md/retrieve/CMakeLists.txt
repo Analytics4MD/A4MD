@@ -11,8 +11,8 @@ set_target_properties(retrieve PROPERTIES
     POSITION_INDEPENDENT_CODE ON
 )
 
-add_dependencies(retrieve common dataspaces)
-target_link_libraries(retrieve dataspaces dataspaces_cmn dataspaces_dart m ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${PYTHON_LIBRARIES})
+add_dependencies(retrieve a4md_cmn)
+target_link_libraries(retrieve a4md_cmn ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${PYTHON_LIBRARIES})
 
 install (TARGETS retrieve DESTINATION lib)
 install (FILES ${_retrieve_headers_} DESTINATION include)

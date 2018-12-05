@@ -19,7 +19,13 @@ class PlumedChunker : public Chunker
                     std::vector<int> types,
                     std::vector<double> x_cords,
                     std::vector<double> y_cords,
-                    std::vector<double> z_cords);
+                    std::vector<double> z_cords,
+                    double box_lx,
+                    double box_ly,
+                    double box_lz,
+                    double box_xy,
+                    double box_xz,
+                    double box_yz);
 };
 
 #endif

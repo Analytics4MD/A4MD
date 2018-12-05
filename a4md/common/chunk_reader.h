@@ -13,6 +13,6 @@ class ChunkReader
         ChunkReader(IMSReader* ims_reader);
         ChunkReader(Chunker* chunker);
         ~ChunkReader();
-        std::vector<Chunk> read_chunks(int num_chunks);
+        ChunkArray read_chunks(int num_chunks);
 };
 #endif

@@ -6,6 +6,6 @@
 class IMSWriter 
 {
     public:
-        virtual void write_chunks(std::vector<Chunk> chunks) = 0;
+        virtual void write_chunks(ChunkArray chunks) = 0;
 };
 #endif

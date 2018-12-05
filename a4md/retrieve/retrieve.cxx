@@ -96,6 +96,8 @@ int Retrieve::analyze_frame(char* module_name,
         if (m_py_func && PyCallable_Check(m_py_func))
         {
             int count = positions.size();
+            //for (int i=0;i<count;i++)
+            //    printf("pos[%i]: %lf %lf %lf \n",std::get<0>(positions[i]),std::get<1>(positions[i]),std::get<2>(positions[i]));
             PyObject* py_args = PyTuple_New(4);
             npy_intp types_dims[] = {count};
             PyObject* py_types = PyArray_SimpleNewFromData(1, types_dims, NPY_DOUBLE, (void *)types);

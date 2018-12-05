@@ -16,7 +16,7 @@ set(_ingest_headers_
         pycall.h
         )
 
-include_directories(${PROJECT_SOURCE_DIR}/extern/dataspaces/include)
+#include_directories(${PROJECT_SOURCE_DIR}/extern/dataspaces/include)
 
 add_library(ingest ${_ingest_sources_})
 set_target_properties(ingest PROPERTIES

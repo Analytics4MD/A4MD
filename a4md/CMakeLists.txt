@@ -10,8 +10,12 @@ find_package(NumPy REQUIRED)
 include_directories(${NUMPY_INCLUDE_DIR})
 
 # find Boost
+#set( BOOST_ROOT "" CACHE PATH "/software/boost/1.68-gcc-8.1.0" )
+#set( BOOST_INCLUDEDIR "" CACHE PATH "/software/boost/1.68-gcc-8.1.0/include")
+#set( BOOST_LIBRARYDIR "" CACHE PATH "/software/boost/1.68-gcc-8.1.0/lib")
+#set( Boost_NO_SYSTEM_PATHS on CACHE BOOL "Do not search system for Boost" )
 find_package(Boost 1.53 REQUIRED COMPONENTS
-             date_time filesystem iostreams serialization)
+             iostreams serialization)
 if (Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
 
@@ -123,8 +127,8 @@ set(_a4md_sources_
 add_executable(a4md ${_a4md_sources_})
 add_executable(ingester ingester.cxx)
 add_executable(retriever retriever.cxx)
-target_link_libraries(ingester ingest)
-target_link_libraries(retriever retrieve)
+target_link_libraries(ingester ingest a4md_cmn ${Boost_LIBRARIES})
+target_link_libraries(retriever retrieve a4md_cmn ${Boost_LIBRARIES})
 
 install (TARGETS ingester DESTINATION bin)
 install (TARGETS retriever DESTINATION bin)

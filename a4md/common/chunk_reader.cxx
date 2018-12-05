@@ -16,10 +16,16 @@ ChunkReader::~ChunkReader()
 {
 }
 
-std::vector<Chunk> ChunkReader::read_chunks(int num_chunks)
+ChunkArray ChunkReader::read_chunks(int num_chunks)
 {
     if (read_from_file)
-        return m_chunker->chunks_from_file(num_chunks);
+    {
+        auto chunks = m_chunker->chunks_from_file(num_chunks);
+        ChunkArray chunk_ary;
+        for (auto chunk:chunks)
+            chunk_ary.append(&chunk);
+        return chunk_ary;
+    }
     else
         return m_ims_reader->get_chunks(num_chunks);
 }

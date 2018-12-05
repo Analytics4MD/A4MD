@@ -7,6 +7,6 @@ class ChunkWriter // Writes chunks into an IMS. No application logic here.
     private:
         IMSWriter* m_ims_writer;
     public:
-        bool write_chunks(std::vector <Chunk> chunks);
+        bool write_chunks(ChunkArray chunks);
 };
 #endif
