@@ -10,23 +10,17 @@ find_package(NumPy REQUIRED)
 include_directories(${NUMPY_INCLUDE_DIR})
 
 # find Boost
-#set( BOOST_ROOT "" CACHE PATH "/software/boost/1.68-gcc-8.1.0" )
-#set( BOOST_INCLUDEDIR "" CACHE PATH "/software/boost/1.68-gcc-8.1.0/include")
-#set( BOOST_LIBRARYDIR "" CACHE PATH "/software/boost/1.68-gcc-8.1.0/lib")
-#set( Boost_NO_SYSTEM_PATHS on CACHE BOOL "Do not search system for Boost" )
-find_package(Boost 1.53 REQUIRED COMPONENTS
-             iostreams serialization)
-if (Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-
-    message(STATUS "Boost_INCLUDE_DIRS" ${Boost_INCLUDE_DIRS})
-    message(STATUS "Boost_LIBRARY_DIRS" ${Boost_LIBRARY_DIRS})
-    message(STATUS "Boost_LIBRARIES" ${Boost_LIBRARIES})
-    
-else (Boost_FOUND)
-    message(SEND_ERROR "This application cannot compile without Boost")
-endif (Boost_FOUND)
-
+SET (BOOST_MIN_VERSION "1.55.0")
+FIND_PACKAGE(Boost ${BOOST_MIN_VERSION} REQUIRED COMPONENTS iostreams serialization)
+if (NOT Boost_FOUND)
+  message(FATAL_ERROR "Fatal error: Boost (version >= 1.55) required.")
+else()
+  message(STATUS "Setting up BOOST")
+  message(STATUS " Includes - ${Boost_INCLUDE_DIRS}")
+  message(STATUS " Library  - ${Boost_LIBRARY_DIRS}")
+  include_directories(${Boost_INCLUDE_DIRS})
+  link_directories(${Boost_LIBRARY_DIRS})
+endif (NOT Boost_FOUND)
 # adding MPI
 find_package(MPI REQUIRED)
 if (MPI_FOUND)

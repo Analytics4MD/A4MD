@@ -2,6 +2,7 @@
 #define __COMMON_H__
 #include <vector>
 #include <string>
+#include <iostream>
 #include "exceptions.h"
 #include <boost/iostreams/device/back_inserter.hpp>
 #include <boost/archive/binary_oarchive.hpp>
