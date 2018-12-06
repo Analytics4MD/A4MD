@@ -167,7 +167,7 @@ def simulate(job):
     with job, open("generate_stdout.log", "w+") as generate_stdout, open('iostats.log','w+') as iostat_out:
         job_command = ['bash','checkio.sh']
         generate_iostats = subprocess.Popen(job_command, stdout=iostat_out, stderr=iostat_out)
-        time.sleep(120)
+        time.sleep(10)
         job_command = ['mpirun','-n',str(job.sp.NPROCS),'lmp_mpi','-i','in.lj']
         print("Executing job command:", job_command)
         start = timer()
@@ -175,7 +175,7 @@ def simulate(job):
         generate.wait()
         t = timer() - start
         job.document['ete_simulation_time'] = t
-        time.sleep(120)
+        time.sleep(10)
         generate_iostats.kill()
     
 

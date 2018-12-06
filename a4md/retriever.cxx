@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 
-void analyze(Retrieve& retrieve, int argc, const char** argv, ChunkArray chunk_ary)
+void analyze(Retrieve& retrieve, int step, int argc, const char** argv, ChunkArray chunk_ary)
 {
 
     auto chunks = chunk_ary.get_chunks();
@@ -23,30 +23,27 @@ void analyze(Retrieve& retrieve, int argc, const char** argv, ChunkArray chunk_a
         //for (auto pos:positions)
         //    printf("%f %f %f \n",std::get<0>(pos), std::get<1>(pos),std::get<2>(pos));
         //printf("----=======Positions end\n");
-        double x_low, y_low, z_low,x_high, y_high, z_high;
-        x_low=y_low=z_low=0.0;
-        x_high=y_high=z_high=1.0;
-        //printf("x_low %f\n",x_low);
-        //printf("x_high %f\n",x_high);
-
-        //printf("y_low %f\n",y_low);
-        //printf("y_high %f\n",y_high);
-
-        //printf("z_low %f\n",z_low);
-        //printf("z_high %f\n",z_high);
+        double lx, ly, lz, xy, xz, yz; //xy, xz, yz are tilt factors 
+        lx = chunk->get_box_lx();
+        ly = chunk->get_box_ly();
+        lz = chunk->get_box_lz();
+        xy = chunk->get_box_xy(); // 0 for orthorhombic
+        xz = chunk->get_box_xz(); // 0 for orthorhombic
+        yz = chunk->get_box_yz(); // 0 for orthorhombic
+      
         char* name = (char*)argv[1];
         char* func = (char*)argv[2];
         retrieve.analyze_frame(name,
                                func,
                                types,
                                positions,
-                               x_low,
-                               x_high,
-                               y_low,
-                               y_high,
-                               z_low,
-                               z_high,
-                               0);
+                               lx,
+                               ly,
+                               lz,
+                               xy,
+                               xz,
+                               yz,
+                               step);
 
     }
 }
@@ -61,15 +58,20 @@ int main (int argc, const char** argv)
 
     //printf("Waiting 5 seconds before Read 1\n");
     //sleep(5);
-    auto chunk_array = dataspaces_reader_ptr.get_chunks(100);
-    chunk_array.print();
-    printf("Analyzing 1\n");
-    analyze(retrieve, argc, argv, chunk_array);
-
-    chunk_array = dataspaces_reader_ptr.get_chunks(101);
-    chunk_array.print();
-    printf("Analyzing 2\n");
-    analyze(retrieve, argc, argv, chunk_array);
+    int total_time = atoi(argv[3]);
+    int dump_interval = atoi(argv[4]);
+    printf("Recieved total time = %i from user in Retriever\n",total_time);
+    for (int timestep=0;timestep<=total_time;timestep+=dump_interval) // NOTE: we get timestep 0 to the total time from lammps
+    {
+        auto chunk_array = dataspaces_reader_ptr.get_chunks(timestep);
+        //chunk_array.print();
+        printf("Analyzing time step %i\n",timestep);
+        analyze(retrieve, timestep, argc, argv, chunk_array);
+    }
+    //chunk_array = dataspaces_reader_ptr.get_chunks(101);
+    //chunk_array.print();
+    //printf("Analyzing 2\n");
+    //analyze(retrieve, argc, argv, chunk_array);
 
     MPI_Finalize();
     return 0;//retrieve.call_py(argc, argv);
