@@ -9,12 +9,8 @@ class PlumedChunker : public Chunker
     private:
         std::queue<Chunk*> m_chunkq;
     public:
-        PlumedChunker();
-        ~PlumedChunker();
-        void initialize() override;
-        void finalize() override;
-        std::vector<Chunk> chunks_from_file(int num_chunks=1) override;
-        ChunkArray get_chunk_array(int num_chunks=1);
+        std::vector<Chunk*> get_chunks(int num_chunks) override;
+        //ChunkArray get_chunk_array(int num_chunks=1);
         void append(int step,
                     std::vector<int> types,
                     std::vector<double> x_cords,

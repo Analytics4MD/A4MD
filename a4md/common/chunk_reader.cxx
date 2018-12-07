@@ -1,31 +1,15 @@
 #include "chunk_reader.h"
+//#include <typeinfo>
 
-ChunkReader::ChunkReader(IMSReader* ims_reader)
+
+ChunkReader::ChunkReader(Chunker & chunker)
+: m_chunker(chunker)
 {
-	m_ims_reader = ims_reader;
-	read_from_file = false;
+    printf("---===== Created ChunkReader with %s chunker\n",typeid(m_chunker).name());
 }
 
-ChunkReader::ChunkReader(Chunker* chunker)
+std::vector<Chunk*> ChunkReader::read_chunks(int chunk_id_from, int chunk_id_to)
 {
-	m_chunker = chunker;
-	read_from_file = true;
-}
-
-ChunkReader::~ChunkReader()
-{
-}
-
-ChunkArray ChunkReader::read_chunks(int num_chunks)
-{
-    if (read_from_file)
-    {
-        auto chunks = m_chunker->chunks_from_file(num_chunks);
-        ChunkArray chunk_ary;
-        for (auto chunk:chunks)
-            chunk_ary.append(&chunk);
-        return chunk_ary;
-    }
-    else
-        return m_ims_reader->get_chunks(num_chunks);
+    printf("Calling m_chunker.get_chunks in ChunkReader::read_chunks, chunkidfrom %i, chunkidto %i\n",chunk_id_from, chunk_id_to);
+    return m_chunker.get_chunks(chunk_id_from, chunk_id_to);
 }

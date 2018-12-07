@@ -24,26 +24,41 @@ DataSpacesWriter::DataSpacesWriter(char* var_name)
     m_var_name = var_name;
 }
 
-void DataSpacesWriter::write_chunks(ChunkArray chunks)
+void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
 {
     MPI_Barrier(m_gcomm);
     //printf("Printing chunk before serializing\n");
-    //chunks.print();
+    ChunkArray chk_ary;
+    for (auto ichunk:chunks)
+        chk_ary.append(ichunk);
+    //chk_ary.print();
+
 
     std::ostringstream oss;
     {
         boost::archive::text_oarchive oa(oss);
         // write class instance to archive
-        oa << chunks;
+        oa << chk_ary;
     }
     
+    //ChunkArray inchunks;
+    //std::string instr(oss.str());
+    //std::istringstream iss(instr);//oss.str());
+    //{
+    //    boost::archive::text_iarchive ia(iss);
+    //    ia >> inchunks;
+    //}
+    //printf("Printing chunk after serializing\n");
+    //inchunks.print();
+ 
     int ndim = 1;
     uint64_t lb[1] = {0}, ub[1] = {0};
-    unsigned int ts = chunks.get_chunk_id();
+    unsigned int ts = chk_ary.get_last_chunk_id();
     std::string data = oss.str();
     std::string::size_type size = data.length();
 
     std::string size_var_name = "chunk_size";
+    printf("chunk size for ts %i is %i\n",ts,size);
     dspaces_lock_on_write("size_lock", &m_gcomm);
     int error = dspaces_put(size_var_name.c_str(),
                             ts,

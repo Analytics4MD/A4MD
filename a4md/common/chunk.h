@@ -17,24 +17,27 @@ class Chunk
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
     {
-        ar & m_step;
+        ar & m_id;
     }
+
     protected:
-        int m_step;
+        int m_id;
+
+    public:
         Chunk(){}
-        Chunk(const int step) :
-             m_step(step)
+        Chunk(const int id) :
+             m_id(id)
         {
         }
-    public:
+
         virtual void print()
         {
-            std::cout << "step " << m_step << std::endl;
+            std::cout << "chunk id " << m_id << std::endl;
         }
 
         int get_chunk_id()
         {
-            return m_step;
+            return m_id;
         }
 };
 
@@ -49,6 +52,7 @@ class PLMDChunk : public Chunk
         void serialize(Archive & ar, const unsigned int version)
         {
             ar & boost::serialization::base_object<Chunk>(*this); 
+            ar & m_timestep;
             ar & m_types;
             ar & m_x_cords;
             ar & m_y_cords;
@@ -60,6 +64,7 @@ class PLMDChunk : public Chunk
             ar & m_box_xz;
             ar & m_box_yz;
         }
+        int m_timestep;
         std::vector<int> m_types;
         std::vector<double> m_x_cords;
         std::vector<double> m_y_cords;
@@ -72,7 +77,8 @@ class PLMDChunk : public Chunk
         double m_box_yz;
     public:
         PLMDChunk() : Chunk(){}
-        PLMDChunk(const int step,
+        PLMDChunk(const int id,
+                  const int timestep,
                   const std::vector<int> & types,
                   const std::vector<double> & x_cords,
                   const std::vector<double> & y_cords,
@@ -83,7 +89,8 @@ class PLMDChunk : public Chunk
                   double box_xy,
                   double box_xz,
                   double box_yz) :
-                  Chunk(step),
+                  Chunk(id),
+                  m_timestep(timestep),
                   m_types(types),
                   m_x_cords(x_cords),
                   m_y_cords(y_cords),
@@ -138,6 +145,7 @@ class PLMDChunk : public Chunk
         double get_box_xy(){ return m_box_xy; }
         double get_box_xz(){ return m_box_xz; }
         double get_box_yz(){ return m_box_yz; }
+        double get_timestep(){ return m_timestep; }
 };
 
 class ChunkArray
@@ -145,13 +153,14 @@ class ChunkArray
     private:
         friend class boost::serialization::access;
         friend std::ostream & operator<<(std::ostream &os, const ChunkArray &ca);
-        std::list<Chunk*> m_chunks;
+        std::vector<Chunk*> m_chunks;
         template<class Archive>
         void serialize(Archive & ar, const unsigned int version)
         {
             ar.register_type(static_cast<PLMDChunk *>(NULL));
             ar & m_chunks;
         }
+
     public:
         ChunkArray(){}
         void print()
@@ -161,10 +170,10 @@ class ChunkArray
         }
         void append(Chunk* chunk)
         {
-            m_chunks.insert(m_chunks.end(), chunk);
+            m_chunks.push_back(chunk);
         }
 
-        int get_chunk_id()
+        int get_last_chunk_id()
         {
             if (m_chunks.size() > 0)
                 return m_chunks.back()->get_chunk_id();
@@ -172,7 +181,7 @@ class ChunkArray
                 return 0;
         }
 
-        std::list<Chunk*> get_chunks()
+        std::vector<Chunk*> get_chunks()
         {
             return m_chunks;
         }

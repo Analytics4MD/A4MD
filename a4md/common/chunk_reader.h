@@ -6,13 +6,9 @@
 class ChunkReader 
 {
     private:
-        IMSReader* m_ims_reader; 
-        Chunker* m_chunker; 
-        bool read_from_file;
+        Chunker & m_chunker; 
     public:
-        ChunkReader(IMSReader* ims_reader);
-        ChunkReader(Chunker* chunker);
-        ~ChunkReader();
-        ChunkArray read_chunks(int num_chunks);
+        ChunkReader(Chunker & chunker);
+        std::vector<Chunk*> read_chunks(int chunks_from, int chunks_to);
 };
 #endif

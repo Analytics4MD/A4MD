@@ -7,15 +7,10 @@
 
 class Chunker 
 {
-    protected:
-        std::string m_file_path;
     public:
-        Chunker();
-        ~Chunker();
-        virtual void initialize(){};
-        virtual void finalize(){};
-        virtual std::vector<Chunk> chunks_from_file(int num_chunks){}
-        virtual void print(){}
+        virtual std::vector<Chunk*> get_chunks(int num_chunks);
+        virtual std::vector<Chunk*> get_chunks(int chunk_id_from, int chunk_id_to);
+
 };
 
 //class PdbChunker : public Chunker

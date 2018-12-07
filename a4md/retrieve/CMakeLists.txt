@@ -1,6 +1,16 @@
 set(_retrieve_sources_
+        voronoi_analyzer.cxx
+        chunk_analyzer.cxx
+        md_retriever.cxx
+        retriever.cxx
+        py_voronoi_analyzer.cxx
         retrieve.cxx)
 set(_retrieve_headers_
+        voronoi_analyzer.h
+        chunk_analyzer.h
+        md_retriever.h
+        retriever.h
+        py_voronoi_analyzer.h
         retrieve.h)
 
 add_library(retrieve ${_retrieve_sources_})

@@ -10,6 +10,6 @@ class DataSpacesWriter : public IMSWriter
         MPI_Comm m_gcomm;
     public:
         DataSpacesWriter(char* var_name);
-        void write_chunks(ChunkArray chunks);
+        void write_chunks(std::vector<Chunk*> chunks) override;
 };
 #endif

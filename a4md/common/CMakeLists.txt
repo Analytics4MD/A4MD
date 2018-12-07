@@ -3,6 +3,9 @@ set(_a4md_cmn_sources_
         dataspaces_reader.cxx
         chunk_writer.cxx
         chunk_reader.cxx
+        ims_reader.cxx
+        ims_writer.cxx
+        chunker.cxx
         )
 set(_a4md_cmn_headers_
         dataspaces_writer.h
@@ -11,6 +14,7 @@ set(_a4md_cmn_headers_
         chunk_reader.h
         ims_writer.h
         ims_reader.h
+        chunker.h
         chunk.h
         exceptions.h
         )

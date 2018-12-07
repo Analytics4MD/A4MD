@@ -10,6 +10,7 @@ class DataSpacesReader : public IMSReader
         MPI_Comm m_gcomm;
     public:
         DataSpacesReader(char* var_name);
-        ChunkArray get_chunks(int num_chunks=1);
+        std::vector<Chunk*> get_chunks(int chunks_from, int chunks_to) override;
+
 };
 #endif

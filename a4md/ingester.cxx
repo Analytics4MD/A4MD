@@ -6,8 +6,8 @@
 int main (int argc, const char** argv)
 {
   MPI_Init(NULL,NULL);
-  char* var_name = "test_var";
-  DataSpacesWriter dataspaces_writer_ptr = DataSpacesWriter(var_name);
+  std::string var_name = "test_var";
+  DataSpacesWriter dataspaces_writer_ptr = DataSpacesWriter((char*)var_name.c_str());
 
   std::vector<double> x_positions = {0.1,1.0,2.0,3.0}; 
   std::vector<double> y_positions = {10.0,20.0,30.0,40.0}; 
@@ -17,7 +17,7 @@ int main (int argc, const char** argv)
   lx=ly=lz=10.0;
   xy=xz=yz=1.0;
   std::vector<int> types = {0,0,0}; 
-  int step = 100; 
+  int step = 0; 
   PlumedChunker chunker = PlumedChunker();
   chunker.append(step, 
                  types, 
@@ -27,11 +27,11 @@ int main (int argc, const char** argv)
                  lx,ly,lz,
                  xy,xz,yz); 
 
-  auto chunk_array = chunker.get_chunk_array();
+  auto chunk_array = chunker.get_chunks(1);//_array();
   dataspaces_writer_ptr.write_chunks(chunk_array);
   printf("Write 1 done\n");
  
-  step = 101;
+  step = 1;
   x_positions[0] = 0.2;
   types[1] = 1;
   chunker.append(step, 
@@ -41,7 +41,7 @@ int main (int argc, const char** argv)
                  z_positions,
                  lx,ly,lz,
                  xy,xz,yz);
-  chunk_array = chunker.get_chunk_array();
+  chunk_array = chunker.get_chunks(1);//_array();
   dataspaces_writer_ptr.write_chunks(chunk_array);
   printf("Write 2 done\n");
 

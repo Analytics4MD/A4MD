@@ -1,13 +1,15 @@
 #include "retrieve.h"
 #include "mpi.h"
 #include "dataspaces_reader.h"
+#include "voronoi_analyzer.h"
+#include "md_retriever.h"
 #include <unistd.h>
 
 
 void analyze(Retrieve& retrieve, int step, int argc, const char** argv, ChunkArray chunk_ary)
 {
 
-    auto chunks = chunk_ary.get_chunks();
+/*    auto chunks = chunk_ary.get_chunks();
     for (auto tempchunk:chunks)
     {
         PLMDChunk *chunk = dynamic_cast<PLMDChunk *>(tempchunk);
@@ -45,34 +47,71 @@ void analyze(Retrieve& retrieve, int step, int argc, const char** argv, ChunkArr
                                yz,
                                step);
 
-    }
+    }*/
+}
+
+ChunkAnalyzer* analyzer_factory(int argc, const char** argv)
+{
+    int total_time = atoi(argv[3]);
+    int dump_interval = atoi(argv[4]);
+    printf("Recieved total time = %i from user in Retriever\n",total_time);
+
+    std::string analyzer_name = "voronoi_analyzer";
+    std::string reader_type = "dataspaces";
+    std::string var_name = "test_var";
+
+    //ChunkAnalyzer* chunk_analyzer;
+    //ChunkReader* chunk_reader;
+    //switch (reader_type)
+    //{
+    //    case "dataspaces":
+    printf("---======== Initializing dataspaces reader\n");
+
+    Chunker * chunker = new DataSpacesReader((char*)var_name.c_str());
+    printf("---======== Initialized dataspaces reader\n");
+    ChunkReader * chunk_reader = new ChunkReader(* chunker);
+    printf("---======== Initialized chunkreader\n");
+
+    //        break;
+    //    default:
+    //        throw NotImplementedException("Reader type %s is not implemented\n",reader_type);
+    //}
+
+    //switch (analyzer_name)
+    //{
+    //    case "voronoi_analyzer":
+    std::string name((char*)argv[1]);
+    std::string func((char*)argv[2]);
+
+    ChunkAnalyzer * chunk_analyzer = new VoronoiAnalyzer(* chunk_reader, name, func);
+    printf("---======== Initialized voronoi analyzer\n");
+
+    //        break;
+    //    default:
+    //        throw NotImplementedException("Analyzer of type %s is not implemented\n",analyzer_name);
+    //}
+
+    return chunk_analyzer;
+}
+
+Retriever* retriever_factory (int argc, const char** argv)
+{
+    ChunkAnalyzer * analyzer = analyzer_factory(argc, argv);
+    int n_steps = 2;
+    int n_stride = 1;
+    int n_analysis_stride = 1;
+    Retriever * retriever = new MDRetriever(* analyzer, n_steps, n_stride, n_analysis_stride);
+    return retriever;
 }
 
 int main (int argc, const char** argv)
 {
     MPI_Init(NULL,NULL);
+    printf("---======== In Retriever::main()\n");
+
+    Retriever * retriever = retriever_factory(argc,argv);
+    retriever->run();
     
-    Retrieve retrieve;
-    std::string var_name = "test_var";
-    DataSpacesReader dataspaces_reader_ptr = DataSpacesReader((char*)var_name.c_str());
-
-    //printf("Waiting 5 seconds before Read 1\n");
-    //sleep(5);
-    int total_time = atoi(argv[3]);
-    int dump_interval = atoi(argv[4]);
-    printf("Recieved total time = %i from user in Retriever\n",total_time);
-    for (int timestep=0;timestep<=total_time;timestep+=dump_interval) // NOTE: we get timestep 0 to the total time from lammps
-    {
-        auto chunk_array = dataspaces_reader_ptr.get_chunks(timestep);
-        //chunk_array.print();
-        printf("Analyzing time step %i\n",timestep);
-        analyze(retrieve, timestep, argc, argv, chunk_array);
-    }
-    //chunk_array = dataspaces_reader_ptr.get_chunks(101);
-    //chunk_array.print();
-    //printf("Analyzing 2\n");
-    //analyze(retrieve, argc, argv, chunk_array);
-
     MPI_Finalize();
-    return 0;//retrieve.call_py(argc, argv);
+    return 0;
 }

@@ -3,7 +3,6 @@ set(_ingest_sources_
         md_ingest.cxx
         ingest.cxx 
         plumed_chunker.cxx
-        chunker.cxx
         chunk_stager.cxx
         pycall.cxx)
 set(_ingest_headers_
@@ -11,7 +10,6 @@ set(_ingest_headers_
         md_ingest.h
         ingest.h
         plumed_chunker.h
-        chunker.h
         chunk_stager.h
         pycall.h
         )

@@ -1,14 +1,15 @@
 #include "chunker.h"
 #include "pycall.h"
 
-Chunker::Chunker()
+
+std::vector<Chunk*> Chunker::get_chunks(int num_chunks)
 {
-    initialize();
+    throw NotImplementedException("Chunker::get_chunks should not be called. It should be overridden in a concrete class\n");
 }
 
-Chunker::~Chunker()
+std::vector<Chunk*> Chunker::get_chunks(int chunks_from, int chunks_to)
 {
-    finalize();
+    throw NotImplementedException("Chunker::get_chunks should not be called. It should be overridden in a concrete class\n");
 }
 
 //PdbChunker::PdbChunker(std::string file_path, std::string log_path, std::string py_path, std::string py_script, std::string py_def) 
