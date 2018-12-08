@@ -5,8 +5,7 @@ VoronoiAnalyzer::VoronoiAnalyzer(ChunkReader & chunk_reader,
                                  std::string module_name,
                                  std::string function_name)
 : ChunkAnalyzer(chunk_reader),
-  m_module_name(module_name),
-  m_function_name(function_name)
+  m_py_analyzer((char*)module_name.c_str(),(char*)function_name.c_str())
 {
 }
 
@@ -15,7 +14,9 @@ void VoronoiAnalyzer::analyze(Chunk* chunk)
     PLMDChunk *plmdchunk = dynamic_cast<PLMDChunk *>(chunk);
     //printf("Printing typecasted chunk\n");
     //chunk->print();
-    POS_VEC positions = plmdchunk->get_positions();
+    auto x_positions = plmdchunk->get_x_positions();
+    auto y_positions = plmdchunk->get_y_positions();
+    auto z_positions = plmdchunk->get_z_positions();
     auto types_vector = plmdchunk->get_types();
     int* types = types_vector.data();
 
@@ -34,10 +35,10 @@ void VoronoiAnalyzer::analyze(Chunk* chunk)
     yz = plmdchunk->get_box_yz(); // 0 for orthorhombic
     int step = plmdchunk->get_timestep();
     
-    m_py_analyzer.analyze_frame((char*)m_module_name.c_str(),
-                                (char*)m_function_name.c_str(),
-                                types,
-                                positions,
+    m_py_analyzer.analyze_frame(types,
+                                x_positions,
+                                y_positions,
+                                z_positions,
                                 lx,
                                 ly,
                                 lz,

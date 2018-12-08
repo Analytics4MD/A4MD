@@ -7,8 +7,6 @@
 class VoronoiAnalyzer : public ChunkAnalyzer
 {
     private:
-        const std::string m_module_name;
-        const std::string m_function_name;
         PyVoronoiAnalyzer m_py_analyzer;
 
     public:

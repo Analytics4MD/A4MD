@@ -126,18 +126,9 @@ class PLMDChunk : public Chunk
             return m_types;
         }
 
-        std::vector<std::tuple<double, double, double> > get_positions()
-        {
-            std::vector<std::tuple<double, double, double> > positions;
-            //printf("----=====Inside get positions size = %i\n",m_x_cords.size());
-            for( auto iterator = m_x_cords.begin() ; iterator != m_x_cords.end() ; ++iterator )
-            {
-                auto position = std::distance( m_x_cords.begin(), iterator ) ;
-                auto pos_tuple = std::make_tuple(m_x_cords[position],m_y_cords[position],m_z_cords[position]);
-                positions.push_back(pos_tuple);
-            }
-            return positions;
-        }
+        std::vector<double> get_x_positions(){ return m_x_cords; }
+        std::vector<double> get_y_positions(){ return m_y_cords; }
+        std::vector<double> get_z_positions(){ return m_z_cords; }
 
         double get_box_lx(){ return m_box_lx; }
         double get_box_ly(){ return m_box_ly; }

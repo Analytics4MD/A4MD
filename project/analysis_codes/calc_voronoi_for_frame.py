@@ -10,9 +10,11 @@ import json
 an_times = []
 an_write_times = []
 
-def analyze(types, points, box_points, step):
-    #print('-----======= Python : analyze ========-------')
+def analyze(types, xpoints,ypoints,zpoints, box_points, step):
+    print('-----======= Python : analyze ========-------')
     #print('box points',box_points);
+    #print("");
+    points = np.vstack((xpoints,ypoints,zpoints)).T
     t=timer() 
     box = freud.box.Box(box_points[0],
         		box_points[1],

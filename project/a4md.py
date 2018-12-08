@@ -6,7 +6,6 @@ import numpy as np
 import os
 from glob import iglob
 import freud
-import mdtraj as md 
 from timeit import default_timer as timer
 from scipy import stats
 
@@ -75,11 +74,25 @@ def initialize(job):
             file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
                        TARGET=NONE\n".\
                        format(job.sp.data_dump_interval))
-        else:
+        elif job.sp.job_type == 'plumed_sequential':
             file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
-                       TARGET=PYTHON PYTHON_MODULE=calc_voronoi_for_frame\n".\
+TARGET=calc_voronoi_for_frame PYTHON_FUNCTION=analyze\n".\
+                       format(job.sp.data_dump_interval))
+        elif job.sp.job_type == 'plumed_conc_NO':
+            file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
+                       TARGET=a4md\n".\
                        format(job.sp.data_dump_interval))
 
+    if job.sp.job_type == 'plumed_conc_NO':
+        with open(job.fn('dataspaces.conf'), 'w') as file:
+            if job.sp.job_type != 'traditional':
+                file.write("## Config file for DataSpaces\n")
+                file.write("ndim = 1\n")
+                file.write("dims = 100000\n")
+                file.write("max_versions = 1000\n")
+                file.write("max_readers = 1\n")
+                file.write("lock_type = 2\n")
+                file.write("hash_version = 1\n")
 
     copyfile('analysis_codes/calc_voronoi_for_frame.py',job.fn('calc_voronoi_for_frame.py'))
     copyfile('checkio.sh',job.fn('checkio.sh'))
@@ -164,17 +177,37 @@ def get_simulation_time(job):
 #@flow.cmd
 def simulate(job):
     import time
-    with job, open("generate_stdout.log", "w+") as generate_stdout, open('iostats.log','w+') as iostat_out:
+    with job, open("generate_stdout.log", "w+") as generate_stdout,\
+              open('iostats.log','w+') as iostat_out,\
+              open('retriever.log','w+') as retriever_out,\
+              open('server.log','w+') as ds_server_out:
         job_command = ['bash','checkio.sh']
         generate_iostats = subprocess.Popen(job_command, stdout=iostat_out, stderr=iostat_out)
         time.sleep(10)
+
+        if job.sp.job_type == 'plumed_conc_NO':
+            job_command = ['mpirun','-n','1','dataspaces_server','-s','1','-c','2']
+            generate_ds_server = subprocess.Popen(job_command, stdout=ds_server_out, stderr=ds_server_out)
+            # Give some time for the servers to load and startup
+            time.sleep(5) #  wait server to fill up the conf file
+
+            job_command = ['mpirun','-n','1','retriever','calc_voronoi_for_frame','analyze',str(job.sp.simulation_time),str(job.sp.data_dump_interval)]
+            generate_retriever = subprocess.Popen(job_command, stdout=retriever_out, stderr=retriever_out)
+
         job_command = ['mpirun','-n',str(job.sp.NPROCS),'lmp_mpi','-i','in.lj']
         print("Executing job command:", job_command)
         start = timer()
         generate = subprocess.Popen(job_command, stdout=generate_stdout, stderr=generate_stdout)
         generate.wait()
+        if job.sp.job_type == 'plumed_conc_NO':
+            generate_retriever.wait()
+
         t = timer() - start
         job.document['ete_simulation_time'] = t
+
+        if job.sp.job_type == 'plumed_conc_NO':
+            generate_ds_server.kill()
+
         time.sleep(10)
         generate_iostats.kill()
     
@@ -185,6 +218,7 @@ def simulate(job):
 @flow.directives(np=8)
 def analyze_job(job):
     if job.sp.job_type == 'traditional':
+        import mdtraj as md 
         with job:
             if 'read_frames_time' not in job.document:
                 read_frame_times = []

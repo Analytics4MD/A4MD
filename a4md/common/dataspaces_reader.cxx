@@ -26,7 +26,7 @@ DataSpacesReader::DataSpacesReader(char* var_name)
 
 std::vector<Chunk*> DataSpacesReader::get_chunks(int chunks_from, int chunks_to)
 {
-    printf("----======= Entering DataSpacesReader::get_chunks with chunksfrom %i, chunksto %i\n",chunks_from, chunks_to);
+    //printf("----======= Entering DataSpacesReader::get_chunks with chunksfrom %i, chunksto %i\n",chunks_from, chunks_to);
     ChunkArray chunks; 
     MPI_Barrier(m_gcomm);
     int ndim = 1;
@@ -49,7 +49,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(int chunks_from, int chunks_to)
     //    printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), ts);
     //else
     dspaces_unlock_on_read("size_lock", &m_gcomm);
-    printf("chunk size read from ds for chunkid %i : %u\n", ts, chunk_size);
+    //printf("chunk size read from ds for chunkid %i : %u\n", ts, chunk_size);
 
     char input_data[chunk_size];
 
@@ -77,8 +77,8 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(int chunks_from, int chunks_to)
         ia >> chunks;
     }
   
-    printf("----===== Read chunk array ");
-    chunks.print();
+    //printf("----===== Read chunk array ");
+    //chunks.print();
     MPI_Barrier(m_gcomm);
     return chunks.get_chunks();
 }

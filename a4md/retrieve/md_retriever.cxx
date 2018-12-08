@@ -15,12 +15,14 @@ MDRetriever::MDRetriever(ChunkAnalyzer& chunk_analyzer,
 void MDRetriever::run()
 {
     printf("---==== Entering MDRetriever::run() n_frames : %i\n",m_n_frames);
-    for (int frame_id=0; frame_id < m_n_frames; frame_id++)
+    int frame_count=0;
+    for (int frame_id=0; frame_id <= m_n_steps; frame_id+=m_n_stride)
     {
-        if (frame_id % m_n_analysis_stride == 0)
+        if (frame_count % m_n_analysis_stride == 0)
         {
             printf("Calling m_chunk_analyzer.analyze_chunks in MDRetriever::run, frame_id:%i\n",frame_id);
             m_chunk_analyzer.analyze_chunks(frame_id, frame_id);
         }
+        frame_count++;
     } 
 }
