@@ -16,10 +16,15 @@ ChunkAnalyzer* analyzer_factory(int argc, const char** argv)
 
     ChunkAnalyzer* chunk_analyzer;
     ChunkReader* chunk_reader;
+ 
+    int n_steps = atoi(argv[3]);
+    int n_stride = atoi(argv[4]);
+    int n_analysis_stride = 1;
+    unsigned long int total_chunks = n_steps/n_stride/n_analysis_stride;
     if (reader_type == "dataspaces")
     {
         printf("---======== Initializing dataspaces reader\n");
-        Chunker * chunker = new DataSpacesReader((char*)var_name.c_str());
+        Chunker * chunker = new DataSpacesReader((char*)var_name.c_str(), total_chunks);
         printf("---======== Initialized dataspaces reader\n");
         chunk_reader = new ChunkReader(* chunker);
         printf("---======== Initialized chunkreader\n");

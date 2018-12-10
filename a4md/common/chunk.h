@@ -21,11 +21,11 @@ class Chunk
     }
 
     protected:
-        int m_id;
+        unsigned long int m_id;
 
     public:
         Chunk(){}
-        Chunk(const int id) :
+        Chunk(const unsigned long int id) :
              m_id(id)
         {
         }
@@ -77,7 +77,7 @@ class PLMDChunk : public Chunk
         double m_box_yz;
     public:
         PLMDChunk() : Chunk(){}
-        PLMDChunk(const int id,
+        PLMDChunk(const unsigned long int id,
                   const int timestep,
                   const std::vector<int> & types,
                   const std::vector<double> & x_cords,
@@ -139,44 +139,46 @@ class PLMDChunk : public Chunk
         double get_timestep(){ return m_timestep; }
 };
 
-class ChunkArray
+class SerializableChunk
 {
     private:
         friend class boost::serialization::access;
-        friend std::ostream & operator<<(std::ostream &os, const ChunkArray &ca);
-        std::vector<Chunk*> m_chunks;
+        friend std::ostream & operator<<(std::ostream &os, const SerializableChunk &ca);
+        Chunk* m_chunk;
         template<class Archive>
         void serialize(Archive & ar, const unsigned int version)
         {
+            // IMPORTANT: Any chunk subclass that needs to be serialized has to have an entry here.
             ar.register_type(static_cast<PLMDChunk *>(NULL));
-            ar & m_chunks;
+            ar & m_chunk;
         }
 
     public:
-        ChunkArray(){}
+        SerializableChunk()
+        {
+        }
+
+        SerializableChunk(Chunk* chunk)
+        :m_chunk(chunk)
+        {
+        }
+
         void print()
         {
-            for (auto i:m_chunks)
-                i->print();
-        }
-        void append(Chunk* chunk)
-        {
-            m_chunks.push_back(chunk);
+            m_chunk->print();
         }
 
-        int get_last_chunk_id()
+        unsigned long int get_chunk_id()
         {
-            if (m_chunks.size() > 0)
-                return m_chunks.back()->get_chunk_id();
-            else
-                return 0;
+            m_chunk->get_chunk_id();
         }
 
-        std::vector<Chunk*> get_chunks()
+        Chunk* get_chunk()
         {
-            return m_chunks;
+            return m_chunk;
         }
 
 };
+
 
 #endif

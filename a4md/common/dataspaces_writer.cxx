@@ -9,85 +9,94 @@
 #include <sstream>
 
 
-DataSpacesWriter::DataSpacesWriter(char* var_name)
+DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunks)
+: m_size_var_name("chunk_size"),
+  m_var_name(var_name),
+  m_total_chunks(total_chunks)
 {
     MPI_Barrier(MPI_COMM_WORLD);
     m_gcomm = MPI_COMM_WORLD;
     // Initalize DataSpaces
     // # of Peers, Application ID, ptr MPI comm, additional parameters
-    // # Peers: Number of connecting clients to the DS server
+    // # Peers: Number of connecting clienchunk_id to the DS server
     // Application ID: Unique idenitifier (integer) for application
     // Pointer to the MPI Communicator, allows DS Layer to use MPI barrier func
-    // Addt'l parameters: Placeholder for future arguments, currently NULL.
+    // Addt'l parameters: Placeholder for future argumenchunk_id, currently NULL.
     dspaces_init(1, 1, &m_gcomm, NULL);
-    printf("Initialized dspaces client in DataSpacesWriter\n");
-    m_var_name = var_name;
+    printf("Initialized dspaces client in DataSpacesWriter, var_name: %s, total_chunks: %u\n",m_var_name.c_str(), m_total_chunks);
 }
 
 void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
 {
+    TimeVar t_start = timeNow();
+    unsigned long int chunk_id; 
     MPI_Barrier(m_gcomm);
     //printf("Printing chunk before serializing\n");
-    ChunkArray chk_ary;
-    for (auto ichunk:chunks)
-        chk_ary.append(ichunk);
-    //chk_ary.print();
-
-
-    std::ostringstream oss;
+    for (auto chunk:chunks)
     {
-        boost::archive::text_oarchive oa(oss);
-        // write class instance to archive
-        oa << chk_ary;
-    }
-    
-    //ChunkArray inchunks;
-    //std::string instr(oss.str());
-    //std::istringstream iss(instr);//oss.str());
-    //{
-    //    boost::archive::text_iarchive ia(iss);
-    //    ia >> inchunks;
-    //}
-    //printf("Printing chunk after serializing\n");
-    //inchunks.print();
- 
-    int ndim = 1;
-    uint64_t lb[1] = {0}, ub[1] = {0};
-    unsigned int ts = chk_ary.get_last_chunk_id();
-    std::string data = oss.str();
-    std::string::size_type size = data.length();
+        //chk_ary.print();
 
-    std::string size_var_name = "chunk_size";
-    printf("chunk size for ts %i is %i\n",ts,size);
-    dspaces_lock_on_write("size_lock", &m_gcomm);
-    int error = dspaces_put(size_var_name.c_str(),
-                            ts,
-                            1*sizeof(std::string::size_type),
+        SerializableChunk serializable_chunk = SerializableChunk(chunk);
+        std::ostringstream oss;
+        {
+            boost::archive::text_oarchive oa(oss);
+            // write class instance to archive
+            oa << serializable_chunk;
+        }
+        
+        //ChunkArray inchunks;
+        //std::string instr(oss.str());
+        //std::istringstream iss(instr);//oss.str());
+        //{
+        //    boost::archive::text_iarchive ia(iss);
+        //    ia >> inchunks;
+        //}
+        //printf("Printing chunk after serializing\n");
+        //inchunks.print();
+ 
+        int ndim = 1;
+        uint64_t lb[1] = {0}, ub[1] = {0};
+        chunk_id = chunk->get_chunk_id();
+        std::string data = oss.str();
+        std::string::size_type size = data.length();
+        
+        //printf("chunk size for chunk_id %i is %i\n",chunk_id,size);
+        m_total_size += size;
+        dspaces_lock_on_write("size_lock", &m_gcomm);
+        int error = dspaces_put(m_size_var_name.c_str(),
+                                chunk_id,
+                                1*sizeof(std::string::size_type),
+                                ndim,
+                                lb,
+                                ub,
+                                &size);
+        if (error != 0)
+            printf("----====== ERROR: Did not write size of chunk id: %i to dataspaces successfully\n",chunk_id);
+        //else
+        //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
+        dspaces_unlock_on_write("size_lock", &m_gcomm);
+        //printf("writing char array to dataspace:\n %s\n",data.c_str());
+        dspaces_lock_on_write("my_test_lock", &m_gcomm);
+        error = dspaces_put(m_var_name.c_str(),
+                            chunk_id,
+                            data.length(),
                             ndim,
                             lb,
                             ub,
-                            &size);
-    if (error != 0)
-        printf("----====== ERROR: Did not write size of chunk id: %i to dataspaces successfully\n",ts);
-    //else
-    //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), ts);
-    dspaces_unlock_on_write("size_lock", &m_gcomm);
-
-    //printf("writing char array to dataspace:\n %s\n",data.c_str());
-
-    dspaces_lock_on_write("my_test_lock", &m_gcomm);
-    error = dspaces_put(m_var_name.c_str(),
-                        ts,
-                        data.length(),
-                        ndim,
-                        lb,
-                        ub,
-                        data.c_str());
-    if (error != 0)
-        printf("----====== ERROR: Did not write chunk id: %i to dataspaces successfully\n",ts);
-    //else
-    //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), ts);
-    dspaces_unlock_on_write("my_test_lock", &m_gcomm);
-
+                            data.c_str());
+        if (error != 0)
+            printf("----====== ERROR: Did not write chunk id: %i to dataspaces successfully\n",chunk_id);
+        //else
+        //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
+        dspaces_unlock_on_write("my_test_lock", &m_gcomm);
+    }
     MPI_Barrier(m_gcomm);
+    DurationMilli write_time_ms = timeNow()-t_start;
+    m_total_data_write_time_ms += write_time_ms.count();
+    if (chunk_id == m_total_chunks)
+    {
+        printf("total_data_write_time_ms : %f\n",m_total_data_write_time_ms);
+        printf("total_chunk_data_written : %u\n",m_total_size);
+        printf("total_chunks written : %u\n",m_total_chunks+1);
+    }
 }

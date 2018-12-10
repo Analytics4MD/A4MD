@@ -3,13 +3,17 @@
 #include <vector>
 #include <string>
 #include "chunk.h"
+#include <chrono>
+#define timeNow() std::chrono::high_resolution_clock::now()
+typedef std::chrono::high_resolution_clock::time_point TimeVar;
+typedef std::chrono::duration<double, std::milli> DurationMilli;
 
 
 class Chunker 
 {
     public:
         virtual std::vector<Chunk*> get_chunks(int num_chunks);
-        virtual std::vector<Chunk*> get_chunks(int chunk_id_from, int chunk_id_to);
+        virtual std::vector<Chunk*> get_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to);
 
 };
 

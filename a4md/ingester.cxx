@@ -7,7 +7,8 @@ int main (int argc, const char** argv)
 {
   MPI_Init(NULL,NULL);
   std::string var_name = "test_var";
-  DataSpacesWriter dataspaces_writer_ptr = DataSpacesWriter((char*)var_name.c_str());
+  unsigned long int n_chunks = 2;
+  DataSpacesWriter dataspaces_writer_ptr = DataSpacesWriter((char*)var_name.c_str(), n_chunks);
 
   std::vector<double> x_positions = {0.1,1.0,2.0,3.0}; 
   std::vector<double> y_positions = {10.0,20.0,30.0,40.0}; 
@@ -19,7 +20,8 @@ int main (int argc, const char** argv)
   std::vector<int> types = {0,0,0}; 
   int step = 0; 
   PlumedChunker chunker = PlumedChunker();
-  chunker.append(step, 
+  chunker.append(0,
+                 step, 
                  types, 
                  x_positions, 
                  y_positions, 
@@ -34,7 +36,8 @@ int main (int argc, const char** argv)
   step = 1;
   x_positions[0] = 0.2;
   types[1] = 1;
-  chunker.append(step, 
+  chunker.append(1,
+                 step, 
                  types, 
                  x_positions, 
                  y_positions, 

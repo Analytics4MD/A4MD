@@ -1,5 +1,6 @@
 #include "plumed_chunker.h"
 
+
 std::vector<Chunk*> PlumedChunker::get_chunks(int num_chunks)
 {
     if (m_chunkq.size() < num_chunks)
@@ -13,7 +14,8 @@ std::vector<Chunk*> PlumedChunker::get_chunks(int num_chunks)
     return chunks;
 }
 
-void PlumedChunker::append(int step,
+void PlumedChunker::append(unsigned long int id,
+                           int time_step,
                            std::vector<int> types,
                            std::vector<double> x_cords,
                            std::vector<double> y_cords,
@@ -27,9 +29,8 @@ void PlumedChunker::append(int step,
 
 
 {
-    int id = step;//this needs to checked
     Chunk* chunk = new PLMDChunk(id,
-                                 step,
+                                 time_step,
                                  types,
                                  x_cords,
                                  y_cords,
@@ -42,19 +43,3 @@ void PlumedChunker::append(int step,
                                  box_yz);
     m_chunkq.push(chunk);
 }
-
-//ChunkArray PlumedChunker::get_chunk_array(int num_chunks)
-//{
-//    if (m_chunkq.size() < num_chunks)
-//        throw "get_chunk_array asking for more chunks than what is available"; 
-//    ChunkArray chunk_ary;
-//    for (int i=0;i<num_chunks;i++)
-//    {
-//        chunk_ary.append(m_chunkq.front());
-//        m_chunkq.pop();
-//    }
-//    return chunk_ary;
-//    //return m_chunk_array;
-//}
-
-

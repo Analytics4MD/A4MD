@@ -7,7 +7,7 @@ std::vector<Chunk*> Chunker::get_chunks(int num_chunks)
     throw NotImplementedException("Chunker::get_chunks should not be called. It should be overridden in a concrete class\n");
 }
 
-std::vector<Chunk*> Chunker::get_chunks(int chunks_from, int chunks_to)
+std::vector<Chunk*> Chunker::get_chunks(unsigned long int chunks_from, unsigned long int chunks_to)
 {
     throw NotImplementedException("Chunker::get_chunks should not be called. It should be overridden in a concrete class\n");
 }
