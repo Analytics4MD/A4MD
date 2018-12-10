@@ -90,7 +90,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
     if (chunk_id == m_total_chunks)
     {
         printf("total_data_read_time_ms : %f\n",total_data_read_time_ms);
-        printf("total_chunks read : %u\n",m_total_chunks+1);
+        printf("total_chunks read : %u\n",m_total_chunks);
     }
 
     return chunks;

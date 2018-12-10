@@ -20,7 +20,7 @@ ChunkAnalyzer* analyzer_factory(int argc, const char** argv)
     int n_steps = atoi(argv[3]);
     int n_stride = atoi(argv[4]);
     int n_analysis_stride = 1;
-    unsigned long int total_chunks = n_steps/n_stride/n_analysis_stride;
+    unsigned long int total_chunks = n_steps/n_stride/n_analysis_stride + 1;// +1 for the call before simulation starts
     if (reader_type == "dataspaces")
     {
         printf("---======== Initializing dataspaces reader\n");

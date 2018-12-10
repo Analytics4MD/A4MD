@@ -97,6 +97,6 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
     {
         printf("total_data_write_time_ms : %f\n",m_total_data_write_time_ms);
         printf("total_chunk_data_written : %u\n",m_total_size);
-        printf("total_chunks written : %u\n",m_total_chunks+1);
+        printf("total_chunks written : %u\n",m_total_chunks);
     }
 }
