@@ -7,47 +7,37 @@ int main (int argc, const char** argv)
 {
   MPI_Init(NULL,NULL);
   std::string var_name = "test_var";
-  unsigned long int n_chunks = 2;
+  if (argc != 2)
+    printf("ERROR: Expecting number of simulation steps as command line argument\n");
+  unsigned long int n_chunks = atoi(argv[1]) + 1;
   DataSpacesWriter dataspaces_writer_ptr = DataSpacesWriter((char*)var_name.c_str(), n_chunks);
 
-  std::vector<double> x_positions = {0.1,1.0,2.0,3.0}; 
-  std::vector<double> y_positions = {10.0,20.0,30.0,40.0}; 
-  std::vector<double> z_positions = {111.0,123.0,454.0,645.0}; 
- 
-  double lx,ly,lz,xy,xz,yz;
-  lx=ly=lz=10.0;
-  xy=xz=yz=1.0;
-  std::vector<int> types = {0,0,0}; 
-  int step = 0; 
-  PlumedChunker chunker = PlumedChunker();
-  chunker.append(0,
-                 step, 
-                 types, 
-                 x_positions, 
-                 y_positions, 
-                 z_positions,
-                 lx,ly,lz,
-                 xy,xz,yz); 
+   for (int chunkid=0;chunkid<n_chunks;chunkid++)
+  {
+      std::vector<double> x_positions = {1.0*chunkid,1.1*chunkid,1.2*chunkid,1.3*chunkid}; 
+      std::vector<double> y_positions = {0.0*chunkid,0.1*chunkid,0.2*chunkid,0.3*chunkid}; 
+      std::vector<double> z_positions = {10.0*chunkid,10.1*chunkid,10.2*chunkid,10.3*chunkid}; 
 
-  auto chunk_array = chunker.get_chunks(1);//_array();
-  dataspaces_writer_ptr.write_chunks(chunk_array);
-  printf("Write 1 done\n");
- 
-  step = 1;
-  x_positions[0] = 0.2;
-  types[1] = 1;
-  chunker.append(1,
-                 step, 
-                 types, 
-                 x_positions, 
-                 y_positions, 
-                 z_positions,
-                 lx,ly,lz,
-                 xy,xz,yz);
-  chunk_array = chunker.get_chunks(1);//_array();
-  dataspaces_writer_ptr.write_chunks(chunk_array);
-  printf("Write 2 done\n");
+      double lx,ly,lz,xy,xz,yz;
+      lx=ly=lz=10.0;
+      xy=xz=yz=1.0;
+      std::vector<int> types = {0,0,0}; 
+      int step = chunkid; 
+      PlumedChunker chunker = PlumedChunker();
+      chunker.append(chunkid,
+                     step, 
+                     types, 
+                     x_positions, 
+                     y_positions, 
+                     z_positions,
+                     lx,ly,lz,
+                     xy,xz,yz); 
 
+      auto chunk_array = chunker.get_chunks(1);//_array();
+      dataspaces_writer_ptr.write_chunks(chunk_array);
+      printf("Write %i done\n",chunkid);
+  } 
+  
   MPI_Finalize();
   return 0;
 }

@@ -63,6 +63,8 @@ Retriever* retriever_factory (int argc, const char** argv)
 
 int main (int argc, const char** argv)
 {
+    if (argc != 5)
+        printf("ERROR: Expecting 4 command line arguments 1) python module name 2) function name 3) n_steps 4) n_stride\n");
     MPI_Init(NULL,NULL);
     printf("---======== In Retriever::main()\n");
 
