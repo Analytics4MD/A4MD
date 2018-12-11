@@ -16,14 +16,16 @@ class A4MDProject(FlowProject):
 def initialized(job):
     return job.isfile('in.lj')
 
-def simulated(job):
-    return 'ete_simulation_time' in job.document
+def processed(job):
+    return 'ete_workflow_time_s' in job.document and \
+           'analysis_time_s' in job.document
 
-def analyzed(job):
+def post_processed(job):
     #print('in job',job,job.isfile('voro_freq.txt'))
-    return 'transfer_time' in job.document and \
-           'simulation_time' in job.document and \
-           'modify_time' in job.document
+    return 'ete_workflow_time_s' in job.document and \
+           'simulation_time_s' in job.document and \
+           'analysis_time_s' in job.document and \
+           'overhead_time_s' in job.document
 
 def diskstats_parse(dev=None):
     file_path = '/proc/diskstats'
@@ -70,31 +72,35 @@ def initialize(job):
         copyfile(source_file,dest_file)
     #elif 'plumed' in job.sp.job_type:
     with open(job.fn('plumed.dat'), 'w') as file:
-        if job.sp.job_type == 'traditional':
+        if job.sp.job_type == 'plumed_sequential':
             file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
-TARGET=NONE TOTAL_STEPS={}\n".\
+TARGET=py PYTHON_MODULE=calc_voronoi_for_frame PYTHON_FUNCTION=analyze \
+TOTAL_STEPS={}\n".\
                        format(job.sp.data_dump_interval,
                               job.sp.simulation_time))
-        elif job.sp.job_type == 'plumed_sequential':
+        elif job.sp.job_type == 'plumed_ds_sequential':
             file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
-TARGET=calc_voronoi_for_frame PYTHON_FUNCTION=analyze TOTAL_STEPS={}\n".\
+TARGET=py PYTHON_MODULE=calc_voronoi_for_frame PYTHON_FUNCTION=analyze \
+TOTAL_STEPS={} STAGE_DATA_IN=dataspaces\n".\
                        format(job.sp.data_dump_interval,
                               job.sp.simulation_time))
-        elif job.sp.job_type == 'plumed_conc_NO':
-            file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
-                       TARGET=a4md TOTAL_STEPS={}\n".\
-                       format(job.sp.data_dump_interval,
-                              job.sp.simulation_time))
+        elif job.sp.job_type == 'plumed_ds_concurrent':
+                    file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
+TARGET=a4md TOTAL_STEPS={} STAGE_DATA_IN=dataspaces\n".\
+                               format(job.sp.data_dump_interval,
+                                      job.sp.simulation_time))
 
-    if job.sp.job_type == 'plumed_conc_NO':
+    if 'plumed_ds_' in job.sp.job_type:
         with open(job.fn('dataspaces.conf'), 'w') as file:
-            if job.sp.job_type != 'traditional':
                 file.write("## Config file for DataSpaces\n")
                 file.write("ndim = 1\n")
                 file.write("dims = 100000\n")
                 file.write("max_versions = 1000\n")
                 file.write("max_readers = 1\n")
-                file.write("lock_type = 2\n")
+                if job.sp.job_type == 'plumed_ds_sequential':
+                     file.write("lock_type = 1\n") #  We are going to write first and read.
+                elif job.sp.job_type == 'plumed_ds_concurrent':
+                     file.write("lock_type = 1\n")
                 file.write("hash_version = 1\n")
 
     copyfile('analysis_codes/calc_voronoi_for_frame.py',job.fn('calc_voronoi_for_frame.py'))
@@ -104,16 +110,19 @@ TARGET=calc_voronoi_for_frame PYTHON_FUNCTION=analyze TOTAL_STEPS={}\n".\
         lmp.create_lammps_script(job)
 
 
-def get_ete_analysis_time(job):
-    ete_analysis_time = None
-    with job, open("generate_stdout.log", "r") as log:
-        for line in log:
-            if "DISPATCH_UPDATE_TIME_rank_0" in line:
-                ete_analysis_time = float(line.split(':')[1])/1000.0
-                break
-    if ete_analysis_time is None:
-        raise ValueError('Could not find DISPATCH_UPDATE_TIME_rank_0 in generate_stdout.log')
-    return ete_analysis_time
+def get_ete_plumed_time(job):
+    ete_plumed_time = None
+    with job, open("plumed.out", "r") as log:
+            labels = ['total_dispatch_action_time_ms']
+            for line in log:
+                values = line.split(':')
+                if any(label in values[1] for label in labels):
+                    values = line.split(':')
+                    ete_plumed_time = float(values[2])
+                    break
+    if ete_plumed_time is None:
+        raise ValueError('Could not find total_dispatch_action_time_ms in plumed.out')
+    return ete_plumed_time
 
 def get_transfer_time(job):
     tt = 0
@@ -136,18 +145,37 @@ def get_transfer_time(job):
             raise ValueError('analysis_output_time not found in job document')
 
     else:
-        job.document['ete_analysis_time'] = get_ete_analysis_time(job)
+        job.document['ete_plumed_time'] = get_ete_plumed_time(job)
         if 'analysis_time' in job.document: # analysis time is written from the analysis script
-            tt = job.document['ete_analysis_time']-job.document['analysis_time']
+            tt = job.document['ete_plumed_time']-job.document['analysis_time']
         else:
             raise ValueError('analysis_time is not in the job document.')
+    return tt
+
+def get_overhead_time(job):
+    ot = 0.0
+    if job.sp.job_type == 'traditional':
+        output_time_labels = ['Ouput']#'Pair','Neigh']#,'Comm','Other']#,'Modify','Ouput']
+        with job, open("log.prod", "r") as log:
+            for line in log:
+                values = line.split('|')
+                if len(values)== 6 and any(label in values[0] for label in output_time_labels):
+                    values = line.split('|')
+                    ot = float(values[2]) # Adding up times for all the analysis_time_labels
+                    break
+        if 'read_frames_time' in job.document:
+            ot += job.document['read_frames_time']
+        else:
+            raise ValueError('read_frames_time not found in job document')
         if 'analysis_output_time' in job.document:
-            tt -= job.document['analysis_output_time']
+            ot += job.document['analysis_output_time']
         else:
             raise ValueError('analysis_output_time not found in job document')
 
-    return tt
-
+    else:
+        ot = job.document['ete_workflow_time_s'] - job.document['simulation_time'] - job.document['analysis_time']
+    
+    return ot
 
 def get_modify_time(job):
     mt = 0
@@ -161,24 +189,72 @@ def get_modify_time(job):
     return mt
 
 
-def get_simulation_time(job):
-    st = 0
-    modify_time_labels = ['Pair','Neigh','Comm','Other']#,'Modify','Ouput']
-    with job, open("log.prod", "r") as log:
-        for line in log:
-            values = line.split('|')
-            if len(values)== 6 and any(label in values[0] for label in modify_time_labels):
+def get_simulation_time_s(job):
+    st = 0.0
+    if job.sp.job_type == 'traditional':
+        modify_time_labels = ['Pair','Neigh','Comm','Other']#,'Modify','Ouput']
+        with job, open("log.prod", "r") as log:
+            for line in log:
                 values = line.split('|')
-                st += float(values[2]) # Adding up times for all the analysis_time_labels
+                if len(values)== 6 and any(label in values[0] for label in modify_time_labels):
+                    values = line.split('|')
+                    st += float(values[2]) # Adding up times for all the analysis_time_labels
+    else:
+        with job, open("plumed.out", "r") as log:
+            labels = ['total_simulation_time_ms']
+            for line in log:
+                values = line.split(':')
+                if any(label in values[1] for label in labels):
+                    values = line.split(':')
+                    st = float(values[2])*0.001 # Adding up times for all the analysis_time_labels
+                    break
     return st
 
 
+def traditional_analysis(job):
+    import mdtraj as md 
+    with job:
+        if 'read_frames_time' not in job.document:
+            read_frame_times = []
+            start = timer()
+            import analysis_codes.calc_voronoi_for_frame as calc_voro
+            traj_ext = job.sp.output_type
+            traj_file = 'output.{}'.format(traj_ext)
+            top_file = 'top_L_{}.pdb'.format(job.sp.L)
+            if job.isfile(top_file) and job.isfile(traj_file): 
+                if job.sp.output_type =='dcd':
+                    traj = md.load_dcd(traj_file,top=top_file)
+                elif job.sp.output_type == 'xyz':
+                    traj = md.load_xyz(traj_file,top=top_file)
+                else:
+                    raise ValueError('Unrecognized output_type: {}'.format(job.sp.output_type))
+                if len(traj)>0:
+                    print('found',len(traj),'frames in',traj_file)
+                    box_L = [job.sp.L, job.sp.L, job.sp.L]#traj[0].unitcell_lengths[0]*10 # mul by 10 to compensate for mdtraj dividing by 10
+                    #print(box_L, type(box_L))
+                    box_points=np.append(box_L,[0, 0, 0])
+                    #print("my box points are ", box_points)
+                    #print("total frames",traj.n_frames)
+                    read_frame_times.append(timer()-start)
+                    for frame in range(traj.n_frames):
+                        start = timer()
+                        points = traj.xyz[frame]*10
+                        dummy=[0]*len(points)
+                        read_frame_times.append(timer()-start)
+                        calc_voro.analyze(dummy, points[:,0], points[:,1],points[:,2], box_points, frame*job.sp.data_dump_interval,) 
+                else:
+                    raise ValueError('trajectory file {} does not contain any frames.'.format(traj_file))
+            else:
+                raise ValueError('top file ({}) or traj file ({}) not found in job ({})'.format(top_file,traj_file,job))
+
+            job.document['read_frames_time']=np.sum(read_frame_times)
+
 @A4MDProject.operation
 @A4MDProject.pre(initialized)
-@A4MDProject.post(simulated)
+@A4MDProject.post(processed)
 @flow.directives(np=18)
 #@flow.cmd
-def simulate(job):
+def process(job):
     import time
     with job, open("generate_stdout.log", "w+") as generate_stdout,\
               open('iostats.log','w+') as iostat_out,\
@@ -188,27 +264,35 @@ def simulate(job):
         generate_iostats = subprocess.Popen(job_command, stdout=iostat_out, stderr=iostat_out)
         time.sleep(10)
 
-        if job.sp.job_type == 'plumed_conc_NO':
-            job_command = ['mpirun','-n','1','dataspaces_server','-s','1','-c','2']
-            generate_ds_server = subprocess.Popen(job_command, stdout=ds_server_out, stderr=ds_server_out)
+        if 'plumed_ds_' in job.sp.job_type:
+            if job.sp.job_type == 'plumed_ds_concurrent':
+                job_command = ['mpirun','-n','1','dataspaces_server','-s','1','-c','2']
+            elif job.sp.job_type == 'plumed_ds_sequential':
+                job_command = ['mpirun','-n','1','dataspaces_server','-s','1','-c','1']
+            generate_ds_server = subprocess.Popen(job_command, stdout=ds_server_out, stderr=ds_server_out, shell=False)
             # Give some time for the servers to load and startup
             time.sleep(3) #  wait server to fill up the conf file
 
+        if job.sp.job_type == 'plumed_ds_concurrent':
             job_command = ['mpirun','-n','1','retriever','calc_voronoi_for_frame','analyze',str(job.sp.simulation_time),str(job.sp.data_dump_interval)]
-            generate_retriever = subprocess.Popen(job_command, stdout=retriever_out, stderr=retriever_out)
+            generate_retriever = subprocess.Popen(job_command, stdout=retriever_out, stderr=retriever_out, shell=False)
 
         job_command = ['mpirun','-n',str(job.sp.NPROCS),'lmp_mpi','-i','in.lj']
+        #job_command = ['mpirun -n {} lmp_mpi -i in.lj'.format(job.sp.NPROCS)]
         print("Executing job command:", job_command)
         start = timer()
-        generate = subprocess.Popen(job_command, stdout=generate_stdout, stderr=generate_stdout)
+        generate = subprocess.Popen(job_command, stdout=generate_stdout, stderr=generate_stdout, shell=False)
         generate.wait()
-        if job.sp.job_type == 'plumed_conc_NO':
+        if job.sp.job_type == 'plumed_ds_concurrent':
             generate_retriever.wait()
 
+        if job.sp.job_type == 'traditional':
+            traditional_analysis(job)
+     
         t = timer() - start
-        job.document['ete_simulation_time'] = t
+        job.document['ete_workflow_time_s'] = t
 
-        if job.sp.job_type == 'plumed_conc_NO':
+        if 'plumed_ds_' in job.sp.job_type:
             generate_ds_server.kill()
 
         time.sleep(10)
@@ -216,51 +300,14 @@ def simulate(job):
     
 
 @A4MDProject.operation
-@A4MDProject.pre(simulated)
-@A4MDProject.post(analyzed)
+@A4MDProject.pre(processed)
+@A4MDProject.post(post_processed)
 @flow.directives(np=8)
-def analyze_job(job):
-    if job.sp.job_type == 'traditional':
-        import mdtraj as md 
-        with job:
-            if 'read_frames_time' not in job.document:
-                read_frame_times = []
-                start = timer()
-                import analysis_codes.calc_voronoi_for_frame as calc_voro
-                traj_ext = job.sp.output_type
-                traj_file = 'output.{}'.format(traj_ext)
-                top_file = 'top_L_{}.pdb'.format(job.sp.L)
-                if job.isfile(top_file) and job.isfile(traj_file): 
-                    if job.sp.output_type =='dcd':
-                        traj = md.load_dcd(traj_file,top=top_file)
-                    elif job.sp.output_type == 'xyz':
-                        traj = md.load_xyz(traj_file,top=top_file)
-                    else:
-                        raise ValueError('Unrecognized output_type: {}'.format(job.sp.output_type))
-                    if len(traj)>0:
-                        print('found',len(traj),'frames in',traj_file)
-                        box_L = [job.sp.L, job.sp.L, job.sp.L]#traj[0].unitcell_lengths[0]*10 # mul by 10 to compensate for mdtraj dividing by 10
-                        #print(box_L, type(box_L))
-                        box_points=np.append(box_L,[0, 0, 0])
-                        #print("my box points are ", box_points)
-                        #print("total frames",traj.n_frames)
-                        read_frame_times.append(timer()-start)
-                        for frame in range(traj.n_frames):
-                            start = timer()
-                            points = traj.xyz[frame]*10
-                            dummy=[0]*len(points)
-                            read_frame_times.append(timer()-start)
-                            calc_voro.analyze(dummy, points, box_points, frame*job.sp.data_dump_interval) 
-                    else:
-                        raise ValueError('trajectory file {} does not contain any frames.'.format(traj_file))
-                else:
-                    raise ValueError('top file ({}) or traj file ({}) not found in job ({})'.format(top_file,traj_file,job))
-
-                job.document['read_frames_time']=np.sum(read_frame_times)        
-
-    job.document['transfer_time'] = get_transfer_time(job)
-    job.document['modify_time'] = get_modify_time(job)
-    job.document['simulation_time'] = get_simulation_time(job)
+def post_process(job):
+    #job.document['transfer_time'] = get_transfer_time(job)
+    #job.document['modify_time'] = get_modify_time(job)
+    job.document['simulation_time_s'] = get_simulation_time_s(job)
+    job.document['overhead_time_s'] = job.document['ete_workflow_time_s'] - job.document['simulation_time_s'] - job.document['analysis_time_s']
 
 
 if __name__ == '__main__':
