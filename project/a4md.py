@@ -72,16 +72,19 @@ def initialize(job):
     with open(job.fn('plumed.dat'), 'w') as file:
         if job.sp.job_type == 'traditional':
             file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
-                       TARGET=NONE\n".\
-                       format(job.sp.data_dump_interval))
+TARGET=NONE TOTAL_STEPS={}\n".\
+                       format(job.sp.data_dump_interval,
+                              job.sp.simulation_time))
         elif job.sp.job_type == 'plumed_sequential':
             file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
-TARGET=calc_voronoi_for_frame PYTHON_FUNCTION=analyze\n".\
-                       format(job.sp.data_dump_interval))
+TARGET=calc_voronoi_for_frame PYTHON_FUNCTION=analyze TOTAL_STEPS={}\n".\
+                       format(job.sp.data_dump_interval,
+                              job.sp.simulation_time))
         elif job.sp.job_type == 'plumed_conc_NO':
             file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
-                       TARGET=a4md\n".\
-                       format(job.sp.data_dump_interval))
+                       TARGET=a4md TOTAL_STEPS={}\n".\
+                       format(job.sp.data_dump_interval,
+                              job.sp.simulation_time))
 
     if job.sp.job_type == 'plumed_conc_NO':
         with open(job.fn('dataspaces.conf'), 'w') as file:
@@ -189,7 +192,7 @@ def simulate(job):
             job_command = ['mpirun','-n','1','dataspaces_server','-s','1','-c','2']
             generate_ds_server = subprocess.Popen(job_command, stdout=ds_server_out, stderr=ds_server_out)
             # Give some time for the servers to load and startup
-            time.sleep(5) #  wait server to fill up the conf file
+            time.sleep(3) #  wait server to fill up the conf file
 
             job_command = ['mpirun','-n','1','retriever','calc_voronoi_for_frame','analyze',str(job.sp.simulation_time),str(job.sp.data_dump_interval)]
             generate_retriever = subprocess.Popen(job_command, stdout=retriever_out, stderr=retriever_out)
