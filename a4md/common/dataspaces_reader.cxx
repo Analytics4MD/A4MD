@@ -12,7 +12,8 @@
 DataSpacesReader::DataSpacesReader(char* var_name, unsigned long int total_chunks)
 : m_size_var_name("chunk_size"),
   m_var_name(var_name),
-  m_total_chunks(total_chunks)
+  m_total_chunks(total_chunks),
+  m_total_data_read_time_ms(0.0)
 {
     MPI_Barrier(MPI_COMM_WORLD);
     m_gcomm = MPI_COMM_WORLD;
@@ -39,6 +40,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
     {
         std::string::size_type chunk_size;
         dspaces_lock_on_read("size_lock", &m_gcomm);
+        //printf("---==== Reading chunk id %u\n",chunk_id);
         int error = dspaces_get(m_size_var_name.c_str(),
                                 chunk_id,
                                 sizeof(std::string::size_type),
@@ -86,10 +88,10 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
     }
     MPI_Barrier(m_gcomm);
     DurationMilli read_time_ms = timeNow()-t_start;
-    total_data_read_time_ms += read_time_ms.count();
-    if (chunk_id == m_total_chunks)
+    m_total_data_read_time_ms += read_time_ms.count();
+    if (chunk_id-1 == m_total_chunks-1)
     {
-        printf("total_data_read_time_ms : %f\n",total_data_read_time_ms);
+        printf("total_data_read_time_ms : %f\n",m_total_data_read_time_ms);
         printf("total_chunks read : %u\n",m_total_chunks);
     }
 

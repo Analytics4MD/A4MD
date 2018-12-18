@@ -2,10 +2,9 @@
 
 
 VoronoiAnalyzer::VoronoiAnalyzer(ChunkReader & chunk_reader,
-                                 std::string module_name,
-                                 std::string function_name)
+                                 PyVoronoiAnalyzer & py_analyzer)
 : ChunkAnalyzer(chunk_reader),
-  m_py_analyzer((char*)module_name.c_str(),(char*)function_name.c_str())
+  m_py_analyzer(py_analyzer)
 {
 }
 

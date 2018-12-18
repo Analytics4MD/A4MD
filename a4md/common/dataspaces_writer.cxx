@@ -12,7 +12,8 @@
 DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunks)
 : m_size_var_name("chunk_size"),
   m_var_name(var_name),
-  m_total_chunks(total_chunks)
+  m_total_chunks(total_chunks),
+  m_total_data_write_time_ms(0.0)
 {
     MPI_Barrier(MPI_COMM_WORLD);
     m_gcomm = MPI_COMM_WORLD;
@@ -93,7 +94,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
     MPI_Barrier(m_gcomm);
     DurationMilli write_time_ms = timeNow()-t_start;
     m_total_data_write_time_ms += write_time_ms.count();
-    if (chunk_id == m_total_chunks)
+    if (chunk_id == m_total_chunks-1)
     {
         printf("total_data_write_time_ms : %f\n",m_total_data_write_time_ms);
         printf("total_chunk_data_written : %u\n",m_total_size);

@@ -9,7 +9,7 @@ int main (int argc, const char** argv)
   std::string var_name = "test_var";
   if (argc != 2)
     printf("ERROR: Expecting number of simulation steps as command line argument\n");
-  unsigned long int n_chunks = atoi(argv[1]) + 1;
+  unsigned long int n_chunks = atoi(argv[1]);
   DataSpacesWriter dataspaces_writer_ptr = DataSpacesWriter((char*)var_name.c_str(), n_chunks);
 
    for (int chunkid=0;chunkid<n_chunks;chunkid++)

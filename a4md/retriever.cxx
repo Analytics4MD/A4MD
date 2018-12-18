@@ -16,11 +16,9 @@ ChunkAnalyzer* analyzer_factory(int argc, const char** argv)
 
     ChunkAnalyzer* chunk_analyzer;
     ChunkReader* chunk_reader;
- 
-    int n_steps = atoi(argv[3]);
-    int n_stride = atoi(argv[4]);
+    int n_frames = atoi(argv[3]);
     int n_analysis_stride = 1;
-    unsigned long int total_chunks = n_steps/n_stride/n_analysis_stride + 1;// +1 for the call before simulation starts
+    unsigned long int total_chunks = n_frames;// +1 for the call before simulation starts
     if (reader_type == "dataspaces")
     {
         printf("---======== Initializing dataspaces reader\n");
@@ -38,7 +36,8 @@ ChunkAnalyzer* analyzer_factory(int argc, const char** argv)
     {
         std::string name((char*)argv[1]);
         std::string func((char*)argv[2]);
-        chunk_analyzer = new VoronoiAnalyzer(* chunk_reader, name, func);
+        PyVoronoiAnalyzer* py_analyzer = new PyVoronoiAnalyzer((char*)name.c_str(),(char*)func.c_str());
+        chunk_analyzer = new VoronoiAnalyzer(*chunk_reader, *py_analyzer);
         printf("---======== Initialized voronoi analyzer\n");
     }
     else
@@ -52,25 +51,28 @@ ChunkAnalyzer* analyzer_factory(int argc, const char** argv)
 Retriever* retriever_factory (int argc, const char** argv)
 {
     ChunkAnalyzer * analyzer = analyzer_factory(argc, argv);
-    int n_steps = atoi(argv[3]);
-    int n_stride = atoi(argv[4]);
-    int n_analysis_stride = 1;
+    int n_frames = atoi(argv[3]);
+    int n_window_width = 1;
     
-    printf("Recieved n_steps = %i from user in Retriever\n",n_steps);
-    Retriever * retriever = new MDRetriever(* analyzer, n_steps, n_stride, n_analysis_stride);
+    printf("Recieved n_frames = %i from user in Retriever\n",n_frames);
+    Retriever * retriever = new MDRetriever(* analyzer, n_frames, n_window_width);
     return retriever;
 }
 
 int main (int argc, const char** argv)
 {
-    if (argc != 5)
-        printf("ERROR: Expecting 4 command line arguments 1) python module name 2) function name 3) n_steps 4) n_stride\n");
+    if (argc != 4)
+        printf("ERROR: Expecting 4 command line arguments 1) python module name 2) function name 3) n_frames\n");
     MPI_Init(NULL,NULL);
     printf("---======== In Retriever::main()\n");
 
+    TimeVar t_start = timeNow();
     Retriever * retriever = retriever_factory(argc,argv);
     retriever->run();
-    
+    DurationMilli md_retriever_time_ms = timeNow()-t_start;
+    auto total_md_retriever_time_ms = md_retriever_time_ms.count();
+    printf("total_retriever_time_ms : %f\n",total_md_retriever_time_ms);
+
     MPI_Finalize();
     return 0;
 }
