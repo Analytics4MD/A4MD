@@ -60,13 +60,13 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         chunk_id = chunk->get_chunk_id();
         std::string data = oss.str();
         std::string::size_type size = data.length();
-        
-        //printf("chunk size for chunk_id %i is %i\n",chunk_id,size);
+        //printf("MAX SIZE of string is %zu \n", data.max_size());
+        //printf("chunk size for chunk_id %i is %zu\n",chunk_id,size);
         m_total_size += size;
         dspaces_lock_on_write("size_lock", &m_gcomm);
         int error = dspaces_put(m_size_var_name.c_str(),
                                 chunk_id,
-                                1*sizeof(std::string::size_type),
+                                sizeof(std::string::size_type),
                                 ndim,
                                 lb,
                                 ub,

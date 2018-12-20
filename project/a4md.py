@@ -102,7 +102,7 @@ TARGET=a4md TOTAL_STEPS={} STAGE_DATA_IN=dataspaces\n".\
                 if job.sp.job_type == 'plumed_ds_sequential':
                      file.write("lock_type = 1\n") #  We are going to write first and read.
                 elif job.sp.job_type == 'plumed_ds_concurrent':
-                     file.write("lock_type = 1\n")
+                     file.write("lock_type = 3\n")
                 file.write("hash_version = 1\n")
 
     copyfile('analysis_codes/calc_voronoi_for_frame.py',job.fn('calc_voronoi_for_frame.py'))
@@ -413,7 +413,9 @@ def process(job):
             generate_retriever.wait()
 
         if job.sp.job_type == 'traditional':
+            start_analysis = timer()
             traditional_analysis(job)
+            job.document['ete_analysis_time_s'] = timer() - start_analysis
      
         t = timer() - start
         job.document['ete_workflow_time_s'] = t

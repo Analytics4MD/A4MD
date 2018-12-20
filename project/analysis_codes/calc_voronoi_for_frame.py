@@ -6,16 +6,24 @@ import freud
 from timeit import default_timer as timer
 from scipy import stats
 import json
+import time
 
 an_times = []
 #an_write_times = []
+ddi = None
+nsteps = None
+with open('signac_statepoint.json', 'r') as f:
+    sp = json.load(f)
+    ddi = sp['data_dump_interval']
+    nsteps = sp['simulation_time']
 
 def analyze(types, xpoints,ypoints,zpoints, box_points, step):
     print('-----======= Python : analyze ({})========-------'.format(step))
     #print('box points',box_points);
     #print("");
-    points = np.vstack((xpoints,ypoints,zpoints)).T
     t=timer() 
+    
+    points = np.vstack((xpoints,ypoints,zpoints)).T
     box = freud.box.Box(box_points[0],
         		box_points[1],
         		box_points[2],
@@ -33,22 +41,14 @@ def analyze(types, xpoints,ypoints,zpoints, box_points, step):
 
     frq,edges = np.histogram(data,range=[0,50],bins=30)
 
-    
-    #t=timer()
-    #print("In analyze: step: ",step)
-    #print('last frame position[0]',points[0])
-    #print('freud box', box)
-
-    #print('mean {} min {} max {}'.format(av,mi,ma))
     np.savetxt('voro_volumes.txt',data)
     np.savetxt('voro_freq.txt',frq)
     np.savetxt('voro_edges.txt',edges)
-    #print('Number of voronoi cells',len(cells))
     an_time = timer()-t
     an_times.append(an_time)
-
      
-    if step>=200:
+    if step>=nsteps:
+        print('------============ reached end of analysis ({}) ==========------------'.format(step))
         with open('signac_job_document.json', 'r') as f:
             job_document = json.load(f)
 
