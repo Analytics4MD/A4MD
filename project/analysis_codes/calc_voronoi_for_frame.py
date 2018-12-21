@@ -9,7 +9,7 @@ import json
 import time
 
 an_times = []
-#an_write_times = []
+an_write_times = []
 ddi = None
 nsteps = None
 with open('signac_statepoint.json', 'r') as f:
@@ -40,13 +40,15 @@ def analyze(types, xpoints,ypoints,zpoints, box_points, step):
     mi = np.min(data)
 
     frq,edges = np.histogram(data,range=[0,50],bins=30)
+    an_time = timer()-t
+    an_times.append(an_time)
 
+    t=timer()
     np.savetxt('voro_volumes.txt',data)
     np.savetxt('voro_freq.txt',frq)
     np.savetxt('voro_edges.txt',edges)
-    an_time = timer()-t
-    an_times.append(an_time)
-     
+    an_write_time = timer()-t
+    an_write_times.append(an_write_time)    
     if step>=nsteps:
         print('------============ reached end of analysis ({}) ==========------------'.format(step))
         with open('signac_job_document.json', 'r') as f:
@@ -54,8 +56,8 @@ def analyze(types, xpoints,ypoints,zpoints, box_points, step):
 
         job_document['analysis_time_s'] = np.sum(an_times)
         job_document['analysis_time_s_sem'] = stats.sem(an_times)
-        #job_document['analysis_output_time'] = np.sum(an_write_times)
-        #job_document['analysis_output_time_sem'] = stats.sem(an_write_times)
+        job_document['analysis_output_time_s'] = np.sum(an_write_times)
+        job_document['analysis_output_time_s_sem'] = stats.sem(an_write_times)
 
         with open('signac_job_document.json', 'w') as f:
             f.write(json.dumps(job_document))

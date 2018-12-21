@@ -121,11 +121,11 @@ def create_lammps_script(job, file_name='in.lj'):
             #    job.sp['output_type']='dcd'
             if 'output_type' in job.sp:
                 if job.sp.output_type == 'dcd':
-                    f.write('dump    1       all dcd {} output.dcd\n'.format(job.sp.data_dump_interval))
+                    f.write('dump   traj       all dcd {} output.dcd\n'.format(job.sp.data_dump_interval))
                 elif job.sp.output_type == 'xyz':
-                    f.write('dump    1       all xyz {} output.xyz\n'.format(job.sp.data_dump_interval))
+                    f.write('dump   traj       all xyz {} output.xyz\n'.format(job.sp.data_dump_interval))
             f.write('#dump_modify 1 element Ar\n')
-            f.write('dump_modify 1 flush yes\n')
+            f.write('dump_modify traj flush yes\n')
         elif 'plumed' in job.sp.job_type:
             f.write('fix  3 all plumed plumedfile plumed.dat outfile plumed.out \n')
 
