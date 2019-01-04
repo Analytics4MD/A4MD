@@ -36,6 +36,7 @@ build:
     - cd build
     - cmake .. -DCMAKE_INSTALL_PREFIX=../_install 
     - make install
+    - cd ..
     - echo "Build complete"
   post_ci:
     - docker build -t $DOCKER_ACC/$DOCKER_REPO:latest .
