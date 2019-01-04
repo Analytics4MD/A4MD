@@ -18,8 +18,9 @@ integrations:
       on_start: never
       on_pull_request: always
 build:
-  pre_ci:
-    - bash build_container.sh
+  pre_ci_boot:
+    - image_name: globalcomputinglab/a4md_base
+    - pull: true
   ci:
     - echo "Build complete"
 
