@@ -1,4 +1,4 @@
-language: C++
+language: C/C++
 env:
   global:
   - TRAVIS=False
