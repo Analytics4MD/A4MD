@@ -1,4 +1,4 @@
-language: C/C++
+language: python
 env:
   global:
   - TRAVIS=False
