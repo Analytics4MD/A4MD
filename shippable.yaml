@@ -37,6 +37,8 @@ build:
     - make install
     - echo "Build complete"
   post_ci:
+    - if [ "$BRANCH" == "master" ]; then docker commit $SHIPPABLE_CONTAINER_NAME globalcomputinglab/a4md:latest; fi
+    - if [ "$BRANCH" == "feat/docker_ready" ]; then docker commit $SHIPPABLE_CONTAINER_NAME globalcomputinglab/a4md:dev_latest; fi
     - if [ "$BRANCH" == "master" ]; then docker push globalcomputinglab/a4md:latest; fi
     - if [ "$BRANCH" == "feat/docker_ready" ]; then docker push globalcomputinglab/a4md:dev_latest; fi
 
