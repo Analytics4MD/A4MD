@@ -36,7 +36,9 @@ build:
     - cmake .. -DCMAKE_INSTALL_PREFIX=../_install 
     - make install
     - echo "Build complete"
-
+  post_ci:
+    - if [ "$BRANCH" == "master" ]; then docker push globalcomputinglab/a4md:latest; fi
+    - if [ "$BRANCH" == "feat/docker_ready" ]; then docker push globalcomputinglab/a4md:dev_latest; fi
 
 #  on_success:
 #    - COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN shippable_retry coveralls
