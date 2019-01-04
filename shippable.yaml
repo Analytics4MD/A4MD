@@ -6,7 +6,7 @@ env:
 
 integrations:
   hub:
-    - integrationName: my-docker-hub   ##replace with your integration name
+    - integrationName: docker_hub   ##replace with your integration name
     - type: dockerRegistryLogin
   notifications:
     - integrationName: Shippable-Slack
