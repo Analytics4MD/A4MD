@@ -10,18 +10,18 @@ integrations:
     - integrationName: docker_hub
       type: dockerRegistryLogin
 
-#  notifications:
-#    - integrationName: Shippable-Slack
-#      type: slack
-#      recipients:
-#        - "#lichens"
-#      branches:
-#        only:
-#          - master
-#      on_success: always
-#      on_failure: always
-#      on_start: never
-#      on_pull_request: always
+  notifications:
+    - integrationName: Shippable-Slack
+      type: slack
+      recipients:
+        - "#lichens"
+      branches:
+        only:
+          - master
+      on_success: always
+      on_failure: always
+      on_start: never
+      on_pull_request: always
 git:
   submodule: true
 build:
