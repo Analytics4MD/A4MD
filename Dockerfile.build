@@ -8,6 +8,8 @@ RUN apt-get update --fix-missing && apt-get install -y --no-install-recommends \
     curl \
     git \
     build-essential \
+    autotools-dev \
+    automake \
     gcc \
     gfortran \
     python3.6 \
