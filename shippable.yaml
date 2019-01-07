@@ -40,6 +40,7 @@ build:
     - cd build
     - cmake .. -DCMAKE_INSTALL_PREFIX=../_install 
     - make install
+    - ./a4md/tests-main
     - cd ..
     - echo "Build complete"
   post_ci:
