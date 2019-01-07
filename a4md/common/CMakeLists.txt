@@ -37,5 +37,11 @@ target_include_directories(
 )
 target_link_libraries(a4md_cmn dataspaces dataspaces_cmn dataspaces_dart m ${Boost_LIBRARIES} ${MPI_LIBRARIES})
 
+add_executable(tests-cmn test-main.cxx)
+target_link_libraries(tests-cmn Catch2::Catch2)
+include(CTest)
+include(ParseAndAddCatchTests)
+ParseAndAddCatchTests(tests-cmn)
+
 install (TARGETS a4md_cmn DESTINATION lib)
 install (FILES ${_a4md_cmn_headers_} DESTINATION include)
