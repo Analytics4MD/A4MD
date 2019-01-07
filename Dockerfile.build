@@ -38,33 +38,3 @@ RUN tar -xjf /tmp/openmpi-2.1.3.tar.bz2 && \
 #    \
 #    openmpi-bin libopenmpi-dev
 
-#RUN which cmake && \
-#    cmake --version
-#
-#RUN which gcc && \
-#    gcc --version
-#
-#RUN which mpicc && \
-#    mpicc --version
-#ARG ssh_prv_key
-#ARG ssh_pub_key
-## Authorize SSH Host
-#RUN mkdir -p /root/.ssh && \
-#    chmod 0700 /root/.ssh && \
-#    ssh-keyscan github.com > /root/.ssh/known_hosts
-#
-## Add the keys and set permissions
-#RUN echo "$ssh_prv_key" > /root/.ssh/id_rsa && \
-#    echo "$ssh_pub_key" > /root/.ssh/id_rsa.pub && \
-#    chmod 600 /root/.ssh/id_rsa && \
-#    chmod 600 /root/.ssh/id_rsa.pub
-#RUN git clone -b feat/docker_ready --recursive git@github.com:Analytics4MD/A4MD-project-a4md.git a4md
-# Remove SSH keys
-#RUN rm -rf /root/.ssh/
-#RUN cd a4md && \
-#    git checkout feat/new_metric_names && \
-#    mkdir build && \
-#    cd build && \
-#    cmake .. \
-#    -DCMAKE_INSTALL_PREFIX=../_install &&\
-#    make install
