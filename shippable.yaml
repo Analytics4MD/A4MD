@@ -3,7 +3,7 @@ env:
   global:
   - TRAVIS=False
   - secure: Pz5/Q8RkDtQXelNgd8hKSlmA2n/4E9LvcSEUI98OyYuWERWYpfiSsMnxaYRGdLkdl0sJbnT/Z/+G5MdGnGw2SsHiXyyOG+xfXyTJm/+HCmbiTOoJzc1Av3g6lMMbS4A9ffFV6C36NB7akjuWj+G/kxWfY9X1C+Uqb7H6DtSI9FkVyS/ifQzj2jtO20d/SwtyCciPKIZyKFGCppjPTaQA0CozHq/vQFS1cLB62/mEigasj/qAQyExgDji49l3qvZeToWpcCUvMoUsgKvbzab3FLGya4IS6FcWJ4ChiBygjuB6GPfWGgWOF0rAlrZC3blREVgEQYJ4pLp+GqmHzCeysQ==
-  - DOCKER_REPO="a4md"
+  - DOCKER_REPO="a4md_openmpi_2.1.3"
   - DOCKER_ACC="globalcomputinglab"
 integrations:
   hub:
