@@ -5,7 +5,7 @@ unsigned int Factorial1( unsigned int number ) {
 }
 
 TEST_CASE( "Factorials are computed again", "[factorial1]" ) {
-    REQUIRE( Factorial1(1) == 1 );
+    REQUIRE( Factorial1(1) == 10 );
     REQUIRE( Factorial1(2) == 2 );
     REQUIRE( Factorial1(3) == 6 );
     REQUIRE( Factorial1(10) == 3628800 );
