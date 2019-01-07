@@ -7,3 +7,6 @@
 [submodule "a4md/extern/plumed2"]
 	path = a4md/extern/plumed2
 	url = https://github.com/Analytics4MD/plumed2.git
+[submodule "a4md/extern/catch2"]
+	path = a4md/extern/catch2
+	url = https://github.com/catchorg/Catch2.git
