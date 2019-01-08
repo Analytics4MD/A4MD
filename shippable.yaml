@@ -41,7 +41,7 @@ build:
     - cmake .. -DCMAKE_INSTALL_PREFIX=../_install 
     - make install
     - ./a4md/tests-main
-    - ./a4md/common/test/tests-cmn
+    - ./a4md/common/test/tests-cmn -r xml > shippable/testresults/tests-cmn-report.xml
     - cd ..
     - echo "Build complete"
   post_ci:
