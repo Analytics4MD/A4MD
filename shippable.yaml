@@ -40,10 +40,9 @@ build:
     - cd build
     - cmake .. -DCMAKE_INSTALL_PREFIX=../_install 
     - make install
-    - cd ../
+    - cd ..
     - ./build/a4md/tests-main
     - ./build/a4md/common/test/tests-cmn -r junit -o shippable/testresults/tests-cmn-report.xml
-    - cd ..
     - echo "Build complete"
   post_ci:
     - docker build -t $DOCKER_ACC/$DOCKER_REPO:latest .
