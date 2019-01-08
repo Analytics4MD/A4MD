@@ -1,5 +1,6 @@
 language: python
 env:
+  - CI_REPORTS=shippable/testresults
   global:
   - TRAVIS=False
   - secure: Pz5/Q8RkDtQXelNgd8hKSlmA2n/4E9LvcSEUI98OyYuWERWYpfiSsMnxaYRGdLkdl0sJbnT/Z/+G5MdGnGw2SsHiXyyOG+xfXyTJm/+HCmbiTOoJzc1Av3g6lMMbS4A9ffFV6C36NB7akjuWj+G/kxWfY9X1C+Uqb7H6DtSI9FkVyS/ifQzj2jtO20d/SwtyCciPKIZyKFGCppjPTaQA0CozHq/vQFS1cLB62/mEigasj/qAQyExgDji49l3qvZeToWpcCUvMoUsgKvbzab3FLGya4IS6FcWJ4ChiBygjuB6GPfWGgWOF0rAlrZC3blREVgEQYJ4pLp+GqmHzCeysQ==
@@ -30,8 +31,8 @@ build:
     image_tag: latest
     pull: true
   ci:
-    - pwd
-    - ls -a
+    - mkdir -p shippable/testresults
+    - mkdir -p shippable/codecoverage
     - cd a4md/extern/catch2
     - cmake -Bbuild -H. -DBUILD_TESTING=OFF
     - cmake --build build/ --target install
@@ -40,10 +41,9 @@ build:
     - cd build
     - cmake .. -DCMAKE_INSTALL_PREFIX=../_install 
     - make install
-    - ./a4md/tests-main
-    - mkdir shippable
-    - mkdir shippable/testresults
-    - ./a4md/common/test/tests-cmn -r junit -o shippable/testresults/tests-cmn-report.xml
+    - cd ../
+    - ./build/a4md/tests-main
+    - ./build/a4md/common/test/tests-cmn -r junit -o shippable/testresults/tests-cmn-report.xml
     - cd ..
     - echo "Build complete"
   post_ci:
