@@ -41,7 +41,7 @@ build:
     - cmake .. -DCMAKE_INSTALL_PREFIX=../_install 
     - make install
     - cd ..
-    - ./build/a4md/tests-main
+    - ./build/a4md/tests-main -r junit -o shippable/testresults/tests-main-report.xml
     - ./build/a4md/common/test/tests-cmn -r junit -o shippable/testresults/tests-cmn-report.xml
     - echo "Build complete"
   post_ci:
