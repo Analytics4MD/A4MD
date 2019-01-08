@@ -11,13 +11,13 @@ integrations:
       type: dockerRegistryLogin
 
   notifications:
-    - integrationName: Shippable-Slack
+    - integrationName: A4MDSlackNotifications
       type: slack
       recipients:
         - "#lichens"
-      branches:
-        only:
-          - master
+#      branches:
+#        only:
+#          - master
       on_success: always
       on_failure: always
       on_start: never
