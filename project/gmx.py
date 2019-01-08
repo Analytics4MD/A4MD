@@ -295,9 +295,9 @@ TARGET=a4md TOTAL_STEPS={} STAGE_DATA_IN=dataspaces\n".\
     copyfile('files/gltph_gmx/start_state.cpt',job.fn('start_state.cpt'))
     with job:
         gmx_in.create_gmx_script(job)
-    job_command = ['bash','remake_tpr.sh']
-    subp = subprocess.Popen(job_command)
-    subp.wait()
+        job_command = ['bash','remake_tpr.sh']
+        subp = subprocess.Popen(job_command)
+        subp.wait()
 
     copyfile('analysis_codes/calc_voronoi_for_frame.py',job.fn('calc_voronoi_for_frame.py'))
     copyfile('checkio.sh',job.fn('checkio.sh'))
