@@ -10,23 +10,6 @@ from timeit import default_timer as timer
 from scipy import stats
 
 
-class A4MDProject(FlowProject):
-    pass
-
-def initialized(job):
-    return job.isfile('in.lj')
-
-def processed(job):
-    return 'total_time_s' in job.document and \
-           'analysis_time_s' in job.document
-
-def post_processed(job):
-    #print('in job',job,job.isfile('voro_freq.txt'))
-    return 'total_time_s' in job.document and \
-           'simulation_time_s' in job.document and \
-           'analysis_time_s' in job.document and \
-           'data_management_time_s' in job.document
-
 def diskstats_parse(dev=None):
     file_path = '/proc/diskstats'
     result = {}
@@ -60,56 +43,6 @@ def diskstats_parse(dev=None):
 
     return result
 
-@A4MDProject.operation
-@A4MDProject.post(initialized)
-def initialize(job):
-    import create_gmx_input as gmx_in
-    from shutil import copyfile
-    with open(job.fn('plumed.dat'), 'w') as file:
-        if job.sp.job_type == 'plumed_sequential':
-            file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
-TARGET=py PYTHON_MODULE=calc_voronoi_for_frame PYTHON_FUNCTION=analyze \
-TOTAL_STEPS={}\n".\
-                       format(job.sp.data_dump_interval,
-                              job.sp.simulation_time))
-        elif job.sp.job_type == 'plumed_ds_sequential':
-            file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
-TARGET=py PYTHON_MODULE=calc_voronoi_for_frame PYTHON_FUNCTION=analyze \
-TOTAL_STEPS={} STAGE_DATA_IN=dataspaces\n".\
-                       format(job.sp.data_dump_interval,
-                              job.sp.simulation_time))
-        elif job.sp.job_type == 'plumed_ds_concurrent':
-                    file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
-TARGET=a4md TOTAL_STEPS={} STAGE_DATA_IN=dataspaces\n".\
-                               format(job.sp.data_dump_interval,
-                                      job.sp.simulation_time))
-
-    if 'plumed_ds_' in job.sp.job_type:
-        with open(job.fn('dataspaces.conf'), 'w') as file:
-                file.write("## Config file for DataSpaces\n")
-                file.write("ndim = 1\n")
-                file.write("dims = 100000\n")
-                file.write("max_versions = 1000\n")
-                file.write("max_readers = 1\n")
-                if job.sp.job_type == 'plumed_ds_sequential':
-                     file.write("lock_type = 1\n") #  We are going to write first and read.
-                elif job.sp.job_type == 'plumed_ds_concurrent':
-                     file.write("lock_type = 3\n")
-                file.write("hash_version = 1\n")
-
-    copyfile('files/gltph_gmx/start_conf.gro',job.fn('start_conf.gro'))
-    copyfile('files/gltph_gmx/remake_tpr.sh',job.fn('remake_tpr.sh'))
-    copyfile('files/gltph_gmx/top/topol.top',job.fn('topol.top'))
-    copyfile('files/gltph_gmx/index.ndx',job.fn('index.ndx'))
-    copyfile('files/gltph_gmx/start_state.cpt',job.fn('start_state.cpt'))
-    with job:
-        gmx_in.create_gmx_script(job)
-    job_command = ['bash','remake_tpr.sh']
-    subp = subprocess.Popen(job_command)
-    subp.wait()
-
-    copyfile('analysis_codes/calc_voronoi_for_frame.py',job.fn('calc_voronoi_for_frame.py'))
-    copyfile('checkio.sh',job.fn('checkio.sh'))
 
 
 def get_dispatch_action_time_s(job):
@@ -300,6 +233,75 @@ def traditional_analysis(job):
             if 'analysis_time_s' not in job.document:
                 raise ValueError('analysis_time_s is not found in job document!')
 
+class A4MDProject(FlowProject):
+    pass
+
+def initialized(job):
+    return job.isfile('topol.tpr')
+
+def processed(job):
+    return 'total_time_s' in job.document and \
+           'analysis_time_s' in job.document
+
+def post_processed(job):
+    #print('in job',job,job.isfile('voro_freq.txt'))
+    return 'total_time_s' in job.document and \
+           'simulation_time_s' in job.document and \
+           'analysis_time_s' in job.document and \
+           'data_management_time_s' in job.document
+
+
+@A4MDProject.operation
+@A4MDProject.post(initialized)
+def initialize(job):
+    import create_gmx_input as gmx_in
+    from shutil import copyfile
+    with open(job.fn('plumed.dat'), 'w') as file:
+        if job.sp.job_type == 'plumed_sequential':
+            file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
+TARGET=py PYTHON_MODULE=calc_voronoi_for_frame PYTHON_FUNCTION=analyze \
+TOTAL_STEPS={}\n".\
+                       format(job.sp.data_dump_interval,
+                              job.sp.simulation_time))
+        elif job.sp.job_type == 'plumed_ds_sequential':
+            file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
+TARGET=py PYTHON_MODULE=calc_voronoi_for_frame PYTHON_FUNCTION=analyze \
+TOTAL_STEPS={} STAGE_DATA_IN=dataspaces\n".\
+                       format(job.sp.data_dump_interval,
+                              job.sp.simulation_time))
+        elif job.sp.job_type == 'plumed_ds_concurrent':
+                    file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
+TARGET=a4md TOTAL_STEPS={} STAGE_DATA_IN=dataspaces\n".\
+                               format(job.sp.data_dump_interval,
+                                      job.sp.simulation_time))
+
+    if 'plumed_ds_' in job.sp.job_type:
+        with open(job.fn('dataspaces.conf'), 'w') as file:
+                file.write("## Config file for DataSpaces\n")
+                file.write("ndim = 1\n")
+                file.write("dims = 100000\n")
+                file.write("max_versions = 1000\n")
+                file.write("max_readers = 1\n")
+                if job.sp.job_type == 'plumed_ds_sequential':
+                     file.write("lock_type = 1\n") #  We are going to write first and read.
+                elif job.sp.job_type == 'plumed_ds_concurrent':
+                     file.write("lock_type = 3\n")
+                file.write("hash_version = 1\n")
+
+    copyfile('files/gltph_gmx/start_conf.gro',job.fn('start_conf.gro'))
+    copyfile('files/gltph_gmx/remake_tpr.sh',job.fn('remake_tpr.sh'))
+    copyfile('files/gltph_gmx/top/topol.top',job.fn('topol.top'))
+    copyfile('files/gltph_gmx/index.ndx',job.fn('index.ndx'))
+    copyfile('files/gltph_gmx/start_state.cpt',job.fn('start_state.cpt'))
+    with job:
+        gmx_in.create_gmx_script(job)
+    job_command = ['bash','remake_tpr.sh']
+    subp = subprocess.Popen(job_command)
+    subp.wait()
+
+    copyfile('analysis_codes/calc_voronoi_for_frame.py',job.fn('calc_voronoi_for_frame.py'))
+    copyfile('checkio.sh',job.fn('checkio.sh'))
+
 @A4MDProject.operation
 @A4MDProject.pre(initialized)
 @A4MDProject.post(processed)
@@ -330,7 +332,7 @@ def process(job):
             job_command = ['mpirun','-n','1','retriever','calc_voronoi_for_frame','analyze', str(n_frames)]
             generate_retriever = subprocess.Popen(job_command, stdout=retriever_out, stderr=retriever_out, shell=False)
 
-        job_command = ['mpirun','-n',str(job.sp.NPROCS),'lmp_mpi','-i','in.lj']
+        job_command = ['mpirun','-n',str(job.sp.NPROCS),'gmx_mpi','mdrun','-v','-s','topol.tpr']
         #job_command = ['mpirun -n {} lmp_mpi -i in.lj'.format(job.sp.NPROCS)]
         print("Executing job command:", job_command)
         start = timer()

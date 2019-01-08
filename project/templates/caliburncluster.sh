@@ -29,6 +29,7 @@ source /home1/st18003/scratch/a4md_env/bin/activate
 
 ################## USER PATHS GO HERE ##########################
 export PATH="/home1/st18003/scratch/software/install/lammps:$PATH"
+export PATH="/home1/st18003/scratch/projects/gromacs-2018.3/_install/bin/:$PATH"
 export PATH="/home1/st18003/scratch/projects/a4md/_install/bin:$PATH"
 ################################################################
 {% endblock %}
