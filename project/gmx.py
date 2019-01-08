@@ -150,13 +150,12 @@ def get_plumed_overhead_time_s(job):
 def get_transfer_time(job):
     tt = 0
     if job.sp.job_type == 'traditional':
-        output_time_labels = ['Ouput']#'Pair','Neigh']#,'Comm','Other']#,'Modify','Ouput']
-        with job, open("log.prod", "r") as log:
+        output_time_labels = ['Write']#'Pair','Neigh']#,'Comm','Other']#,'Modify','Ouput']
+        with job, open("md.log", "r") as log:
             for line in log:
-                values = line.split('|')
-                if len(values)== 6 and any(label in values[0] for label in output_time_labels):
-                    values = line.split('|')
-                    tt = float(values[2]) # Adding up times for all the analysis_time_labels
+                values = line.split()
+                if len(values)== 8 and values[0] == 'Write' and values[1] == 'traj.':#any(label in values[0] for label in output_time_labels):
+                    tt = float(values[5]) # Adding up times for all the analysis_time_labels
                     break
         if 'read_frames_time' in job.document:
             tt += job.document['read_frames_time']
@@ -175,13 +174,13 @@ def get_transfer_time(job):
 def get_simulation_time_s(job):
     st = 0.0
     if job.sp.job_type == 'traditional':
-        modify_time_labels = ['Pair','Neigh','Comm','Other']#,'Modify','Ouput']
-        with job, open("log.prod", "r") as log:
+        with job, open("md.log", "r") as log:
             for line in log:
-                values = line.split('|')
-                if len(values)== 6 and any(label in values[0] for label in modify_time_labels):
-                    values = line.split('|')
-                    st += float(values[2]) # Adding up times for all the analysis_time_labels
+                if 'Time:' in line:
+                    values = line.split()
+                    st = float(values[2]) # Adding up times for all the analysis_time_labels
+                    break
+        st = st-get_transfer_time(job)
     else:
         with job, open("plumed.out", "r") as log:
             labels = ['total_simulation_time_ms']
@@ -200,30 +199,23 @@ def traditional_analysis(job):
         if 'read_frames_time' not in job.document:
             read_frame_times = []
             start = timer()
-            import analysis_codes.calc_voronoi_for_frame as calc_voro
+            import analysis_codes.calc_dist_matrix_for_frame as calc_dist
             traj_ext = job.sp.output_type
-            traj_file = 'output.{}'.format(traj_ext)
-            top_file = 'top_L_{}.pdb'.format(job.sp.L)
+            traj_file = 'traj_comp.{}'.format(traj_ext)
+            top_file = 'reference.pdb'
             if job.isfile(top_file) and job.isfile(traj_file): 
-                if job.sp.output_type =='dcd':
-                    traj = md.load_dcd(traj_file,top=top_file)
-                elif job.sp.output_type == 'xyz':
-                    traj = md.load_xyz(traj_file,top=top_file)
-                else:
-                    raise ValueError('Unrecognized output_type: {}'.format(job.sp.output_type))
+                traj = md.load(traj_file,top=top_file)
                 read_frame_times.append(timer()-start)
 
                 if len(traj)>0:
                     print('found',len(traj),'frames in',traj_file)
-                    box_L = [job.sp.L, job.sp.L, job.sp.L]#traj[0].unitcell_lengths[0]*10 # mul by 10 to compensate for mdtraj dividing by 10
-                    #print(box_L, type(box_L))
-                    box_points=np.append(box_L,[0, 0, 0])
                     #print("my box points are ", box_points)
                     #print("total frames",traj.n_frames)
                     for frame in range(traj.n_frames):
+                        box_points=[traj.unitcell_lengths[0][0],traj.unitcell_lengths[0][1],traj.unitcell_lengths[0][2],0,0,0]
                         points = traj.xyz[frame]*10
                         dummy=[0]*len(points)
-                        calc_voro.analyze(dummy, points[:,0], points[:,1],points[:,2], box_points, frame*job.sp.data_dump_interval,) 
+                        calc_dist.analyze(dummy, points[:,0], points[:,1],points[:,2], box_points, frame*job.sp.data_dump_interval) 
                 else:
                     raise ValueError('trajectory file {} does not contain any frames.'.format(traj_file))
             else:
@@ -298,8 +290,11 @@ TARGET=a4md TOTAL_STEPS={} STAGE_DATA_IN=dataspaces\n".\
         job_command = ['bash','remake_tpr.sh']
         subp = subprocess.Popen(job_command)
         subp.wait()
+        job_command = 'gmx_mpi editconf -f start_conf.gro -o reference.pdb -n index.ndx<<<21'
+        subp = subprocess.Popen(job_command, shell=True, executable='/bin/bash')
+        subp.wait()
 
-    copyfile('analysis_codes/calc_voronoi_for_frame.py',job.fn('calc_voronoi_for_frame.py'))
+    copyfile('analysis_codes/calc_dist_matrix_for_frame.py',job.fn('calc_dist_matrix_for_frame.py'))
     copyfile('checkio.sh',job.fn('checkio.sh'))
 
 @A4MDProject.operation
