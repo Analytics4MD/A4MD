@@ -13,9 +13,10 @@ def get_parameters():
     parameters["P"] = [1]
     parameters["simulation_time"] = [2000]
     #parameters["L"] = [15]#, 30, 60]
-    parameters["data_dump_interval"] = [100]#[10,100,160,200,250,400,500,800,1000]#[1, 10, 20, 100]#, 5000, 10000]#, 100, 500, 1000, 5000, 10000]#[10, 50, 100, 500, 1000, 5000]#, 10000, 20000]
+    parameters["data_dump_interval"] = [10,100]#[10,100,160,200,250,400,500,800,1000]#[1, 10, 20, 100]#, 5000, 10000]#, 100, 500, 1000, 5000, 10000]#[10, 50, 100, 500, 1000, 5000]#, 10000, 20000]
     parameters["trial"] = [1]#, 2, 3, 4, 5]
-    parameters["job_type"] = ['traditional']#['plumed_ds_concurrent','plumed_ds_sequential','plumed_sequential','traditional']
+    parameters['filter_group'] = [('Protein_NA_bound',21)]
+    parameters["job_type"] = ['plumed_ds_concurrent','plumed_ds_sequential','plumed_sequential','traditional']
     parameters["output_type"] = ['xtc']#'xyz','dcd']
     return list(parameters.keys()), list(itertools.product(*parameters.values()))
 

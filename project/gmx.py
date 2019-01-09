@@ -44,18 +44,39 @@ def diskstats_parse(dev=None):
     return result
 
 
-
 def get_dispatch_action_time_s(job):
     dispatch_action_time = None
-    with job, open("plumed.out", "r") as log:
+    with job, open("md.log", "r") as log:
         labels = ['total_dispatch_action_time_ms']
         for line in log:
             if labels[0] in line:
                 values = line.split(':')
                 dispatch_action_time = float(values[2])*1e-3
+                break
     if dispatch_action_time is None:
-        raise ValueError('Could not find total_dispatch_action_time_ms in plumed.out')
+        raise ValueError('Could not find total_dispatch_action_time_ms in plumed.log')
     return dispatch_action_time
+
+
+def get_total_data_read_time_s(job):
+    time = None
+    if job.sp.job_type == 'plumed_ds_concurrent':
+        with job, open("retriever.log", "r") as log:
+                labels = ['total_data_read_time_ms']
+                for line in log:
+                    if labels[0] in line:
+                        values = line.split(':')
+                        time = float(values[1])*1e-3
+                        job.document['total_data_read_time_s'] = time
+                        break
+    else:
+        raise ValueError('Please implement get_total_data_read_time_s for {}'.format(job.sp.job_type))
+
+    if time is None:
+        raise ValueError('data read time not found for {}'.format(job.sp.job_type))
+
+    return time
+
 
 def get_stage_in_time_s(job):
     time = None
@@ -80,7 +101,7 @@ def get_stage_in_time_s(job):
                 values = line.split('|')
                 if len(values)== 6 and any(label in values[0] for label in output_time_labels):
                     values = line.split('|')
-                    time = float(values[2]) # Adding up times for all the analysis_time_labels
+                    time = float(values[2])
                     break
     else:
         raise ValueError('Please implement get_stage_in_time_s for {}'.format(job.sp.job_type))
@@ -90,16 +111,18 @@ def get_stage_in_time_s(job):
 
     return time
 
+
 def get_total_pyanalyzer_time_s(job):
     time = None
-    with job, open("plumed.out", "r") as log:
+    with job, open("md.log", "r") as log:
         labels = ['total_pyanalyzer_time_ms']
         for line in log:
             if labels[0] in line:
                 values = line.split(':')
                 time = float(values[2])*1e-3
+                break
     if time is None:
-        raise ValueError('Could not find total_pyanalyzer_time_ms in plumed.out')
+        raise ValueError('Could not find total_pyanalyzer_time_ms in md.log')
     return time
 
 
@@ -107,7 +130,9 @@ def get_data_management_time_s(job):
     time = 0.0
     if job.sp.job_type == 'plumed_ds_concurrent':
         dispatch_action_time = get_dispatch_action_time_s(job)
-        time = dispatch_action_time
+        total_data_read_time_s = get_total_data_read_time_s(job)
+        print('-----=========== total read time : {}'.format(total_data_read_time_s))
+        time = dispatch_action_time + total_data_read_time_s
     elif job.sp.job_type == 'plumed_ds_sequential':
         dispatch_action_time = get_dispatch_action_time_s(job)
         pyanalyzer_time = get_total_pyanalyzer_time_s(job)
@@ -155,7 +180,7 @@ def get_transfer_time(job):
             for line in log:
                 values = line.split()
                 if len(values)== 8 and values[0] == 'Write' and values[1] == 'traj.':#any(label in values[0] for label in output_time_labels):
-                    tt = float(values[5]) # Adding up times for all the analysis_time_labels
+                    tt = float(values[5])
                     break
         if 'read_frames_time' in job.document:
             tt += job.document['read_frames_time']
@@ -178,17 +203,16 @@ def get_simulation_time_s(job):
             for line in log:
                 if 'Time:' in line:
                     values = line.split()
-                    st = float(values[2]) # Adding up times for all the analysis_time_labels
+                    st = float(values[2])
                     break
         st = st-get_transfer_time(job)
     else:
-        with job, open("plumed.out", "r") as log:
+        with job, open("md.log", "r") as log:
             labels = ['total_simulation_time_ms']
             for line in log:
-                values = line.split(':')
-                if any(label in values[1] for label in labels):
+                if any(label in line for label in labels):
                     values = line.split(':')
-                    st = float(values[2])*0.001 # Adding up times for all the analysis_time_labels
+                    st = float(values[2])*0.001
                     break
     return st
 
@@ -251,18 +275,18 @@ def initialize(job):
     with open(job.fn('plumed.dat'), 'w') as file:
         if job.sp.job_type == 'plumed_sequential':
             file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
-TARGET=py PYTHON_MODULE=calc_voronoi_for_frame PYTHON_FUNCTION=analyze \
+TARGET=py PYTHON_MODULE=calc_dist_matrix_for_frame PYTHON_FUNCTION=analyze \
 TOTAL_STEPS={}\n".\
                        format(job.sp.data_dump_interval,
                               job.sp.simulation_time))
         elif job.sp.job_type == 'plumed_ds_sequential':
             file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
-TARGET=py PYTHON_MODULE=calc_voronoi_for_frame PYTHON_FUNCTION=analyze \
+TARGET=py PYTHON_MODULE=calc_dist_matrix_for_frame PYTHON_FUNCTION=analyze \
 TOTAL_STEPS={} STAGE_DATA_IN=dataspaces\n".\
                        format(job.sp.data_dump_interval,
                               job.sp.simulation_time))
         elif job.sp.job_type == 'plumed_ds_concurrent':
-                    file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
+            file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
 TARGET=a4md TOTAL_STEPS={} STAGE_DATA_IN=dataspaces\n".\
                                format(job.sp.data_dump_interval,
                                       job.sp.simulation_time))
@@ -290,7 +314,7 @@ TARGET=a4md TOTAL_STEPS={} STAGE_DATA_IN=dataspaces\n".\
         job_command = ['bash','remake_tpr.sh']
         subp = subprocess.Popen(job_command)
         subp.wait()
-        job_command = 'gmx_mpi editconf -f start_conf.gro -o reference.pdb -n index.ndx<<<21'
+        job_command = 'gmx_mpi editconf -f start_conf.gro -o reference.pdb -n index.ndx<<<{}'.format(job.sp.filter_group[1])
         subp = subprocess.Popen(job_command, shell=True, executable='/bin/bash')
         subp.wait()
 
@@ -324,10 +348,13 @@ def process(job):
         if job.sp.job_type == 'plumed_ds_concurrent':
             one_extra_step = 1 # plumed sends the initial frame as well
             n_frames = int(job.sp.simulation_time/job.sp.data_dump_interval) + one_extra_step
-            job_command = ['mpirun','-n','1','retriever','calc_voronoi_for_frame','analyze', str(n_frames)]
+            job_command = ['mpirun','-n','1','retriever','calc_dist_matrix_for_frame','analyze', str(n_frames)]
             generate_retriever = subprocess.Popen(job_command, stdout=retriever_out, stderr=retriever_out, shell=False)
 
-        job_command = ['mpirun','-n',str(job.sp.NPROCS),'gmx_mpi','mdrun','-v','-s','topol.tpr']
+        if 'plumed' in job.sp.job_type:
+            job_command = ['mpirun','-n',str(job.sp.NPROCS),'gmx_mpi','mdrun','-v','-s','topol.tpr','-plumed','plumed.dat']
+        else:
+            job_command = ['mpirun','-n',str(job.sp.NPROCS),'gmx_mpi','mdrun','-v','-s','topol.tpr']
         #job_command = ['mpirun -n {} lmp_mpi -i in.lj'.format(job.sp.NPROCS)]
         print("Executing job command:", job_command)
         start = timer()
