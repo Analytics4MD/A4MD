@@ -18,8 +18,11 @@ def create_gmx_script(job, file_name='bench.mdp'):
         f.write('nstfout             =  0\n')
         f.write('nstlog              =  1000\n')
         f.write('nstenergy           =  1000\n')
-        f.write('nstxtcout           =  {}\n'.format(job.sp.data_dump_interval))
-        f.write('xtc_grps            =  Protein_NA_bound\n')
+        if job.sp.job_type == 'traditional':
+            f.write('nstxtcout           =  {}\n'.format(job.sp.data_dump_interval))
+        else:
+            f.write('nstxtcout           =  0\n')
+        f.write('xtc_grps            =  {}\n'.format(job.sp.filter_group[0]))
         f.write('; non-bonded interactions\n')
         f.write('cutoff-scheme       = Verlet\n')
         f.write('nstcalcenergy       = 10\n')
