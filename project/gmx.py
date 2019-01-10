@@ -249,6 +249,32 @@ def traditional_analysis(job):
             if 'analysis_time_s' not in job.document:
                 raise ValueError('analysis_time_s is not found in job document!')
 
+def barplot(df,variable,data_dump_interval,ylabel,show_n_largest=10,multiplier=1,logscale=True):
+    import matplotlib.pyplot as plt
+    df_iter = df
+    fig1, ax1 = plt.subplots()
+
+    df_sorted = df_iter.sort_values(variable,ascending=False).head(show_n_largest)
+    num_functions = df_sorted['Function'].nunique()
+    cmap = plt.cm.plasma
+    colors = cmap(np.linspace(0., 1., num_functions))
+    print(len(df_sorted['Function_short']))
+    ax1.bar(np.arange(len(df_sorted['Function_short'])),
+            df_sorted[variable]*multiplier)
+    if logscale:
+        ax1.set_yscale('log')
+    ax1.set_xticks(np.arange(len(df_sorted['Function_short'])))
+    ax1.set_xticklabels(df_sorted['Function_short'], rotation = 45, ha='right', zorder=100,fontsize=10)
+    print(df_sorted['Function_short'].values)
+    ax1.set_xlabel('Function Name')
+    ax1.set_ylabel(ylabel)
+    plt.title('{} (Stride: {})'.format(variable,data_dump_interval), fontsize=10)
+    plt.savefig('retriever_profile.png', dpi=None, facecolor='w', edgecolor='w',
+                orientation='portrait', papertype=None, format=None,
+                transparent=False, bbox_inches='tight',# pad_inches=0.1,
+                frameon=None, metadata=None)
+
+
 class A4MDProject(FlowProject):
     pass
 
@@ -261,7 +287,12 @@ def processed(job):
 
 def post_processed(job):
     #print('in job',job,job.isfile('voro_freq.txt'))
-    return 'total_time_s' in job.document and \
+    if 'tau_profiling' in job.sp and job.sp.tau_profiling and job.sp.job_type=='plumed_ds_concurrent':
+        profiled = job.isfile('profile.tsv') and job.isfile('retriever_profile.png')
+    else:
+        profiled = True
+    return profiled and \
+           'total_time_s' in job.document and \
            'simulation_time_s' in job.document and \
            'analysis_time_s' in job.document and \
            'data_management_time_s' in job.document
@@ -386,7 +417,25 @@ def post_process(job):
     job.document['simulation_time_s'] = get_simulation_time_s(job)
     # analysis_time_s is recorded during analysis. So no need to do it here.
     job.document['data_management_time_s'] = get_data_management_time_s(job)
-    job.document['plumed_overhead_time_s'] = get_plumed_overhead_time_s(job)
-    
+    #job.document['plumed_overhead_time_s'] = get_plumed_overhead_time_s(job)
+    if job.sp.tau_profiling:
+        with job:
+            job_command = ['paraprof','--text','profile.tsv']
+            generate_profile = subprocess.Popen(job_command, shell=False)
+            generate_profile.wait()
+            import matplotlib.pyplot as plt
+            import pandas as pd
+            import numpy as np
+            profile_file = 'profile.tsv'
+            df = pd.read_csv(profile_file,delimiter='\t',skipfooter=4)
+            df['Function_short']=df.Function.apply(lambda x: x.split(' ')[0][:25])
+            barplot(df,
+                    'Exclusive TIME',
+                    job.sp.data_dump_interval,
+                    ylabel='Time [s]',
+                    show_n_largest=10, 
+                    multiplier=1e-6,
+                    logscale=False)
+            
 if __name__ == '__main__':
     A4MDProject().main()
