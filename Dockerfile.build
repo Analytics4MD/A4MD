@@ -1,0 +1,42 @@
+#FROM nvidia/cuda:8.0-devel-ubuntu16.04
+FROM ubuntu:18.10
+# conda deps
+RUN apt-get update --fix-missing && apt-get install -y --no-install-recommends \
+    wget \
+    bzip2 \
+    ca-certificates \
+    curl \
+    git \
+    build-essential \
+    autotools-dev \
+    automake \
+    gcc \
+    gfortran \
+    python3.6 \
+    python3.6-dev \
+    python3-pip \
+    openssh-server &&\
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+#RUN echo "--------============ python"
+#RUN python3 --version
+RUN pip3 install numpy
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    cmake \
+    libboost-serialization-dev  \
+    libboost-iostreams-dev
+
+ADD https://download.open-mpi.org/release/open-mpi/v2.1/openmpi-2.1.3.tar.bz2 /tmp
+RUN tar -xjf /tmp/openmpi-2.1.3.tar.bz2 && \
+    ls -a && \
+    cd openmpi-2.1.3 && \
+    ls -a && \
+    ./configure --prefix=/usr/local  --enable-static --disable-shared && \
+    make all install
+
+
+#    \
+#    openmpi-bin libopenmpi-dev
+

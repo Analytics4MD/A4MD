@@ -1,0 +1,56 @@
+language: python
+env:
+  global:
+  - TRAVIS=False
+  - secure: Pz5/Q8RkDtQXelNgd8hKSlmA2n/4E9LvcSEUI98OyYuWERWYpfiSsMnxaYRGdLkdl0sJbnT/Z/+G5MdGnGw2SsHiXyyOG+xfXyTJm/+HCmbiTOoJzc1Av3g6lMMbS4A9ffFV6C36NB7akjuWj+G/kxWfY9X1C+Uqb7H6DtSI9FkVyS/ifQzj2jtO20d/SwtyCciPKIZyKFGCppjPTaQA0CozHq/vQFS1cLB62/mEigasj/qAQyExgDji49l3qvZeToWpcCUvMoUsgKvbzab3FLGya4IS6FcWJ4ChiBygjuB6GPfWGgWOF0rAlrZC3blREVgEQYJ4pLp+GqmHzCeysQ==
+  - DOCKER_REPO="a4md_openmpi_2.1.3"
+  - DOCKER_ACC="globalcomputinglab"
+integrations:
+  hub:
+    - integrationName: docker_hub
+      type: dockerRegistryLogin
+
+  notifications:
+    - integrationName: A4MDSlackNotifications
+      type: slack
+      recipients:
+        - "#lichens"
+#      branches:
+#        only:
+#          - master
+      on_success: always
+      on_failure: always
+      on_start: never
+      on_pull_request: always
+git:
+  submodule: true
+build:
+  pre_ci_boot:
+    image_name: globalcomputinglab/a4md_base
+    image_tag: latest
+    pull: true
+  ci:
+    - mkdir -p shippable/testresults
+    - mkdir -p shippable/codecoverage
+    - cd a4md/extern/catch2
+    - cmake -Bbuild -H. -DBUILD_TESTING=OFF
+    - cmake --build build/ --target install
+    - cd ../../../
+    - mkdir build
+    - cd build
+    - cmake .. -DCMAKE_INSTALL_PREFIX=../_install 
+    - make install
+    - cd ..
+    - ./build/a4md/tests-main -r junit -o shippable/testresults/tests-main-report.xml
+    - ./build/a4md/common/test/tests-cmn -r junit -o shippable/testresults/tests-cmn-report.xml
+    - echo "Build complete"
+  post_ci:
+    - docker build -t $DOCKER_ACC/$DOCKER_REPO:latest .
+    - if [ "$IS_PULL_REQUEST" != true ]; then docker push $DOCKER_ACC/$DOCKER_REPO:latest; fi
+# - if [ "$BRANCH" == "master" ]; then docker commit $SHIPPABLE_CONTAINER_NAME globalcomputinglab/a4md:latest; fi
+#    - if [ "$BRANCH" == "feat/docker_ready" ]; then docker commit $SHIPPABLE_CONTAINER_NAME globalcomputinglab/a4md:dev_latest; fi
+#    - if [ "$BRANCH" == "master" ]; then docker push globalcomputinglab/a4md:latest; fi
+#    - if [ "$BRANCH" == "feat/docker_ready" ]; then docker push globalcomputinglab/a4md:dev_latest; fi
+
+#  on_success:
+#    - COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN shippable_retry coveralls

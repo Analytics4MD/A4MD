@@ -1,12 +1,10 @@
-#ifndef __RETRIEVE_H__
-#define __RETRIEVE_H__
+#ifndef __PY_VORONOI_ANALYZER_H__
+#define __PY_VORONOI_ANALYZER_H__
 #include <vector>
-#include <tuple>
-
 #include <Python.h>
 
 
-class Retrieve
+class PyVoronoiAnalyzer
 {
     private:
         int initialize_python();
@@ -15,11 +13,11 @@ class Retrieve
         const char* m_module_name;
         const char* m_function_name;
     public:
-        Retrieve(char* module_name,
-                 char* function_name);
-        ~Retrieve();
+        PyVoronoiAnalyzer(char* module_name,
+                          char* function_name);
+        ~PyVoronoiAnalyzer();
         
-        int analyze_frame(std::vector<int> types,
+        int analyze_frame(int* types,
                           std::vector<double> x_positions,
                           std::vector<double> y_positions,
                           std::vector<double> z_positions,

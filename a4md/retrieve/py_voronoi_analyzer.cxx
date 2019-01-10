@@ -1,4 +1,4 @@
-#include "retrieve.h"
+#include "py_voronoi_analyzer.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <iostream>
@@ -9,8 +9,8 @@
 #include <numpy/npy_common.h>
 
 
-Retrieve::Retrieve(char* module_name,
-                   char* function_name)
+PyVoronoiAnalyzer::PyVoronoiAnalyzer(char* module_name,
+                                     char* function_name)
 : m_module_name(module_name),
   m_function_name(function_name)
 {
@@ -18,14 +18,14 @@ Retrieve::Retrieve(char* module_name,
     printf("Initialized Retrieve\n");
 }
 
-Retrieve::~Retrieve()
+PyVoronoiAnalyzer::~PyVoronoiAnalyzer()
 {
     Py_DECREF(m_py_module);
     Py_DECREF(m_py_func); 
     Py_FinalizeEx(); 
 }
 
-int Retrieve::initialize_python()
+int PyVoronoiAnalyzer::initialize_python()
 {
   //Initialize Python interpreter
   if (!Py_IsInitialized())
@@ -54,11 +54,9 @@ int Retrieve::initialize_python()
   m_py_module = PyImport_ImportModule(m_module_name);
   m_py_func = PyObject_GetAttrString(m_py_module, m_function_name);
 
-
   printf("-----===== Initialized python and the module ====-----\n");
   return 0;
 }
-
 
  //! Used to analyze a frame of MD data using a python code.
  /*!
@@ -68,17 +66,17 @@ int Retrieve::initialize_python()
      \return integer value indicating success or failure  (0 is success, otherwise failure)
      \sa 
  */
-int Retrieve::analyze_frame(std::vector<int> types,
-                            std::vector<double> x_positions,
-                            std::vector<double> y_positions,
-                            std::vector<double> z_positions,
-                            double x_low,
-                            double x_high,
-                            double y_low,
-                            double y_high,
-                            double z_low,
-                            double z_high,
-                            int step)
+int PyVoronoiAnalyzer::analyze_frame(int* types,
+                                     std::vector<double> x_positions,
+                                     std::vector<double> y_positions,
+                                     std::vector<double> z_positions,
+                                     double x_low,
+                                     double x_high,
+                                     double y_low,
+                                     double y_high,
+                                     double z_low,
+                                     double z_high,
+                                     int step)
 {
     int result = 0;
     if (!m_py_module)
@@ -96,7 +94,7 @@ int Retrieve::analyze_frame(std::vector<int> types,
             //    printf("pos[%i]: %lf %lf %lf \n",std::get<0>(positions[i]),std::get<1>(positions[i]),std::get<2>(positions[i]));
             PyObject* py_args = PyTuple_New(6);
             npy_intp types_dims[] = {count};
-            PyObject* py_types = PyArray_SimpleNewFromData(1, types_dims, NPY_DOUBLE, static_cast<void*>(types.data()));
+            PyObject* py_types = PyArray_SimpleNewFromData(1, types_dims, NPY_DOUBLE, (void *)types);
             PyTuple_SetItem(py_args, 0, py_types);
  
             npy_intp positions_dims[] = {count};
@@ -138,5 +136,4 @@ int Retrieve::analyze_frame(std::vector<int> types,
 
     } 
     return result;
-
 }

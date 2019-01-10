@@ -1,37 +1,78 @@
 #include "retrieve.h"
+#include "mpi.h"
+#include "dataspaces_reader.h"
+#include "voronoi_analyzer.h"
+#include "md_retriever.h"
+#include <unistd.h>
+
+
+ChunkAnalyzer* analyzer_factory(int argc, const char** argv)
+{
+    
+
+    std::string analyzer_name = "voronoi_analyzer";
+    std::string reader_type = "dataspaces";
+    std::string var_name = "test_var";
+
+    ChunkAnalyzer* chunk_analyzer;
+    ChunkReader* chunk_reader;
+    int n_frames = atoi(argv[3]);
+    int n_analysis_stride = 1;
+    unsigned long int total_chunks = n_frames;// +1 for the call before simulation starts
+    if (reader_type == "dataspaces")
+    {
+        printf("---======== Initializing dataspaces reader\n");
+        Chunker * chunker = new DataSpacesReader((char*)var_name.c_str(), total_chunks);
+        printf("---======== Initialized dataspaces reader\n");
+        chunk_reader = new ChunkReader(* chunker);
+        printf("---======== Initialized chunkreader\n");
+    }
+    else
+    {
+        throw NotImplementedException("Reader type is not implemented");
+    }
+
+    if(analyzer_name == "voronoi_analyzer")
+    {
+        std::string name((char*)argv[1]);
+        std::string func((char*)argv[2]);
+        PyVoronoiAnalyzer* py_analyzer = new PyVoronoiAnalyzer((char*)name.c_str(),(char*)func.c_str());
+        chunk_analyzer = new VoronoiAnalyzer(*chunk_reader, *py_analyzer);
+        printf("---======== Initialized voronoi analyzer\n");
+    }
+    else
+    {
+        throw NotImplementedException("Analyzer type is not implemented");
+    }
+
+    return chunk_analyzer;
+}
+
+Retriever* retriever_factory (int argc, const char** argv)
+{
+    ChunkAnalyzer * analyzer = analyzer_factory(argc, argv);
+    int n_frames = atoi(argv[3]);
+    int n_window_width = 1;
+    
+    printf("Recieved n_frames = %i from user in Retriever\n",n_frames);
+    Retriever * retriever = new MDRetriever(* analyzer, n_frames, n_window_width);
+    return retriever;
+}
 
 int main (int argc, const char** argv)
 {
-  Retrieve retrieve;
-  retrieve.run();
-  int types[2];
-  types[0] = 0;
-  types[1] = 0;
-  POS_VEC positions;
-  positions.push_back(std::make_tuple(1.0,1.0,1.0));
-  double x_low, y_low, z_low,x_high, y_high, z_high;
-  x_low=y_low=z_low=0.0;
-  x_high=y_high=z_high=1.0;
-  printf("x_low %f\n",x_low);
-  printf("x_high %f\n",x_high);
+    if (argc != 4)
+        printf("ERROR: Expecting 4 command line arguments 1) python module name 2) function name 3) n_frames\n");
+    MPI_Init(NULL,NULL);
+    printf("---======== In Retriever::main()\n");
 
-  printf("y_low %f\n",y_low);
-  printf("y_high %f\n",y_high);
+    TimeVar t_start = timeNow();
+    Retriever * retriever = retriever_factory(argc,argv);
+    retriever->run();
+    DurationMilli md_retriever_time_ms = timeNow()-t_start;
+    auto total_md_retriever_time_ms = md_retriever_time_ms.count();
+    printf("total_retriever_time_ms : %f\n",total_md_retriever_time_ms);
 
-  printf("z_low %f\n",z_low);
-  printf("z_high %f\n",z_high);
-  char* name = (char*)argv[1];
-  char* func = (char*)argv[2];
-  retrieve.analyze_frame(name,
-                         func,
-                         types,
-                         positions,
-                         x_low,
-                         x_high,
-                         y_low,
-                         y_high,
-                         z_low,
-                         z_high,
-                         0);
-  return 0;//retrieve.call_py(argc, argv);
+    MPI_Finalize();
+    return 0;
 }

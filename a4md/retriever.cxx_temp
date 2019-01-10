@@ -1,0 +1,66 @@
+#include "retrieve.h"
+#include "mpi.h"
+#include "dataspaces_reader.h"
+#include "voronoi_analyzer.h"
+#include "md_retriever.h"
+#include <unistd.h>
+
+
+ChunkAnalyzer* analyzer_factory(int argc, const char** argv)
+{
+    int total_time = atoi(argv[3]);
+    int dump_interval = atoi(argv[4]);
+    printf("Recieved total time = %i from user in Retriever\n",total_time);
+
+    std::string analyzer_name = "voronoi_analyzer";
+    std::string reader_type = "dataspaces";
+    std::string var_name = "test_var";
+
+    ChunkAnalyzer* chunk_analyzer;
+    ChunkReader* chunk_reader;
+    if (reader_type == "dataspaces")
+    {
+        printf("---======== Initializing dataspaces reader\n");
+        Chunker * chunker = new DataSpacesReader((char*)var_name.c_str());
+        //TODO:issue#6 It is the ChunkReader's responsibility to destruct chunker
+        printf("---======== Initialized dataspaces reader\n");
+        chunk_reader = new ChunkReader(* chunker);
+        printf("---======== Initialized chunkreader\n");
+    }
+    else
+        throw NotImplementedException("Reader type is not implemented\n");
+
+    if (analyzer_name == "voronoi_analyzer")
+    {
+        std::string name((char*)argv[1]);
+        std::string func((char*)argv[2]);
+        //TODO:issue#6 It is the ChunkAnalyzer's responsibility to destruct chunk_reader
+        ChunkAnalyzer * chunk_analyzer = new VoronoiAnalyzer(* chunk_reader, name, func);
+        printf("---======== Initialized voronoi analyzer\n");
+    }
+    else
+        throw NotImplementedException("Analyzer of given type is not implemented\n");
+
+    return chunk_analyzer;
+}
+
+Retriever* retriever_factory (int argc, const char** argv)
+{
+    ChunkAnalyzer * analyzer = analyzer_factory(argc, argv);
+    int n_steps = 2;
+    int n_stride = 1;
+    int n_analysis_stride = 1;
+    Retriever * retriever = new MDRetriever(* analyzer, n_steps, n_stride, n_analysis_stride);
+    return retriever;
+}
+
+int main (int argc, const char** argv)
+{
+    MPI_Init(NULL,NULL);
+
+    Retriever * retriever = retriever_factory(argc,argv);
+    retriever->run();
+    
+    MPI_Finalize();
+    return 0;
+}

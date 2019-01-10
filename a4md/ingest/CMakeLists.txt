@@ -2,34 +2,30 @@ set(_ingest_sources_
         plumed_ingest.cxx
         md_ingest.cxx
         ingest.cxx 
-        chunker.cxx
+        plumed_chunker.cxx
         chunk_stager.cxx
-        chunk_writer.cxx
-        chunk_reader.cxx
-        ims_reader.cxx
         pycall.cxx)
 set(_ingest_headers_
         plumed_ingest.h
         md_ingest.h
         ingest.h
-        chunker.h
+        plumed_chunker.h
         chunk_stager.h
-        chunk_writer.h
-        chunk_reader.h
-        ims_reader.h
-        ims_writer.h
         pycall.h
-        common.h
-        exceptions.h)
+        )
 
-include_directories(${PROJECT_SOURCE_DIR}/extern/dataspaces/include)
+#include_directories(${PROJECT_SOURCE_DIR}/extern/dataspaces/include)
 
 add_library(ingest ${_ingest_sources_})
+set_target_properties(ingest PROPERTIES
+    CXX_STANDARD 11
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF
+    POSITION_INDEPENDENT_CODE ON
+)
 
-
-
-add_dependencies(ingest dataspaces)
-target_link_libraries(ingest dataspaces dataspaces_cmn dataspaces_dart m ${MPI_LIBRARIES} ${PYTHON_LIBRARIES})
+add_dependencies(ingest a4md_cmn)
+target_link_libraries(ingest a4md_cmn ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${PYTHON_LIBRARIES})
 
 
 install (TARGETS ingest DESTINATION lib)
