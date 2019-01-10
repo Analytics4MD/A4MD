@@ -18,6 +18,8 @@ def get_parameters():
     parameters['filter_group'] = [('Protein_NA_bound',21)]
     parameters["job_type"] = ['plumed_ds_concurrent','plumed_ds_sequential','plumed_sequential','traditional']
     parameters["output_type"] = ['xtc']#'xyz','dcd']
+    parameters["simulation_engine"] = ['gromacs']
+    parameters['tau_profiling'] = [True]
     return list(parameters.keys()), list(itertools.product(*parameters.values()))
 
 
