@@ -1,5 +1,4 @@
-[![Run Status](https://api.shippable.com/projects/5bcf364bec335d0700dbc0ec/badge?branch=issue_14)](https://app.shippable.com/github/Analytics4MD/A4MD-project-a4md/dashboard)
-
+[![Run Status](https://api.shippable.com/projects/5bcf364bec335d0700dbc0ec/badge?branch=master)]()
 # A4MD
 
 ## Getting Started
