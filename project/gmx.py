@@ -239,7 +239,7 @@ def traditional_analysis(job):
                         box_points=[traj.unitcell_lengths[0][0],traj.unitcell_lengths[0][1],traj.unitcell_lengths[0][2],0,0,0]
                         points = traj.xyz[frame]*10
                         dummy=[0]*len(points)
-                        calc_dist.analyze(dummy, points[:,0], points[:,1],points[:,2], box_points, frame*job.sp.data_dump_interval) 
+                        calc_dist.analyze(dummy, points[:,0], points[:,1],points[:,2], box_points, frame*job.sp.stride) 
                 else:
                     raise ValueError('trajectory file {} does not contain any frames.'.format(traj_file))
             else:
@@ -249,7 +249,7 @@ def traditional_analysis(job):
             if 'analysis_time_s' not in job.document:
                 raise ValueError('analysis_time_s is not found in job document!')
 
-def barplot(df,variable,data_dump_interval,ylabel,show_n_largest=10,multiplier=1,logscale=True):
+def barplot(df,variable,stride,ylabel,show_n_largest=10,multiplier=1,logscale=True):
     import matplotlib.pyplot as plt
     df_iter = df
     fig1, ax1 = plt.subplots()
@@ -268,7 +268,7 @@ def barplot(df,variable,data_dump_interval,ylabel,show_n_largest=10,multiplier=1
     print(df_sorted['Function_short'].values)
     ax1.set_xlabel('Function Name')
     ax1.set_ylabel(ylabel)
-    plt.title('{} (Stride: {})'.format(variable,data_dump_interval), fontsize=10)
+    plt.title('{} (Stride: {})'.format(variable,stride), fontsize=10)
     plt.savefig('retriever_profile.png', dpi=None, facecolor='w', edgecolor='w',
                 orientation='portrait', papertype=None, format=None,
                 transparent=False, bbox_inches='tight',# pad_inches=0.1,
@@ -308,18 +308,18 @@ def initialize(job):
             file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
 TARGET=py PYTHON_MODULE=calc_dist_matrix_for_frame PYTHON_FUNCTION=analyze \
 TOTAL_STEPS={}\n".\
-                       format(job.sp.data_dump_interval,
+                       format(job.sp.stride,
                               job.sp.simulation_time))
         elif job.sp.job_type == 'plumed_ds_sequential':
             file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
 TARGET=py PYTHON_MODULE=calc_dist_matrix_for_frame PYTHON_FUNCTION=analyze \
 TOTAL_STEPS={} STAGE_DATA_IN=dataspaces\n".\
-                       format(job.sp.data_dump_interval,
+                       format(job.sp.stride,
                               job.sp.simulation_time))
         elif job.sp.job_type == 'plumed_ds_concurrent':
             file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
 TARGET=a4md TOTAL_STEPS={} STAGE_DATA_IN=dataspaces\n".\
-                               format(job.sp.data_dump_interval,
+                               format(job.sp.stride,
                                       job.sp.simulation_time))
 
     if 'plumed_ds_' in job.sp.job_type:
@@ -378,7 +378,7 @@ def process(job):
 
         if job.sp.job_type == 'plumed_ds_concurrent':
             one_extra_step = 1 # plumed sends the initial frame as well
-            n_frames = int(job.sp.simulation_time/job.sp.data_dump_interval) + one_extra_step
+            n_frames = int(job.sp.simulation_time/job.sp.stride) + one_extra_step
             job_command = ['mpirun','-n','1','retriever','calc_dist_matrix_for_frame','analyze', str(n_frames)]
             generate_retriever = subprocess.Popen(job_command, stdout=retriever_out, stderr=retriever_out, shell=False)
 
@@ -431,7 +431,7 @@ def post_process(job):
             df['Function_short']=df.Function.apply(lambda x: x.split(' ')[0][:25])
             barplot(df,
                     'Exclusive TIME',
-                    job.sp.data_dump_interval,
+                    job.sp.stride,
                     ylabel='Time [s]',
                     show_n_largest=10, 
                     multiplier=1e-6,
