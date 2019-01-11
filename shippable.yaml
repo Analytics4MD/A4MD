@@ -32,10 +32,6 @@ build:
   ci:
     - mkdir -p shippable/testresults
     - mkdir -p shippable/codecoverage
-    - cd a4md/extern/catch2
-    - cmake -Bbuild -H. -DBUILD_TESTING=OFF
-    - cmake --build build/ --target install
-    - cd ../../../
     - mkdir build
     - cd build
     - cmake .. -DCMAKE_INSTALL_PREFIX=../_install 
