@@ -51,18 +51,47 @@ int PyVoronoiAnalyzer::initialize_python()
   PyObject* sysPath = PySys_GetObject((char*)"path");
   PyList_Append(sysPath, PyUnicode_FromString("."));
 
-  printf("-------========= Loading module %s =========----------\n",m_module_name.c_str());
   m_py_module = PyImport_ImportModule(m_module_name);
-  if (!m_py_module)
-    printf("-------========= Successfully Loading module %s =========----------\n",m_module_name.c_str());
-  else
-    printf("-------========= DID NOT Load module %s =========----------\n",m_module_name.c_str());
-  printf("-------========= Loading method %s =========----------\n",m_function_name.c_str());
+  if(PyErr_Occurred() || m_py_module == NULL)
+  {
+     std::string err = "\n";
+     PyObject *type, *value, *traceback;
+     PyErr_Fetch(&type, &value, &traceback);
+     if (type != NULL)
+     {
+       PyObject* str_exc_type = PyObject_Repr(type); //Now a unicode object
+       PyObject* pyStr = PyUnicode_AsEncodedString(str_exc_type, "utf-8","Error ~");
+       const char *strExcType =  PyBytes_AS_STRING(pyStr);
+       printf("%s\n",strExcType);
+       std::string err_type(strExcType);
+       err = "Exception type: "+err_type+"\n";
+     }
+     if (value != NULL)
+     {
+       PyObject* str_exc_type = PyObject_Repr(value); //Now a unicode object
+       PyObject* pyStr = PyUnicode_AsEncodedString(str_exc_type, "utf-8","Error ~");
+       const char *strExcVal =  PyBytes_AS_STRING(pyStr);
+       printf("%s\n",strExcVal);
+       std::string err_val(strExcVal);
+       err = err + "Exception value: "+ err_val+"\n";
+     }
+     if (traceback != NULL)
+     {
+       PyObject* str_exc_type = PyObject_Repr(traceback); //Now a unicode object
+       PyObject* pyStr = PyUnicode_AsEncodedString(str_exc_type, "utf-8","Error ~");
+       const char *strExcTraceBack =  PyBytes_AS_STRING(pyStr);
+       printf("%s\n",strExcTraceBack);
+       std::string err_trace(strExcTraceBack);
+       err = err + "Exception traceback: "+ err_trace+"\n";
+     }
+     throw PythonModuleLoadException(err.c_str());
+  }
   m_py_func = PyObject_GetAttrString(m_py_module, m_function_name);
   if (m_py_func && PyCallable_Check(m_py_func))
     printf("-----===== Initialized python and the module ====-----\n");
   else
     printf("--------========= ERROR : Could not load %s in %s. Please check if the function signature matches specification\n",m_module_name,m_function_name); 
+
   return 0;
 }
 
