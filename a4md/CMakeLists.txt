@@ -9,10 +9,6 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 find_package(NumPy REQUIRED)
 include_directories(${NUMPY_INCLUDE_DIR})
 
-#add_subdirectory(${PROJECT_SOURCE_DIR}/a4md/extern/catch2)
-find_package(Catch2 REQUIRED)
-message(STATUS "finding Catch2")
-
 # find Boost
 SET (BOOST_MIN_VERSION "1.55.0")
 FIND_PACKAGE(Boost ${BOOST_MIN_VERSION} REQUIRED COMPONENTS iostreams serialization)
@@ -125,6 +121,10 @@ set(_a4md_sources_
 add_executable(a4md ${_a4md_sources_})
 add_executable(ingester ingester.cxx)
 add_executable(retriever retriever.cxx)
+
+add_subdirectory(${PROJECT_SOURCE_DIR}/a4md/extern/catch2)
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/a4md/extern/catch2/contrib" ${CMAKE_MODULE_PATH})
+
 add_executable(tests-main tests-main.cpp test-ingest.cpp)
 target_link_libraries(tests-main Catch2::Catch2)
 target_link_libraries(ingester ingest a4md_cmn ${Boost_LIBRARIES})
