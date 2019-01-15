@@ -44,17 +44,25 @@ int PyVoronoiAnalyzer::initialize_python()
   char cwd[256];
   if (getcwd(cwd, sizeof(cwd)) == NULL)
     perror("getcwd() error");
-  else
-    printf("Python modules in current working directory: %s will be found automatically,\
-    but not python modules in other locations. Please add those paths to PYTHONPATH.\n", cwd);
+//  else
+//    printf("Python modules in current working directory: %s will be found automatically,\
+//    but not python modules in other locations. Please add those paths to PYTHONPATH.\n", cwd);
 
   PyObject* sysPath = PySys_GetObject((char*)"path");
   PyList_Append(sysPath, PyUnicode_FromString("."));
 
+  printf("-------========= Loading module %s =========----------\n",m_module_name.c_str());
   m_py_module = PyImport_ImportModule(m_module_name);
+  if (!m_py_module)
+    printf("-------========= Successfully Loading module %s =========----------\n",m_module_name.c_str());
+  else
+    printf("-------========= DID NOT Load module %s =========----------\n",m_module_name.c_str());
+  printf("-------========= Loading method %s =========----------\n",m_function_name.c_str());
   m_py_func = PyObject_GetAttrString(m_py_module, m_function_name);
-
-  printf("-----===== Initialized python and the module ====-----\n");
+  if (m_py_func && PyCallable_Check(m_py_func))
+    printf("-----===== Initialized python and the module ====-----\n");
+  else
+    printf("--------========= ERROR : Could not load %s in %s. Please check if the function signature matches specification\n",m_module_name,m_function_name); 
   return 0;
 }
 
