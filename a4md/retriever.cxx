@@ -1,7 +1,7 @@
 #include "retrieve.h"
 #include "mpi.h"
 #include "dataspaces_reader.h"
-#include "voronoi_analyzer.h"
+#include "md_analyzer.h"
 #include "md_retriever.h"
 #include <unistd.h>
 
@@ -36,8 +36,8 @@ ChunkAnalyzer* analyzer_factory(int argc, const char** argv)
     {
         std::string name((char*)argv[1]);
         std::string func((char*)argv[2]);
-        PyVoronoiAnalyzer* py_analyzer = new PyVoronoiAnalyzer((char*)name.c_str(),(char*)func.c_str());
-        chunk_analyzer = new VoronoiAnalyzer(*chunk_reader, *py_analyzer);
+        PyRunner* py_runner = new PyRunner((char*)name.c_str(),(char*)func.c_str());
+        chunk_analyzer = new MDAnalyzer(*chunk_reader, *py_runner);
         printf("---======== Initialized voronoi analyzer\n");
     }
     else

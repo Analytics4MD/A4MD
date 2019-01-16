@@ -27,6 +27,6 @@ set_target_properties(ingest PROPERTIES
 add_dependencies(ingest a4md_cmn)
 target_link_libraries(ingest a4md_cmn ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${PYTHON_LIBRARIES})
 
-
+add_subdirectory(test)
 install (TARGETS ingest DESTINATION lib)
 install (FILES ${_ingest_headers_} DESTINATION include)

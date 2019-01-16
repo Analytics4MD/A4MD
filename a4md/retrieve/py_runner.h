@@ -1,10 +1,11 @@
-#ifndef __PY_VORONOI_ANALYZER_H__
-#define __PY_VORONOI_ANALYZER_H__
+#ifndef __PY_RUNNER_H__
+#define __PY_RUNNER_H__
 #include <vector>
 #include <Python.h>
+#include "exceptions.h"
 
 
-class PyVoronoiAnalyzer
+class PyRunner
 {
     private:
         int initialize_python();
@@ -13,9 +14,9 @@ class PyVoronoiAnalyzer
         const char* m_module_name;
         const char* m_function_name;
     public:
-        PyVoronoiAnalyzer(char* module_name,
+        PyRunner(char* module_name,
                           char* function_name);
-        ~PyVoronoiAnalyzer();
+        ~PyRunner();
         
         int analyze_frame(int* types,
                           std::vector<double> x_positions,

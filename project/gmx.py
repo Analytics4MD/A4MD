@@ -305,21 +305,27 @@ def initialize(job):
     from shutil import copyfile
     with open(job.fn('plumed.dat'), 'w') as file:
         if job.sp.job_type == 'plumed_sequential':
-            file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
+            file.write("MOLINFO STRUCTURE=reference.pdb\n")
+            file.write("p: DISPATCHATOMS ATOMS=@{} STRIDE={} \
 TARGET=py PYTHON_MODULE=calc_dist_matrix_for_frame PYTHON_FUNCTION=analyze \
 TOTAL_STEPS={}\n".\
-                       format(job.sp.stride,
+                       format(job.sp.filter_group[0],
+                              job.sp.stride,
                               job.sp.simulation_time))
         elif job.sp.job_type == 'plumed_ds_sequential':
-            file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
+            file.write("MOLINFO STRUCTURE=reference.pdb\n")
+            file.write("p: DISPATCHATOMS ATOMS=@{} STRIDE={} \
 TARGET=py PYTHON_MODULE=calc_dist_matrix_for_frame PYTHON_FUNCTION=analyze \
 TOTAL_STEPS={} STAGE_DATA_IN=dataspaces\n".\
-                       format(job.sp.stride,
+                       format(job.sp.filter_group[0],
+                              job.sp.stride,
                               job.sp.simulation_time))
         elif job.sp.job_type == 'plumed_ds_concurrent':
-            file.write("p: DISPATCHATOMS ATOMS=@mdatoms STRIDE={} \
+            file.write("MOLINFO STRUCTURE=reference.pdb\n")
+            file.write("p: DISPATCHATOMS ATOMS=@{} STRIDE={} \
 TARGET=a4md TOTAL_STEPS={} STAGE_DATA_IN=dataspaces\n".\
-                               format(job.sp.stride,
+                               format(job.sp.filter_group[0],
+                                      job.sp.stride,
                                       job.sp.simulation_time))
 
     if 'plumed_ds_' in job.sp.job_type:

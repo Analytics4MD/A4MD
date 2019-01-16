@@ -1,14 +1,14 @@
-#include "voronoi_analyzer.h"
+#include "md_analyzer.h"
 
 
-VoronoiAnalyzer::VoronoiAnalyzer(ChunkReader & chunk_reader,
-                                 PyVoronoiAnalyzer & py_analyzer)
+MDAnalyzer::MDAnalyzer(ChunkReader & chunk_reader,
+                                 PyRunner & py_runner)
 : ChunkAnalyzer(chunk_reader),
-  m_py_analyzer(py_analyzer)
+  m_py_runner(py_runner)
 {
 }
 
-void VoronoiAnalyzer::analyze(Chunk* chunk)
+void MDAnalyzer::analyze(Chunk* chunk)
 {
     PLMDChunk *plmdchunk = dynamic_cast<PLMDChunk *>(chunk);
     //printf("Printing typecasted chunk\n");
@@ -34,7 +34,7 @@ void VoronoiAnalyzer::analyze(Chunk* chunk)
     yz = plmdchunk->get_box_yz(); // 0 for orthorhombic
     int step = plmdchunk->get_timestep();
     
-    m_py_analyzer.analyze_frame(types,
+    m_py_runner.analyze_frame(types,
                                 x_positions,
                                 y_positions,
                                 z_positions,

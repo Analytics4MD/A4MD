@@ -11,6 +11,7 @@ import time
 from mdtraj.formats import PDBTrajectoryFile
 from mdtraj import Trajectory
 import matplotlib.pyplot as plt
+from scipy.spatial import distance
 
 
 def pbc_min_image(p1, p2, axes):
@@ -82,24 +83,17 @@ fig, ax = plt.subplots()
 ims = []
 
 def analyze(types, xpoints,ypoints,zpoints, box_points, step):
-    print('-----======= Python : analyze ({})========-------'.format(step))
+    #print('-----======= Python : analyze ({})========-------'.format(step))
     #print('box points',box_points);
     #print("");
     t=timer() 
     # ---------============= analysis code goes here (start) ===========------------------- 
-    try:
-        points = np.vstack((xpoints,ypoints,zpoints)).T
-        t = Trajectory(points, top, time=step, unitcell_lengths = np.asarray(box_points[:3]))
-        min_img_cords = pbc_traslate(t.xyz[i],t.unitcell_lengths[i])
-        dist_matrix = get_distances(atom_indices_by_resid,min_img_cords,masses=masses)
-        im = ax.imshow(dist_matrix, interpolation='nearest')
-        ims.append([im])
-        plt.draw()
-    except Exception as e:
-        print('!!!!!!!!! Exception caught in python analysis code!!!!!!!!')
-        print(e)
-        raise
-
+    points = np.vstack((xpoints,ypoints,zpoints)).T
+    min_img_cords = pbc_traslate(points,np.asarray(box_points[:3]))
+    dist_matrix = get_distances(atom_indices_by_resid,min_img_cords,masses=masses)
+    im = ax.imshow(dist_matrix, interpolation='nearest')
+    ims.append([im])
+    plt.draw()
     # ---------============= analysis code goes here (end)   ===========------------------- 
     an_time = timer()-t
     an_times.append(an_time)
@@ -110,10 +104,11 @@ def analyze(types, xpoints,ypoints,zpoints, box_points, step):
     # ---------============= analysis output code goes here (end)   ===========------------------- 
     an_write_time = timer()-t
     an_write_times.append(an_write_time)    
+    
     if step>=nsteps:
+        print('------============ reached end of analysis ({}) ==========------------'.format(step))
         ani = manimation.ArtistAnimation(fig, ims, interval=50, blit=True, repeat_delay=1000)
         ani.save('dis.gif',writer='imagemagick')
-        print('------============ reached end of analysis ({}) ==========------------'.format(step))
         with open('signac_job_document.json', 'r') as f:
             job_document = json.load(f)
 

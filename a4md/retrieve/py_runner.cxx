@@ -1,4 +1,4 @@
-#include "py_voronoi_analyzer.h"
+#include "py_runner.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <iostream>
@@ -9,8 +9,7 @@
 #include <numpy/npy_common.h>
 
 
-PyVoronoiAnalyzer::PyVoronoiAnalyzer(char* module_name,
-                                     char* function_name)
+PyRunner::PyRunner(char* module_name, char* function_name)
 : m_module_name(module_name),
   m_function_name(function_name)
 {
@@ -18,41 +17,16 @@ PyVoronoiAnalyzer::PyVoronoiAnalyzer(char* module_name,
     printf("Initialized Retrieve\n");
 }
 
-PyVoronoiAnalyzer::~PyVoronoiAnalyzer()
+PyRunner::~PyRunner()
 {
     Py_DECREF(m_py_module);
     Py_DECREF(m_py_func); 
     Py_FinalizeEx(); 
 }
 
-int PyVoronoiAnalyzer::initialize_python()
+void print_py_error_and_rethrow()
 {
-  //Initialize Python interpreter
-  if (!Py_IsInitialized())
-    Py_Initialize();
- 
-  
-  import_array();
-  PyObject* module = PyImport_ImportModule("numpy"); // New reference
-  if (!module)
-  {
-    PyErr_Print();
-    fprintf(stderr,"numpy import failed. See for an error message above");
-  } 
-  Py_DECREF(module);
-
-  char cwd[256];
-  if (getcwd(cwd, sizeof(cwd)) == NULL)
-    perror("getcwd() error");
-//  else
-//    printf("Python modules in current working directory: %s will be found automatically,\
-//    but not python modules in other locations. Please add those paths to PYTHONPATH.\n", cwd);
-
-  PyObject* sysPath = PySys_GetObject((char*)"path");
-  PyList_Append(sysPath, PyUnicode_FromString("."));
-
-  m_py_module = PyImport_ImportModule(m_module_name);
-  if(PyErr_Occurred() || m_py_module == NULL)
+  if(PyErr_Occurred())
   {
      std::string err = "\n";
      PyObject *type, *value, *traceback;
@@ -84,14 +58,48 @@ int PyVoronoiAnalyzer::initialize_python()
        std::string err_trace(strExcTraceBack);
        err = err + "Exception traceback: "+ err_trace+"\n";
      }
-     throw PythonModuleLoadException(err.c_str());
+     throw PythonModuleException(err.c_str());
   }
-  m_py_func = PyObject_GetAttrString(m_py_module, m_function_name);
-  if (m_py_func && PyCallable_Check(m_py_func))
-    printf("-----===== Initialized python and the module ====-----\n");
-  else
-    printf("--------========= ERROR : Could not load %s in %s. Please check if the function signature matches specification\n",m_module_name,m_function_name); 
+}
 
+int PyRunner::initialize_python()
+{
+  //Initialize Python interpreter
+  if (!Py_IsInitialized())
+    Py_Initialize();
+ 
+  import_array();
+  PyObject* module = PyImport_ImportModule("numpy"); // New reference
+  if (!module)
+  {
+    PyErr_Print();
+    fprintf(stderr,"numpy import failed. See for an error message above");
+  } 
+  Py_DECREF(module);
+
+  char cwd[256];
+  if (getcwd(cwd, sizeof(cwd)) == NULL)
+    perror("getcwd() error");
+//  else
+//    printf("Python modules in current working directory: %s will be found automatically,\
+//    but not python modules in other locations. Please add those paths to PYTHONPATH.\n", cwd);
+
+  PyObject* sysPath = PySys_GetObject((char*)"path");
+  PyList_Append(sysPath, PyUnicode_FromString("."));
+
+  m_py_module = PyImport_ImportModule(m_module_name);
+  if (m_py_module ==NULL) print_py_error_and_rethrow();
+  m_py_func = PyObject_GetAttrString(m_py_module, m_function_name);
+
+  if (m_py_func && PyCallable_Check(m_py_func))
+  {
+    printf("-----===== Initialized python and the module ====-----\n");
+  }
+  else
+  {
+    printf("--------========= ERROR : Could not load %s in %s. Please check if the function signature matches specification\n",m_module_name,m_function_name); 
+    print_py_error_and_rethrow();
+  }
   return 0;
 }
 
@@ -103,7 +111,7 @@ int PyVoronoiAnalyzer::initialize_python()
      \return integer value indicating success or failure  (0 is success, otherwise failure)
      \sa 
  */
-int PyVoronoiAnalyzer::analyze_frame(int* types,
+int PyRunner::analyze_frame(int* types,
                                      std::vector<double> x_positions,
                                      std::vector<double> y_positions,
                                      std::vector<double> z_positions,
@@ -160,15 +168,15 @@ int PyVoronoiAnalyzer::analyze_frame(int* types,
             }
             else
             {
-                PyErr_Print();
-                fprintf(stderr,"Call failed\n");
                 result = 1;
+                print_py_error_and_rethrow();
             }
         }
         else
         {
             fprintf(stderr,"Python function %s is not found in %s\n",m_function_name, m_module_name);
             result = -2;
+            print_py_error_and_rethrow();
         }
 
     } 

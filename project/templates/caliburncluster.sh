@@ -16,7 +16,7 @@
 #SBATCH --error={{ job_output }}
 {% endif %}
 {% block tasks %}
-SBATCH --ntasks={{ np_global }}
+#SBATCH --ntasks={{ np_global }}
 {% endblock %}
 module purge
 module load python/3.6.3
