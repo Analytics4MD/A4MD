@@ -18,7 +18,7 @@ class PyRunner
                           char* function_name);
         ~PyRunner();
         
-        int analyze_frame(int* types,
+        int analyze_frame(std::vector<int> types,
                           std::vector<double> x_positions,
                           std::vector<double> y_positions,
                           std::vector<double> z_positions,

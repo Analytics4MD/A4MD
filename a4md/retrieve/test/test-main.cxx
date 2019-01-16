@@ -43,7 +43,7 @@ TEST_CASE( "PyRunner Tests", "[retrieve]" )
     try
     {
       PyRunner runner = PyRunner(module_name,function_name);
-      int types[3] = { 0, 0 ,0 };
+      std::vector<int> types = { 0, 0 ,0 };
       std::vector<double> x_positions = { 1.0, 2.0, 3.0 };
       double low, high;
       low = 0.0;

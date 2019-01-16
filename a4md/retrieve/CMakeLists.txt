@@ -3,15 +3,13 @@ set(_retrieve_sources_
         chunk_analyzer.cxx
         md_retriever.cxx
         retriever.cxx
-        py_runner.cxx
-        retrieve.cxx)
+        py_runner.cxx)
 set(_retrieve_headers_
         md_analyzer.h
         chunk_analyzer.h
         md_retriever.h
         retriever.h
-        py_runner.h
-        retrieve.h)
+        py_runner.h)
 
 add_library(retrieve ${_retrieve_sources_})
 set_target_properties(retrieve PROPERTIES

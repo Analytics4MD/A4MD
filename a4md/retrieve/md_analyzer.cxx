@@ -16,8 +16,7 @@ void MDAnalyzer::analyze(Chunk* chunk)
     auto x_positions = plmdchunk->get_x_positions();
     auto y_positions = plmdchunk->get_y_positions();
     auto z_positions = plmdchunk->get_z_positions();
-    auto types_vector = plmdchunk->get_types();
-    int* types = types_vector.data();
+    auto types = plmdchunk->get_types();
 
     //for (int i=0;i< types_vector.size(); i++)
     //    printf("type: %i ",types[i]);

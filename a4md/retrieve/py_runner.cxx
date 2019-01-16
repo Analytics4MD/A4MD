@@ -116,17 +116,17 @@ int PyRunner::initialize_python()
      \return integer value indicating success or failure  (0 is success, otherwise failure)
      \sa 
  */
-int PyRunner::analyze_frame(int* types,
-                                     std::vector<double> x_positions,
-                                     std::vector<double> y_positions,
-                                     std::vector<double> z_positions,
-                                     double x_low,
-                                     double x_high,
-                                     double y_low,
-                                     double y_high,
-                                     double z_low,
-                                     double z_high,
-                                     int step)
+int PyRunner::analyze_frame(std::vector<int> types,
+                            std::vector<double> x_positions,
+                            std::vector<double> y_positions,
+                            std::vector<double> z_positions,
+                            double x_low,
+                            double x_high,
+                            double y_low,
+                            double y_high,
+                            double z_low,
+                            double z_high,
+                            int step)
 {
     int result = 0;
     if (!m_py_module)
@@ -144,7 +144,7 @@ int PyRunner::analyze_frame(int* types,
             //    printf("pos[%i]: %lf %lf %lf \n",std::get<0>(positions[i]),std::get<1>(positions[i]),std::get<2>(positions[i]));
             PyObject* py_args = PyTuple_New(6);
             npy_intp types_dims[] = {count};
-            PyObject* py_types = PyArray_SimpleNewFromData(1, types_dims, NPY_DOUBLE, (void *)types);
+            PyObject* py_types = PyArray_SimpleNewFromData(1, types_dims, NPY_DOUBLE, static_cast<void*>(types.data()));
             PyTuple_SetItem(py_args, 0, py_types);
  
             npy_intp positions_dims[] = {count};
