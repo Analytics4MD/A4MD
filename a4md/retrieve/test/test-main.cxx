@@ -6,8 +6,10 @@
 
 TEST_CASE( "PyRunner ModuleLoadException Tests", "[retrieve]" )
 {
-    char* module_name = (char*)std::string("dummy").c_str();
-    char* function_name = (char*)std::string("analyze").c_str();
+    std::string m("dummy");
+    std::string f("analyze");
+    char* module_name = (char*)m.c_str();
+    char* function_name = (char*)f.c_str();
     bool caught_py_exception = false;
     try
     {
@@ -26,8 +28,10 @@ TEST_CASE( "PyRunner ModuleLoadException Tests", "[retrieve]" )
 
 TEST_CASE( "PyRunner Tests", "[retrieve]" )
 {
-    char* module_name = (char*)std::string("test_analysis").c_str();
-    char* function_name = (char*)std::string("analyze").c_str();
+    std::string m("test_analysis");
+    std::string f("analyze");
+    char* module_name = (char*)m.c_str();
+    char* function_name = (char*)f.c_str();
     bool caught_py_exception = false;
     char cwd[256];
     if (getcwd(cwd, sizeof(cwd)) == NULL)

@@ -80,15 +80,20 @@ int PyRunner::initialize_python()
   char cwd[256];
   if (getcwd(cwd, sizeof(cwd)) == NULL)
     perror("getcwd() error");
-//  else
-//    printf("Python modules in current working directory: %s will be found automatically,\
-//    but not python modules in other locations. Please add those paths to PYTHONPATH.\n", cwd);
+  else
+    printf("current working directory: %s \n", cwd);
 
   PyObject* sysPath = PySys_GetObject((char*)"path");
   PyList_Append(sysPath, PyUnicode_FromString("."));
-
+  printf("--------========== import module %s ===========--------\n",m_module_name);
   m_py_module = PyImport_ImportModule(m_module_name);
-  if (m_py_module ==NULL) print_py_error_and_rethrow();
+  if (m_py_module ==NULL)
+  {
+    printf("--------========== import module %s failed ===========--------\n",m_module_name);
+    print_py_error_and_rethrow();
+  }
+
+  printf("--------========== import module %s done ===========--------\n",m_module_name);
   m_py_func = PyObject_GetAttrString(m_py_module, m_function_name);
 
   if (m_py_func && PyCallable_Check(m_py_func))

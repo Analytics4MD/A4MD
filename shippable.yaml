@@ -37,7 +37,7 @@ build:
     - cmake .. -DCMAKE_INSTALL_PREFIX=../_install 
     - make install
     - cd ..
-    - cp a4md/retrieve/test/test_analysis.py ./
+    - export PYTHONPATH=a4md/retrieve/test/
     - ./build/a4md/tests-main -r junit -o shippable/testresults/tests-main-report.xml
     - ./build/a4md/common/test/tests-cmn -r junit -o shippable/testresults/tests-cmn-report.xml
     - ./build/a4md/retrieve/test/tests-retrieve -r junit -o shippable/testresults/tests-retrieve-report.xml
