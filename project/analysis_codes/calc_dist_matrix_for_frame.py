@@ -12,6 +12,7 @@ from mdtraj.formats import PDBTrajectoryFile
 from mdtraj import Trajectory
 import matplotlib.pyplot as plt
 from scipy.spatial import distance
+import matplotlib.animation as manimation
 
 
 def pbc_min_image(p1, p2, axes):
@@ -108,7 +109,7 @@ def analyze(types, xpoints,ypoints,zpoints, box_points, step):
     if step>=nsteps:
         print('------============ reached end of analysis ({}) ==========------------'.format(step))
         ani = manimation.ArtistAnimation(fig, ims, interval=50, blit=True, repeat_delay=1000)
-        ani.save('dis.gif',writer='imagemagick')
+        ani.save('dis.html')
         with open('signac_job_document.json', 'r') as f:
             job_document = json.load(f)
 

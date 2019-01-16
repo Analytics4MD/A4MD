@@ -392,7 +392,6 @@ def process(job):
             job_command = ['mpirun','-n',str(job.sp.NPROCS),'gmx_mpi','mdrun','-v','-s','topol.tpr','-plumed','plumed.dat']
         else:
             job_command = ['mpirun','-n',str(job.sp.NPROCS),'gmx_mpi','mdrun','-v','-s','topol.tpr']
-        #job_command = ['mpirun -n {} lmp_mpi -i in.lj'.format(job.sp.NPROCS)]
         print("Executing job command:", job_command)
         start = timer()
         generate = subprocess.Popen(job_command, stdout=generate_stdout, stderr=generate_stdout, shell=False)

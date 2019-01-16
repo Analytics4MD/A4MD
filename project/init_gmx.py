@@ -19,7 +19,7 @@ def get_parameters():
     parameters["job_type"] = ['plumed_ds_concurrent','plumed_ds_sequential','plumed_sequential','traditional']
     parameters["output_type"] = ['xtc']#'xyz','dcd']
     parameters["simulation_engine"] = ['gromacs']
-    parameters['tau_profiling'] = [True]
+    parameters['tau_profiling'] = [False]
     return list(parameters.keys()), list(itertools.product(*parameters.values()))
 
 

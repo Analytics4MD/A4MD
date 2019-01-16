@@ -19,7 +19,7 @@ def create_gmx_script(job, file_name='bench.mdp'):
         f.write('nstlog              =  1000\n')
         f.write('nstenergy           =  1000\n')
         if job.sp.job_type == 'traditional':
-            f.write('nstxtcout           =  {}\n'.format(job.sp.data_dump_interval))
+            f.write('nstxtcout           =  {}\n'.format(job.sp.stride))
         else:
             f.write('nstxtcout           =  0\n')
         f.write('xtc_grps            =  {}\n'.format(job.sp.filter_group[0]))
