@@ -13,7 +13,7 @@ TEST_CASE( "PyRunner ModuleLoadException Tests", "[retrieve]" )
     {
       PyRunner runner = PyRunner(module_name,function_name);
     }
-    catch(PythonModuleLoadException ex)
+    catch(PythonModuleException ex)
     {
       caught_py_exception = true;
     }
@@ -57,7 +57,7 @@ TEST_CASE( "PyRunner Tests", "[retrieve]" )
                              high,
                              step);
     }
-    catch(PythonModuleLoadException ex)
+    catch(PythonModuleException ex)
     {
       caught_py_exception = true;
     }
