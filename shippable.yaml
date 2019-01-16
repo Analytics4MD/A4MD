@@ -40,6 +40,7 @@ build:
     - cp a4md/retrieve/test/test_analysis.py ./
     - ./build/a4md/tests-main -r junit -o shippable/testresults/tests-main-report.xml
     - ./build/a4md/common/test/tests-cmn -r junit -o shippable/testresults/tests-cmn-report.xml
+    - ./build/a4md/retrieve/test/tests-retrieve -r junit -o shippable/testresults/tests-retrieve-report.xml
     - echo "Build complete"
   post_ci:
     - docker build -t $DOCKER_ACC/$DOCKER_REPO:latest .
