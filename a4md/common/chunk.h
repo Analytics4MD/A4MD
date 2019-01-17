@@ -41,7 +41,7 @@ class Chunk
         }
 };
 
-class PLMDChunk : public Chunk
+class MDChunk : public Chunk
 {
     private:
         friend class boost::serialization::access;
@@ -76,8 +76,8 @@ class PLMDChunk : public Chunk
         double m_box_xz;
         double m_box_yz;
     public:
-        PLMDChunk() : Chunk(){}
-        PLMDChunk(const unsigned long int id,
+        MDChunk() : Chunk(){}
+        MDChunk(const unsigned long int id,
                   const int timestep,
                   const std::vector<int> & types,
                   const std::vector<double> & x_cords,
@@ -106,7 +106,7 @@ class PLMDChunk : public Chunk
 
         void print()
         {
-            printf("--------==========PLMDChunk::print start=============--------------\n");
+            printf("--------==========MDChunk::print start=============--------------\n");
             Chunk::print();
             std::cout << "types : ";
             for (auto i: m_types)
@@ -118,7 +118,7 @@ class PLMDChunk : public Chunk
                 int position = std::distance( m_x_cords.begin(), iterator ) ;
                 printf("[%i] %f %f %f \n",position, m_x_cords[position],m_y_cords[position],m_z_cords[position]);
             }
-            printf("--------==========PLMDChunk::print end=============--------------\n");
+            printf("--------==========MDChunk::print end=============--------------\n");
         }
         
         std::vector<int> get_types()
@@ -149,7 +149,7 @@ class SerializableChunk
         void serialize(Archive & ar, const unsigned int version)
         {
             // IMPORTANT: Any chunk subclass that needs to be serialized has to have an entry here.
-            ar.register_type(static_cast<PLMDChunk *>(NULL));
+            ar.register_type(static_cast<MDChunk *>(NULL));
             ar & m_chunk;
         }
 

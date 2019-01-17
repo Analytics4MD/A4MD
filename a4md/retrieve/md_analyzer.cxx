@@ -10,7 +10,7 @@ MDAnalyzer::MDAnalyzer(ChunkReader & chunk_reader,
 
 void MDAnalyzer::analyze(Chunk* chunk)
 {
-    PLMDChunk *plmdchunk = dynamic_cast<PLMDChunk *>(chunk);
+    MDChunk *plmdchunk = dynamic_cast<MDChunk *>(chunk);
     //printf("Printing typecasted chunk\n");
     //chunk->print();
     auto x_positions = plmdchunk->get_x_positions();

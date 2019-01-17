@@ -18,7 +18,7 @@ TEST_CASE( "Chunk Tests", "[common]" ) {
     lx=ly=lz=xy=xz=yz=1.0;
     lx=1.5;
 
-    PLMDChunk plmd_chunk(current_chunk_id,
+    MDChunk md_chunk(current_chunk_id,
                            step,
                            types,
                            x_positions,
@@ -30,11 +30,11 @@ TEST_CASE( "Chunk Tests", "[common]" ) {
                            xy,
                            xz,
                            yz);
-    Chunk* chunk = &plmd_chunk; 
+    Chunk* chunk = &md_chunk; 
 
     REQUIRE( chunk->get_chunk_id() == 0 );
-    REQUIRE( plmd_chunk.get_timestep() == 1 );
-    REQUIRE( plmd_chunk.get_types()[0] == 2 );
-    REQUIRE( plmd_chunk.get_x_positions()[0] == 0.1 );
-    REQUIRE( plmd_chunk.get_box_lx() == 1.5 );
+    REQUIRE( md_chunk.get_timestep() == 1 );
+    REQUIRE( md_chunk.get_types()[0] == 2 );
+    REQUIRE( md_chunk.get_x_positions()[0] == 0.1 );
+    REQUIRE( md_chunk.get_box_lx() == 1.5 );
 }

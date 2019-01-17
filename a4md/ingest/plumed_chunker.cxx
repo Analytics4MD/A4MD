@@ -29,7 +29,7 @@ void PlumedChunker::append(unsigned long int id,
 
 
 {
-    Chunk* chunk = new PLMDChunk(id,
+    Chunk* chunk = new MDChunk(id,
                                  time_step,
                                  types,
                                  x_cords,
