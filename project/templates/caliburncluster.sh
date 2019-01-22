@@ -16,7 +16,7 @@
 #SBATCH --error={{ job_output }}
 {% endif %}
 {% block tasks %}
-SBATCH --ntasks={{ np_global }}
+#SBATCH --ntasks={{ np_global }}
 {% endblock %}
 module purge
 module load python/3.6.3
@@ -29,7 +29,12 @@ source /home1/st18003/scratch/a4md_env/bin/activate
 
 ################## USER PATHS GO HERE ##########################
 export PATH="/home1/st18003/scratch/software/install/lammps:$PATH"
+export PATH="/home1/st18003/scratch/projects/gromacs-2018.3/_install/bin/:$PATH"
 export PATH="/home1/st18003/scratch/projects/a4md/_install/bin:$PATH"
+
+#export TAU_VERBOSE=1
+#export TAU_TRACK_SIGNALS=1
+#export TAU_METRICS=TIME,PAPI_NATIVE_powercap:::ENERGY_UJ:ZONE0
 ################################################################
 {% endblock %}
 

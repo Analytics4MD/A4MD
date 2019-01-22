@@ -1,0 +1,807 @@
+;
+;	File 'topol_Other_chain_I.itp' was generated
+;	By user: mac2109 (8596)
+;	On host: fido.pug.pbtech
+;	At date: Tue Sep 23 18:52:34 2014
+;
+;	This is a include topology file
+;
+;	It was generated using program:
+;	pdb2gmx - VERSION 4.6.5
+;
+;	Command line was:
+;	pdb2gmx -f nunu.IC_naked.pdb -o protein_ions.pdb 
+;
+;	Force field was read from the standard Gromacs share directory.
+;
+
+[ moleculetype ]
+; Name            nrexcl
+Other_chain_I       3
+
+[ atoms ]
+;   nr       type  resnr residue  atom   cgnr     charge       mass  typeB    chargeB      massB
+; residue   1 MG  rtp MG   q +2.0
+     1         MG      1     MG     MG      1          2     24.305   ; qtot 2
+; residue   2 MG  rtp MG   q +2.0
+     2         MG      2     MG     MG      2          2     24.305   ; qtot 4
+; residue   3 MG  rtp MG   q +2.0
+     3         MG      3     MG     MG      3          2     24.305   ; qtot 6
+; residue   4 MG  rtp MG   q +2.0
+     4         MG      4     MG     MG      4          2     24.305   ; qtot 8
+; residue   5 MG  rtp MG   q +2.0
+     5         MG      5     MG     MG      5          2     24.305   ; qtot 10
+; residue   6 MG  rtp MG   q +2.0
+     6         MG      6     MG     MG      6          2     24.305   ; qtot 12
+; residue   7 MG  rtp MG   q +2.0
+     7         MG      7     MG     MG      7          2     24.305   ; qtot 14
+; residue   8 MG  rtp MG   q +2.0
+     8         MG      8     MG     MG      8          2     24.305   ; qtot 16
+; residue   9 MG  rtp MG   q +2.0
+     9         MG      9     MG     MG      9          2     24.305   ; qtot 18
+; residue  10 MG  rtp MG   q +2.0
+    10         MG     10     MG     MG     10          2     24.305   ; qtot 20
+; residue  11 MG  rtp MG   q +2.0
+    11         MG     11     MG     MG     11          2     24.305   ; qtot 22
+; residue  12 MG  rtp MG   q +2.0
+    12         MG     12     MG     MG     12          2     24.305   ; qtot 24
+; residue  13 MG  rtp MG   q +2.0
+    13         MG     13     MG     MG     13          2     24.305   ; qtot 26
+; residue  14 MG  rtp MG   q +2.0
+    14         MG     14     MG     MG     14          2     24.305   ; qtot 28
+; residue  15 MG  rtp MG   q +2.0
+    15         MG     15     MG     MG     15          2     24.305   ; qtot 30
+; residue  16 MG  rtp MG   q +2.0
+    16         MG     16     MG     MG     16          2     24.305   ; qtot 32
+; residue  17 MG  rtp MG   q +2.0
+    17         MG     17     MG     MG     17          2     24.305   ; qtot 34
+; residue  18 MG  rtp MG   q +2.0
+    18         MG     18     MG     MG     18          2     24.305   ; qtot 36
+; residue  19 MG  rtp MG   q +2.0
+    19         MG     19     MG     MG     19          2     24.305   ; qtot 38
+; residue  20 MG  rtp MG   q +2.0
+    20         MG     20     MG     MG     20          2     24.305   ; qtot 40
+; residue  21 MG  rtp MG   q +2.0
+    21         MG     21     MG     MG     21          2     24.305   ; qtot 42
+; residue  22 MG  rtp MG   q +2.0
+    22         MG     22     MG     MG     22          2     24.305   ; qtot 44
+; residue  23 MG  rtp MG   q +2.0
+    23         MG     23     MG     MG     23          2     24.305   ; qtot 46
+; residue  24 MG  rtp MG   q +2.0
+    24         MG     24     MG     MG     24          2     24.305   ; qtot 48
+; residue  25 MG  rtp MG   q +2.0
+    25         MG     25     MG     MG     25          2     24.305   ; qtot 50
+; residue  26 MG  rtp MG   q +2.0
+    26         MG     26     MG     MG     26          2     24.305   ; qtot 52
+; residue  27 MG  rtp MG   q +2.0
+    27         MG     27     MG     MG     27          2     24.305   ; qtot 54
+; residue  28 MG  rtp MG   q +2.0
+    28         MG     28     MG     MG     28          2     24.305   ; qtot 56
+; residue  29 MG  rtp MG   q +2.0
+    29         MG     29     MG     MG     29          2     24.305   ; qtot 58
+; residue  30 MG  rtp MG   q +2.0
+    30         MG     30     MG     MG     30          2     24.305   ; qtot 60
+; residue  31 MG  rtp MG   q +2.0
+    31         MG     31     MG     MG     31          2     24.305   ; qtot 62
+; residue  32 MG  rtp MG   q +2.0
+    32         MG     32     MG     MG     32          2     24.305   ; qtot 64
+; residue  33 MG  rtp MG   q +2.0
+    33         MG     33     MG     MG     33          2     24.305   ; qtot 66
+; residue  34 MG  rtp MG   q +2.0
+    34         MG     34     MG     MG     34          2     24.305   ; qtot 68
+; residue  35 MG  rtp MG   q +2.0
+    35         MG     35     MG     MG     35          2     24.305   ; qtot 70
+; residue  36 MG  rtp MG   q +2.0
+    36         MG     36     MG     MG     36          2     24.305   ; qtot 72
+; residue  37 MG  rtp MG   q +2.0
+    37         MG     37     MG     MG     37          2     24.305   ; qtot 74
+; residue  38 MG  rtp MG   q +2.0
+    38         MG     38     MG     MG     38          2     24.305   ; qtot 76
+; residue  39 MG  rtp MG   q +2.0
+    39         MG     39     MG     MG     39          2     24.305   ; qtot 78
+; residue  40 MG  rtp MG   q +2.0
+    40         MG     40     MG     MG     40          2     24.305   ; qtot 80
+; residue  41 MG  rtp MG   q +2.0
+    41         MG     41     MG     MG     41          2     24.305   ; qtot 82
+; residue  42 MG  rtp MG   q +2.0
+    42         MG     42     MG     MG     42          2     24.305   ; qtot 84
+; residue  43 MG  rtp MG   q +2.0
+    43         MG     43     MG     MG     43          2     24.305   ; qtot 86
+; residue  44 MG  rtp MG   q +2.0
+    44         MG     44     MG     MG     44          2     24.305   ; qtot 88
+; residue  45 MG  rtp MG   q +2.0
+    45         MG     45     MG     MG     45          2     24.305   ; qtot 90
+; residue  46 MG  rtp MG   q +2.0
+    46         MG     46     MG     MG     46          2     24.305   ; qtot 92
+; residue  47 MG  rtp MG   q +2.0
+    47         MG     47     MG     MG     47          2     24.305   ; qtot 94
+; residue  48 MG  rtp MG   q +2.0
+    48         MG     48     MG     MG     48          2     24.305   ; qtot 96
+; residue  49 MG  rtp MG   q +2.0
+    49         MG     49     MG     MG     49          2     24.305   ; qtot 98
+; residue  50 MG  rtp MG   q +2.0
+    50         MG     50     MG     MG     50          2     24.305   ; qtot 100
+; residue  51 MG  rtp MG   q +2.0
+    51         MG     51     MG     MG     51          2     24.305   ; qtot 102
+; residue  52 MG  rtp MG   q +2.0
+    52         MG     52     MG     MG     52          2     24.305   ; qtot 104
+; residue  53 MG  rtp MG   q +2.0
+    53         MG     53     MG     MG     53          2     24.305   ; qtot 106
+; residue  54 MG  rtp MG   q +2.0
+    54         MG     54     MG     MG     54          2     24.305   ; qtot 108
+; residue  55 MG  rtp MG   q +2.0
+    55         MG     55     MG     MG     55          2     24.305   ; qtot 110
+; residue  56 MG  rtp MG   q +2.0
+    56         MG     56     MG     MG     56          2     24.305   ; qtot 112
+; residue  57 MG  rtp MG   q +2.0
+    57         MG     57     MG     MG     57          2     24.305   ; qtot 114
+; residue  58 MG  rtp MG   q +2.0
+    58         MG     58     MG     MG     58          2     24.305   ; qtot 116
+; residue  59 MG  rtp MG   q +2.0
+    59         MG     59     MG     MG     59          2     24.305   ; qtot 118
+; residue  60 MG  rtp MG   q +2.0
+    60         MG     60     MG     MG     60          2     24.305   ; qtot 120
+; residue  61 MG  rtp MG   q +2.0
+    61         MG     61     MG     MG     61          2     24.305   ; qtot 122
+; residue  62 MG  rtp MG   q +2.0
+    62         MG     62     MG     MG     62          2     24.305   ; qtot 124
+; residue  63 MG  rtp MG   q +2.0
+    63         MG     63     MG     MG     63          2     24.305   ; qtot 126
+; residue  64 MG  rtp MG   q +2.0
+    64         MG     64     MG     MG     64          2     24.305   ; qtot 128
+; residue  65 MG  rtp MG   q +2.0
+    65         MG     65     MG     MG     65          2     24.305   ; qtot 130
+; residue  66 MG  rtp MG   q +2.0
+    66         MG     66     MG     MG     66          2     24.305   ; qtot 132
+; residue  67 MG  rtp MG   q +2.0
+    67         MG     67     MG     MG     67          2     24.305   ; qtot 134
+; residue  68 MG  rtp MG   q +2.0
+    68         MG     68     MG     MG     68          2     24.305   ; qtot 136
+; residue  69 MG  rtp MG   q +2.0
+    69         MG     69     MG     MG     69          2     24.305   ; qtot 138
+; residue  70 MG  rtp MG   q +2.0
+    70         MG     70     MG     MG     70          2     24.305   ; qtot 140
+; residue  71 MG  rtp MG   q +2.0
+    71         MG     71     MG     MG     71          2     24.305   ; qtot 142
+; residue  72 MG  rtp MG   q +2.0
+    72         MG     72     MG     MG     72          2     24.305   ; qtot 144
+; residue  73 MG  rtp MG   q +2.0
+    73         MG     73     MG     MG     73          2     24.305   ; qtot 146
+; residue  74 MG  rtp MG   q +2.0
+    74         MG     74     MG     MG     74          2     24.305   ; qtot 148
+; residue  75 MG  rtp MG   q +2.0
+    75         MG     75     MG     MG     75          2     24.305   ; qtot 150
+; residue  76 MG  rtp MG   q +2.0
+    76         MG     76     MG     MG     76          2     24.305   ; qtot 152
+; residue  77 MG  rtp MG   q +2.0
+    77         MG     77     MG     MG     77          2     24.305   ; qtot 154
+; residue  78 MG  rtp MG   q +2.0
+    78         MG     78     MG     MG     78          2     24.305   ; qtot 156
+; residue  79 MG  rtp MG   q +2.0
+    79         MG     79     MG     MG     79          2     24.305   ; qtot 158
+; residue  80 MG  rtp MG   q +2.0
+    80         MG     80     MG     MG     80          2     24.305   ; qtot 160
+; residue  81 MG  rtp MG   q +2.0
+    81         MG     81     MG     MG     81          2     24.305   ; qtot 162
+; residue  82 MG  rtp MG   q +2.0
+    82         MG     82     MG     MG     82          2     24.305   ; qtot 164
+; residue  83 MG  rtp MG   q +2.0
+    83         MG     83     MG     MG     83          2     24.305   ; qtot 166
+; residue  84 MG  rtp MG   q +2.0
+    84         MG     84     MG     MG     84          2     24.305   ; qtot 168
+; residue  85 MG  rtp MG   q +2.0
+    85         MG     85     MG     MG     85          2     24.305   ; qtot 170
+; residue  86 MG  rtp MG   q +2.0
+    86         MG     86     MG     MG     86          2     24.305   ; qtot 172
+; residue  87 MG  rtp MG   q +2.0
+    87         MG     87     MG     MG     87          2     24.305   ; qtot 174
+; residue  88 MG  rtp MG   q +2.0
+    88         MG     88     MG     MG     88          2     24.305   ; qtot 176
+; residue  89 MG  rtp MG   q +2.0
+    89         MG     89     MG     MG     89          2     24.305   ; qtot 178
+; residue  90 MG  rtp MG   q +2.0
+    90         MG     90     MG     MG     90          2     24.305   ; qtot 180
+; residue  91 MG  rtp MG   q +2.0
+    91         MG     91     MG     MG     91          2     24.305   ; qtot 182
+; residue  92 MG  rtp MG   q +2.0
+    92         MG     92     MG     MG     92          2     24.305   ; qtot 184
+; residue  93 MG  rtp MG   q +2.0
+    93         MG     93     MG     MG     93          2     24.305   ; qtot 186
+; residue  94 MG  rtp MG   q +2.0
+    94         MG     94     MG     MG     94          2     24.305   ; qtot 188
+; residue  95 MG  rtp MG   q +2.0
+    95         MG     95     MG     MG     95          2     24.305   ; qtot 190
+; residue  96 MG  rtp MG   q +2.0
+    96         MG     96     MG     MG     96          2     24.305   ; qtot 192
+; residue  97 MG  rtp MG   q +2.0
+    97         MG     97     MG     MG     97          2     24.305   ; qtot 194
+; residue  98 MG  rtp MG   q +2.0
+    98         MG     98     MG     MG     98          2     24.305   ; qtot 196
+; residue  99 MG  rtp MG   q +2.0
+    99         MG     99     MG     MG     99          2     24.305   ; qtot 198
+; residue 100 MG  rtp MG   q +2.0
+   100         MG    100     MG     MG    100          2     24.305   ; qtot 200
+; residue 101 MG  rtp MG   q +2.0
+   101         MG    101     MG     MG    101          2     24.305   ; qtot 202
+; residue 102 MG  rtp MG   q +2.0
+   102         MG    102     MG     MG    102          2     24.305   ; qtot 204
+; residue 103 MG  rtp MG   q +2.0
+   103         MG    103     MG     MG    103          2     24.305   ; qtot 206
+; residue 104 MG  rtp MG   q +2.0
+   104         MG    104     MG     MG    104          2     24.305   ; qtot 208
+; residue 105 MG  rtp MG   q +2.0
+   105         MG    105     MG     MG    105          2     24.305   ; qtot 210
+; residue 106 MG  rtp MG   q +2.0
+   106         MG    106     MG     MG    106          2     24.305   ; qtot 212
+; residue 107 MG  rtp MG   q +2.0
+   107         MG    107     MG     MG    107          2     24.305   ; qtot 214
+; residue 108 MG  rtp MG   q +2.0
+   108         MG    108     MG     MG    108          2     24.305   ; qtot 216
+; residue 109 MG  rtp MG   q +2.0
+   109         MG    109     MG     MG    109          2     24.305   ; qtot 218
+; residue 110 MG  rtp MG   q +2.0
+   110         MG    110     MG     MG    110          2     24.305   ; qtot 220
+; residue 111 MG  rtp MG   q +2.0
+   111         MG    111     MG     MG    111          2     24.305   ; qtot 222
+; residue 112 MG  rtp MG   q +2.0
+   112         MG    112     MG     MG    112          2     24.305   ; qtot 224
+; residue 113 MG  rtp MG   q +2.0
+   113         MG    113     MG     MG    113          2     24.305   ; qtot 226
+; residue 114 MG  rtp MG   q +2.0
+   114         MG    114     MG     MG    114          2     24.305   ; qtot 228
+; residue   1 SOD rtp SOD  q +1.0
+   115        SOD      1    SOD    SOD    115          1    22.9898   ; qtot 229
+; residue   2 SOD rtp SOD  q +1.0
+   116        SOD      2    SOD    SOD    116          1    22.9898   ; qtot 230
+; residue   3 SOD rtp SOD  q +1.0
+   117        SOD      3    SOD    SOD    117          1    22.9898   ; qtot 231
+; residue   4 SOD rtp SOD  q +1.0
+   118        SOD      4    SOD    SOD    118          1    22.9898   ; qtot 232
+; residue   5 SOD rtp SOD  q +1.0
+   119        SOD      5    SOD    SOD    119          1    22.9898   ; qtot 233
+; residue   6 SOD rtp SOD  q +1.0
+   120        SOD      6    SOD    SOD    120          1    22.9898   ; qtot 234
+; residue   7 SOD rtp SOD  q +1.0
+   121        SOD      7    SOD    SOD    121          1    22.9898   ; qtot 235
+; residue   8 SOD rtp SOD  q +1.0
+   122        SOD      8    SOD    SOD    122          1    22.9898   ; qtot 236
+; residue   9 SOD rtp SOD  q +1.0
+   123        SOD      9    SOD    SOD    123          1    22.9898   ; qtot 237
+; residue  10 SOD rtp SOD  q +1.0
+   124        SOD     10    SOD    SOD    124          1    22.9898   ; qtot 238
+; residue  11 SOD rtp SOD  q +1.0
+   125        SOD     11    SOD    SOD    125          1    22.9898   ; qtot 239
+; residue  12 SOD rtp SOD  q +1.0
+   126        SOD     12    SOD    SOD    126          1    22.9898   ; qtot 240
+; residue  13 SOD rtp SOD  q +1.0
+   127        SOD     13    SOD    SOD    127          1    22.9898   ; qtot 241
+; residue  14 SOD rtp SOD  q +1.0
+   128        SOD     14    SOD    SOD    128          1    22.9898   ; qtot 242
+; residue  15 SOD rtp SOD  q +1.0
+   129        SOD     15    SOD    SOD    129          1    22.9898   ; qtot 243
+; residue  16 SOD rtp SOD  q +1.0
+   130        SOD     16    SOD    SOD    130          1    22.9898   ; qtot 244
+; residue  17 SOD rtp SOD  q +1.0
+   131        SOD     17    SOD    SOD    131          1    22.9898   ; qtot 245
+; residue  18 SOD rtp SOD  q +1.0
+   132        SOD     18    SOD    SOD    132          1    22.9898   ; qtot 246
+; residue  19 SOD rtp SOD  q +1.0
+   133        SOD     19    SOD    SOD    133          1    22.9898   ; qtot 247
+; residue  20 SOD rtp SOD  q +1.0
+   134        SOD     20    SOD    SOD    134          1    22.9898   ; qtot 248
+; residue  21 SOD rtp SOD  q +1.0
+   135        SOD     21    SOD    SOD    135          1    22.9898   ; qtot 249
+; residue  22 SOD rtp SOD  q +1.0
+   136        SOD     22    SOD    SOD    136          1    22.9898   ; qtot 250
+; residue  23 SOD rtp SOD  q +1.0
+   137        SOD     23    SOD    SOD    137          1    22.9898   ; qtot 251
+; residue  24 SOD rtp SOD  q +1.0
+   138        SOD     24    SOD    SOD    138          1    22.9898   ; qtot 252
+; residue  25 SOD rtp SOD  q +1.0
+   139        SOD     25    SOD    SOD    139          1    22.9898   ; qtot 253
+; residue  26 SOD rtp SOD  q +1.0
+   140        SOD     26    SOD    SOD    140          1    22.9898   ; qtot 254
+; residue  27 SOD rtp SOD  q +1.0
+   141        SOD     27    SOD    SOD    141          1    22.9898   ; qtot 255
+; residue  28 SOD rtp SOD  q +1.0
+   142        SOD     28    SOD    SOD    142          1    22.9898   ; qtot 256
+; residue  29 SOD rtp SOD  q +1.0
+   143        SOD     29    SOD    SOD    143          1    22.9898   ; qtot 257
+; residue  30 SOD rtp SOD  q +1.0
+   144        SOD     30    SOD    SOD    144          1    22.9898   ; qtot 258
+; residue  31 SOD rtp SOD  q +1.0
+   145        SOD     31    SOD    SOD    145          1    22.9898   ; qtot 259
+; residue  32 SOD rtp SOD  q +1.0
+   146        SOD     32    SOD    SOD    146          1    22.9898   ; qtot 260
+; residue  33 SOD rtp SOD  q +1.0
+   147        SOD     33    SOD    SOD    147          1    22.9898   ; qtot 261
+; residue  34 SOD rtp SOD  q +1.0
+   148        SOD     34    SOD    SOD    148          1    22.9898   ; qtot 262
+; residue  35 SOD rtp SOD  q +1.0
+   149        SOD     35    SOD    SOD    149          1    22.9898   ; qtot 263
+; residue  36 SOD rtp SOD  q +1.0
+   150        SOD     36    SOD    SOD    150          1    22.9898   ; qtot 264
+; residue  37 SOD rtp SOD  q +1.0
+   151        SOD     37    SOD    SOD    151          1    22.9898   ; qtot 265
+; residue  38 SOD rtp SOD  q +1.0
+   152        SOD     38    SOD    SOD    152          1    22.9898   ; qtot 266
+; residue  39 SOD rtp SOD  q +1.0
+   153        SOD     39    SOD    SOD    153          1    22.9898   ; qtot 267
+; residue  40 SOD rtp SOD  q +1.0
+   154        SOD     40    SOD    SOD    154          1    22.9898   ; qtot 268
+; residue  41 SOD rtp SOD  q +1.0
+   155        SOD     41    SOD    SOD    155          1    22.9898   ; qtot 269
+; residue  42 SOD rtp SOD  q +1.0
+   156        SOD     42    SOD    SOD    156          1    22.9898   ; qtot 270
+; residue  43 SOD rtp SOD  q +1.0
+   157        SOD     43    SOD    SOD    157          1    22.9898   ; qtot 271
+; residue  44 SOD rtp SOD  q +1.0
+   158        SOD     44    SOD    SOD    158          1    22.9898   ; qtot 272
+; residue  45 SOD rtp SOD  q +1.0
+   159        SOD     45    SOD    SOD    159          1    22.9898   ; qtot 273
+; residue  46 SOD rtp SOD  q +1.0
+   160        SOD     46    SOD    SOD    160          1    22.9898   ; qtot 274
+; residue  47 SOD rtp SOD  q +1.0
+   161        SOD     47    SOD    SOD    161          1    22.9898   ; qtot 275
+; residue  48 SOD rtp SOD  q +1.0
+   162        SOD     48    SOD    SOD    162          1    22.9898   ; qtot 276
+; residue  49 SOD rtp SOD  q +1.0
+   163        SOD     49    SOD    SOD    163          1    22.9898   ; qtot 277
+; residue  50 SOD rtp SOD  q +1.0
+   164        SOD     50    SOD    SOD    164          1    22.9898   ; qtot 278
+; residue  51 SOD rtp SOD  q +1.0
+   165        SOD     51    SOD    SOD    165          1    22.9898   ; qtot 279
+; residue  52 SOD rtp SOD  q +1.0
+   166        SOD     52    SOD    SOD    166          1    22.9898   ; qtot 280
+; residue  53 SOD rtp SOD  q +1.0
+   167        SOD     53    SOD    SOD    167          1    22.9898   ; qtot 281
+; residue  54 SOD rtp SOD  q +1.0
+   168        SOD     54    SOD    SOD    168          1    22.9898   ; qtot 282
+; residue  55 SOD rtp SOD  q +1.0
+   169        SOD     55    SOD    SOD    169          1    22.9898   ; qtot 283
+; residue  56 SOD rtp SOD  q +1.0
+   170        SOD     56    SOD    SOD    170          1    22.9898   ; qtot 284
+; residue  57 SOD rtp SOD  q +1.0
+   171        SOD     57    SOD    SOD    171          1    22.9898   ; qtot 285
+; residue  58 SOD rtp SOD  q +1.0
+   172        SOD     58    SOD    SOD    172          1    22.9898   ; qtot 286
+; residue  59 SOD rtp SOD  q +1.0
+   173        SOD     59    SOD    SOD    173          1    22.9898   ; qtot 287
+; residue  60 SOD rtp SOD  q +1.0
+   174        SOD     60    SOD    SOD    174          1    22.9898   ; qtot 288
+; residue  61 SOD rtp SOD  q +1.0
+   175        SOD     61    SOD    SOD    175          1    22.9898   ; qtot 289
+; residue  62 SOD rtp SOD  q +1.0
+   176        SOD     62    SOD    SOD    176          1    22.9898   ; qtot 290
+; residue  63 SOD rtp SOD  q +1.0
+   177        SOD     63    SOD    SOD    177          1    22.9898   ; qtot 291
+; residue  64 SOD rtp SOD  q +1.0
+   178        SOD     64    SOD    SOD    178          1    22.9898   ; qtot 292
+; residue  65 SOD rtp SOD  q +1.0
+   179        SOD     65    SOD    SOD    179          1    22.9898   ; qtot 293
+; residue  66 SOD rtp SOD  q +1.0
+   180        SOD     66    SOD    SOD    180          1    22.9898   ; qtot 294
+; residue  67 SOD rtp SOD  q +1.0
+   181        SOD     67    SOD    SOD    181          1    22.9898   ; qtot 295
+; residue  68 SOD rtp SOD  q +1.0
+   182        SOD     68    SOD    SOD    182          1    22.9898   ; qtot 296
+; residue  69 SOD rtp SOD  q +1.0
+   183        SOD     69    SOD    SOD    183          1    22.9898   ; qtot 297
+; residue  70 SOD rtp SOD  q +1.0
+   184        SOD     70    SOD    SOD    184          1    22.9898   ; qtot 298
+; residue  71 SOD rtp SOD  q +1.0
+   185        SOD     71    SOD    SOD    185          1    22.9898   ; qtot 299
+; residue  72 SOD rtp SOD  q +1.0
+   186        SOD     72    SOD    SOD    186          1    22.9898   ; qtot 300
+; residue  73 SOD rtp SOD  q +1.0
+   187        SOD     73    SOD    SOD    187          1    22.9898   ; qtot 301
+; residue  74 SOD rtp SOD  q +1.0
+   188        SOD     74    SOD    SOD    188          1    22.9898   ; qtot 302
+; residue  75 SOD rtp SOD  q +1.0
+   189        SOD     75    SOD    SOD    189          1    22.9898   ; qtot 303
+; residue  76 SOD rtp SOD  q +1.0
+   190        SOD     76    SOD    SOD    190          1    22.9898   ; qtot 304
+; residue  77 SOD rtp SOD  q +1.0
+   191        SOD     77    SOD    SOD    191          1    22.9898   ; qtot 305
+; residue  78 SOD rtp SOD  q +1.0
+   192        SOD     78    SOD    SOD    192          1    22.9898   ; qtot 306
+; residue  79 SOD rtp SOD  q +1.0
+   193        SOD     79    SOD    SOD    193          1    22.9898   ; qtot 307
+; residue  80 SOD rtp SOD  q +1.0
+   194        SOD     80    SOD    SOD    194          1    22.9898   ; qtot 308
+; residue  81 SOD rtp SOD  q +1.0
+   195        SOD     81    SOD    SOD    195          1    22.9898   ; qtot 309
+; residue  82 SOD rtp SOD  q +1.0
+   196        SOD     82    SOD    SOD    196          1    22.9898   ; qtot 310
+; residue  83 SOD rtp SOD  q +1.0
+   197        SOD     83    SOD    SOD    197          1    22.9898   ; qtot 311
+; residue  84 SOD rtp SOD  q +1.0
+   198        SOD     84    SOD    SOD    198          1    22.9898   ; qtot 312
+; residue  85 SOD rtp SOD  q +1.0
+   199        SOD     85    SOD    SOD    199          1    22.9898   ; qtot 313
+; residue  86 SOD rtp SOD  q +1.0
+   200        SOD     86    SOD    SOD    200          1    22.9898   ; qtot 314
+; residue  87 SOD rtp SOD  q +1.0
+   201        SOD     87    SOD    SOD    201          1    22.9898   ; qtot 315
+; residue  88 SOD rtp SOD  q +1.0
+   202        SOD     88    SOD    SOD    202          1    22.9898   ; qtot 316
+; residue  89 SOD rtp SOD  q +1.0
+   203        SOD     89    SOD    SOD    203          1    22.9898   ; qtot 317
+; residue  90 SOD rtp SOD  q +1.0
+   204        SOD     90    SOD    SOD    204          1    22.9898   ; qtot 318
+; residue  91 SOD rtp SOD  q +1.0
+   205        SOD     91    SOD    SOD    205          1    22.9898   ; qtot 319
+; residue  92 SOD rtp SOD  q +1.0
+   206        SOD     92    SOD    SOD    206          1    22.9898   ; qtot 320
+; residue  93 SOD rtp SOD  q +1.0
+   207        SOD     93    SOD    SOD    207          1    22.9898   ; qtot 321
+; residue  94 SOD rtp SOD  q +1.0
+   208        SOD     94    SOD    SOD    208          1    22.9898   ; qtot 322
+; residue  95 SOD rtp SOD  q +1.0
+   209        SOD     95    SOD    SOD    209          1    22.9898   ; qtot 323
+; residue  96 SOD rtp SOD  q +1.0
+   210        SOD     96    SOD    SOD    210          1    22.9898   ; qtot 324
+; residue  97 SOD rtp SOD  q +1.0
+   211        SOD     97    SOD    SOD    211          1    22.9898   ; qtot 325
+; residue  98 SOD rtp SOD  q +1.0
+   212        SOD     98    SOD    SOD    212          1    22.9898   ; qtot 326
+; residue  99 SOD rtp SOD  q +1.0
+   213        SOD     99    SOD    SOD    213          1    22.9898   ; qtot 327
+; residue 100 SOD rtp SOD  q +1.0
+   214        SOD    100    SOD    SOD    214          1    22.9898   ; qtot 328
+; residue 101 SOD rtp SOD  q +1.0
+   215        SOD    101    SOD    SOD    215          1    22.9898   ; qtot 329
+; residue 102 SOD rtp SOD  q +1.0
+   216        SOD    102    SOD    SOD    216          1    22.9898   ; qtot 330
+; residue 103 SOD rtp SOD  q +1.0
+   217        SOD    103    SOD    SOD    217          1    22.9898   ; qtot 331
+; residue 104 SOD rtp SOD  q +1.0
+   218        SOD    104    SOD    SOD    218          1    22.9898   ; qtot 332
+; residue 105 SOD rtp SOD  q +1.0
+   219        SOD    105    SOD    SOD    219          1    22.9898   ; qtot 333
+; residue 106 SOD rtp SOD  q +1.0
+   220        SOD    106    SOD    SOD    220          1    22.9898   ; qtot 334
+; residue 107 SOD rtp SOD  q +1.0
+   221        SOD    107    SOD    SOD    221          1    22.9898   ; qtot 335
+; residue 108 SOD rtp SOD  q +1.0
+   222        SOD    108    SOD    SOD    222          1    22.9898   ; qtot 336
+; residue 109 SOD rtp SOD  q +1.0
+   223        SOD    109    SOD    SOD    223          1    22.9898   ; qtot 337
+; residue 110 SOD rtp SOD  q +1.0
+   224        SOD    110    SOD    SOD    224          1    22.9898   ; qtot 338
+; residue 111 SOD rtp SOD  q +1.0
+   225        SOD    111    SOD    SOD    225          1    22.9898   ; qtot 339
+; residue 112 SOD rtp SOD  q +1.0
+   226        SOD    112    SOD    SOD    226          1    22.9898   ; qtot 340
+; residue 113 SOD rtp SOD  q +1.0
+   227        SOD    113    SOD    SOD    227          1    22.9898   ; qtot 341
+; residue 114 SOD rtp SOD  q +1.0
+   228        SOD    114    SOD    SOD    228          1    22.9898   ; qtot 342
+; residue 115 SOD rtp SOD  q +1.0
+   229        SOD    115    SOD    SOD    229          1    22.9898   ; qtot 343
+; residue 116 SOD rtp SOD  q +1.0
+   230        SOD    116    SOD    SOD    230          1    22.9898   ; qtot 344
+; residue 117 SOD rtp SOD  q +1.0
+   231        SOD    117    SOD    SOD    231          1    22.9898   ; qtot 345
+; residue 118 SOD rtp SOD  q +1.0
+   232        SOD    118    SOD    SOD    232          1    22.9898   ; qtot 346
+; residue 119 SOD rtp SOD  q +1.0
+   233        SOD    119    SOD    SOD    233          1    22.9898   ; qtot 347
+; residue 120 SOD rtp SOD  q +1.0
+   234        SOD    120    SOD    SOD    234          1    22.9898   ; qtot 348
+; residue 121 SOD rtp SOD  q +1.0
+   235        SOD    121    SOD    SOD    235          1    22.9898   ; qtot 349
+; residue 122 SOD rtp SOD  q +1.0
+   236        SOD    122    SOD    SOD    236          1    22.9898   ; qtot 350
+; residue 123 SOD rtp SOD  q +1.0
+   237        SOD    123    SOD    SOD    237          1    22.9898   ; qtot 351
+; residue 124 SOD rtp SOD  q +1.0
+   238        SOD    124    SOD    SOD    238          1    22.9898   ; qtot 352
+; residue 125 SOD rtp SOD  q +1.0
+   239        SOD    125    SOD    SOD    239          1    22.9898   ; qtot 353
+; residue 126 SOD rtp SOD  q +1.0
+   240        SOD    126    SOD    SOD    240          1    22.9898   ; qtot 354
+; residue 127 SOD rtp SOD  q +1.0
+   241        SOD    127    SOD    SOD    241          1    22.9898   ; qtot 355
+; residue 128 SOD rtp SOD  q +1.0
+   242        SOD    128    SOD    SOD    242          1    22.9898   ; qtot 356
+; residue 129 SOD rtp SOD  q +1.0
+   243        SOD    129    SOD    SOD    243          1    22.9898   ; qtot 357
+; residue 130 SOD rtp SOD  q +1.0
+   244        SOD    130    SOD    SOD    244          1    22.9898   ; qtot 358
+; residue 131 SOD rtp SOD  q +1.0
+   245        SOD    131    SOD    SOD    245          1    22.9898   ; qtot 359
+; residue 132 SOD rtp SOD  q +1.0
+   246        SOD    132    SOD    SOD    246          1    22.9898   ; qtot 360
+; residue 133 SOD rtp SOD  q +1.0
+   247        SOD    133    SOD    SOD    247          1    22.9898   ; qtot 361
+; residue 134 SOD rtp SOD  q +1.0
+   248        SOD    134    SOD    SOD    248          1    22.9898   ; qtot 362
+; residue 135 SOD rtp SOD  q +1.0
+   249        SOD    135    SOD    SOD    249          1    22.9898   ; qtot 363
+; residue 136 SOD rtp SOD  q +1.0
+   250        SOD    136    SOD    SOD    250          1    22.9898   ; qtot 364
+; residue 137 SOD rtp SOD  q +1.0
+   251        SOD    137    SOD    SOD    251          1    22.9898   ; qtot 365
+; residue 138 CLA rtp CLA  q -1.0
+   252        CLA    138    CLA    CLA    252         -1      35.45   ; qtot 364
+; residue 139 CLA rtp CLA  q -1.0
+   253        CLA    139    CLA    CLA    253         -1      35.45   ; qtot 363
+; residue 140 CLA rtp CLA  q -1.0
+   254        CLA    140    CLA    CLA    254         -1      35.45   ; qtot 362
+; residue 141 CLA rtp CLA  q -1.0
+   255        CLA    141    CLA    CLA    255         -1      35.45   ; qtot 361
+; residue 142 CLA rtp CLA  q -1.0
+   256        CLA    142    CLA    CLA    256         -1      35.45   ; qtot 360
+; residue 143 CLA rtp CLA  q -1.0
+   257        CLA    143    CLA    CLA    257         -1      35.45   ; qtot 359
+; residue 144 CLA rtp CLA  q -1.0
+   258        CLA    144    CLA    CLA    258         -1      35.45   ; qtot 358
+; residue 145 CLA rtp CLA  q -1.0
+   259        CLA    145    CLA    CLA    259         -1      35.45   ; qtot 357
+; residue 146 CLA rtp CLA  q -1.0
+   260        CLA    146    CLA    CLA    260         -1      35.45   ; qtot 356
+; residue 147 CLA rtp CLA  q -1.0
+   261        CLA    147    CLA    CLA    261         -1      35.45   ; qtot 355
+; residue 148 CLA rtp CLA  q -1.0
+   262        CLA    148    CLA    CLA    262         -1      35.45   ; qtot 354
+; residue 149 CLA rtp CLA  q -1.0
+   263        CLA    149    CLA    CLA    263         -1      35.45   ; qtot 353
+; residue 150 CLA rtp CLA  q -1.0
+   264        CLA    150    CLA    CLA    264         -1      35.45   ; qtot 352
+; residue 151 CLA rtp CLA  q -1.0
+   265        CLA    151    CLA    CLA    265         -1      35.45   ; qtot 351
+; residue 152 CLA rtp CLA  q -1.0
+   266        CLA    152    CLA    CLA    266         -1      35.45   ; qtot 350
+; residue 153 CLA rtp CLA  q -1.0
+   267        CLA    153    CLA    CLA    267         -1      35.45   ; qtot 349
+; residue 154 CLA rtp CLA  q -1.0
+   268        CLA    154    CLA    CLA    268         -1      35.45   ; qtot 348
+; residue 155 CLA rtp CLA  q -1.0
+   269        CLA    155    CLA    CLA    269         -1      35.45   ; qtot 347
+; residue 156 CLA rtp CLA  q -1.0
+   270        CLA    156    CLA    CLA    270         -1      35.45   ; qtot 346
+; residue 157 CLA rtp CLA  q -1.0
+   271        CLA    157    CLA    CLA    271         -1      35.45   ; qtot 345
+; residue 158 CLA rtp CLA  q -1.0
+   272        CLA    158    CLA    CLA    272         -1      35.45   ; qtot 344
+; residue 159 CLA rtp CLA  q -1.0
+   273        CLA    159    CLA    CLA    273         -1      35.45   ; qtot 343
+; residue 160 CLA rtp CLA  q -1.0
+   274        CLA    160    CLA    CLA    274         -1      35.45   ; qtot 342
+; residue 161 CLA rtp CLA  q -1.0
+   275        CLA    161    CLA    CLA    275         -1      35.45   ; qtot 341
+; residue 162 CLA rtp CLA  q -1.0
+   276        CLA    162    CLA    CLA    276         -1      35.45   ; qtot 340
+; residue 163 CLA rtp CLA  q -1.0
+   277        CLA    163    CLA    CLA    277         -1      35.45   ; qtot 339
+; residue 164 CLA rtp CLA  q -1.0
+   278        CLA    164    CLA    CLA    278         -1      35.45   ; qtot 338
+; residue 165 CLA rtp CLA  q -1.0
+   279        CLA    165    CLA    CLA    279         -1      35.45   ; qtot 337
+; residue 166 CLA rtp CLA  q -1.0
+   280        CLA    166    CLA    CLA    280         -1      35.45   ; qtot 336
+; residue 167 CLA rtp CLA  q -1.0
+   281        CLA    167    CLA    CLA    281         -1      35.45   ; qtot 335
+; residue 168 CLA rtp CLA  q -1.0
+   282        CLA    168    CLA    CLA    282         -1      35.45   ; qtot 334
+; residue 169 CLA rtp CLA  q -1.0
+   283        CLA    169    CLA    CLA    283         -1      35.45   ; qtot 333
+; residue 170 CLA rtp CLA  q -1.0
+   284        CLA    170    CLA    CLA    284         -1      35.45   ; qtot 332
+; residue 171 CLA rtp CLA  q -1.0
+   285        CLA    171    CLA    CLA    285         -1      35.45   ; qtot 331
+; residue 172 CLA rtp CLA  q -1.0
+   286        CLA    172    CLA    CLA    286         -1      35.45   ; qtot 330
+; residue 173 CLA rtp CLA  q -1.0
+   287        CLA    173    CLA    CLA    287         -1      35.45   ; qtot 329
+; residue 174 CLA rtp CLA  q -1.0
+   288        CLA    174    CLA    CLA    288         -1      35.45   ; qtot 328
+; residue 175 CLA rtp CLA  q -1.0
+   289        CLA    175    CLA    CLA    289         -1      35.45   ; qtot 327
+; residue 176 CLA rtp CLA  q -1.0
+   290        CLA    176    CLA    CLA    290         -1      35.45   ; qtot 326
+; residue 177 CLA rtp CLA  q -1.0
+   291        CLA    177    CLA    CLA    291         -1      35.45   ; qtot 325
+; residue 178 CLA rtp CLA  q -1.0
+   292        CLA    178    CLA    CLA    292         -1      35.45   ; qtot 324
+; residue 179 CLA rtp CLA  q -1.0
+   293        CLA    179    CLA    CLA    293         -1      35.45   ; qtot 323
+; residue 180 CLA rtp CLA  q -1.0
+   294        CLA    180    CLA    CLA    294         -1      35.45   ; qtot 322
+; residue 181 CLA rtp CLA  q -1.0
+   295        CLA    181    CLA    CLA    295         -1      35.45   ; qtot 321
+; residue 182 CLA rtp CLA  q -1.0
+   296        CLA    182    CLA    CLA    296         -1      35.45   ; qtot 320
+; residue 183 CLA rtp CLA  q -1.0
+   297        CLA    183    CLA    CLA    297         -1      35.45   ; qtot 319
+; residue 184 CLA rtp CLA  q -1.0
+   298        CLA    184    CLA    CLA    298         -1      35.45   ; qtot 318
+; residue 185 CLA rtp CLA  q -1.0
+   299        CLA    185    CLA    CLA    299         -1      35.45   ; qtot 317
+; residue 186 CLA rtp CLA  q -1.0
+   300        CLA    186    CLA    CLA    300         -1      35.45   ; qtot 316
+; residue 187 CLA rtp CLA  q -1.0
+   301        CLA    187    CLA    CLA    301         -1      35.45   ; qtot 315
+; residue 188 CLA rtp CLA  q -1.0
+   302        CLA    188    CLA    CLA    302         -1      35.45   ; qtot 314
+; residue 189 CLA rtp CLA  q -1.0
+   303        CLA    189    CLA    CLA    303         -1      35.45   ; qtot 313
+; residue 190 CLA rtp CLA  q -1.0
+   304        CLA    190    CLA    CLA    304         -1      35.45   ; qtot 312
+; residue 191 CLA rtp CLA  q -1.0
+   305        CLA    191    CLA    CLA    305         -1      35.45   ; qtot 311
+; residue 192 CLA rtp CLA  q -1.0
+   306        CLA    192    CLA    CLA    306         -1      35.45   ; qtot 310
+; residue 193 CLA rtp CLA  q -1.0
+   307        CLA    193    CLA    CLA    307         -1      35.45   ; qtot 309
+; residue 194 CLA rtp CLA  q -1.0
+   308        CLA    194    CLA    CLA    308         -1      35.45   ; qtot 308
+; residue 195 CLA rtp CLA  q -1.0
+   309        CLA    195    CLA    CLA    309         -1      35.45   ; qtot 307
+; residue 196 CLA rtp CLA  q -1.0
+   310        CLA    196    CLA    CLA    310         -1      35.45   ; qtot 306
+; residue 197 CLA rtp CLA  q -1.0
+   311        CLA    197    CLA    CLA    311         -1      35.45   ; qtot 305
+; residue 198 CLA rtp CLA  q -1.0
+   312        CLA    198    CLA    CLA    312         -1      35.45   ; qtot 304
+; residue 199 CLA rtp CLA  q -1.0
+   313        CLA    199    CLA    CLA    313         -1      35.45   ; qtot 303
+; residue 200 CLA rtp CLA  q -1.0
+   314        CLA    200    CLA    CLA    314         -1      35.45   ; qtot 302
+; residue 201 CLA rtp CLA  q -1.0
+   315        CLA    201    CLA    CLA    315         -1      35.45   ; qtot 301
+; residue 202 CLA rtp CLA  q -1.0
+   316        CLA    202    CLA    CLA    316         -1      35.45   ; qtot 300
+; residue 203 CLA rtp CLA  q -1.0
+   317        CLA    203    CLA    CLA    317         -1      35.45   ; qtot 299
+; residue 204 CLA rtp CLA  q -1.0
+   318        CLA    204    CLA    CLA    318         -1      35.45   ; qtot 298
+; residue 205 CLA rtp CLA  q -1.0
+   319        CLA    205    CLA    CLA    319         -1      35.45   ; qtot 297
+; residue 206 CLA rtp CLA  q -1.0
+   320        CLA    206    CLA    CLA    320         -1      35.45   ; qtot 296
+; residue 207 CLA rtp CLA  q -1.0
+   321        CLA    207    CLA    CLA    321         -1      35.45   ; qtot 295
+; residue 208 CLA rtp CLA  q -1.0
+   322        CLA    208    CLA    CLA    322         -1      35.45   ; qtot 294
+; residue 209 CLA rtp CLA  q -1.0
+   323        CLA    209    CLA    CLA    323         -1      35.45   ; qtot 293
+; residue 210 CLA rtp CLA  q -1.0
+   324        CLA    210    CLA    CLA    324         -1      35.45   ; qtot 292
+; residue 211 CLA rtp CLA  q -1.0
+   325        CLA    211    CLA    CLA    325         -1      35.45   ; qtot 291
+; residue 212 CLA rtp CLA  q -1.0
+   326        CLA    212    CLA    CLA    326         -1      35.45   ; qtot 290
+; residue 213 CLA rtp CLA  q -1.0
+   327        CLA    213    CLA    CLA    327         -1      35.45   ; qtot 289
+; residue 214 CLA rtp CLA  q -1.0
+   328        CLA    214    CLA    CLA    328         -1      35.45   ; qtot 288
+; residue 215 CLA rtp CLA  q -1.0
+   329        CLA    215    CLA    CLA    329         -1      35.45   ; qtot 287
+; residue 216 CLA rtp CLA  q -1.0
+   330        CLA    216    CLA    CLA    330         -1      35.45   ; qtot 286
+; residue 217 CLA rtp CLA  q -1.0
+   331        CLA    217    CLA    CLA    331         -1      35.45   ; qtot 285
+; residue 218 CLA rtp CLA  q -1.0
+   332        CLA    218    CLA    CLA    332         -1      35.45   ; qtot 284
+; residue 219 CLA rtp CLA  q -1.0
+   333        CLA    219    CLA    CLA    333         -1      35.45   ; qtot 283
+; residue 220 CLA rtp CLA  q -1.0
+   334        CLA    220    CLA    CLA    334         -1      35.45   ; qtot 282
+; residue 221 CLA rtp CLA  q -1.0
+   335        CLA    221    CLA    CLA    335         -1      35.45   ; qtot 281
+; residue 222 CLA rtp CLA  q -1.0
+   336        CLA    222    CLA    CLA    336         -1      35.45   ; qtot 280
+; residue 223 CLA rtp CLA  q -1.0
+   337        CLA    223    CLA    CLA    337         -1      35.45   ; qtot 279
+; residue 224 CLA rtp CLA  q -1.0
+   338        CLA    224    CLA    CLA    338         -1      35.45   ; qtot 278
+; residue 225 CLA rtp CLA  q -1.0
+   339        CLA    225    CLA    CLA    339         -1      35.45   ; qtot 277
+; residue 226 CLA rtp CLA  q -1.0
+   340        CLA    226    CLA    CLA    340         -1      35.45   ; qtot 276
+; residue 227 CLA rtp CLA  q -1.0
+   341        CLA    227    CLA    CLA    341         -1      35.45   ; qtot 275
+; residue 228 CLA rtp CLA  q -1.0
+   342        CLA    228    CLA    CLA    342         -1      35.45   ; qtot 274
+; residue 229 CLA rtp CLA  q -1.0
+   343        CLA    229    CLA    CLA    343         -1      35.45   ; qtot 273
+; residue 230 CLA rtp CLA  q -1.0
+   344        CLA    230    CLA    CLA    344         -1      35.45   ; qtot 272
+; residue 231 CLA rtp CLA  q -1.0
+   345        CLA    231    CLA    CLA    345         -1      35.45   ; qtot 271
+; residue 232 CLA rtp CLA  q -1.0
+   346        CLA    232    CLA    CLA    346         -1      35.45   ; qtot 270
+; residue 233 CLA rtp CLA  q -1.0
+   347        CLA    233    CLA    CLA    347         -1      35.45   ; qtot 269
+; residue 234 CLA rtp CLA  q -1.0
+   348        CLA    234    CLA    CLA    348         -1      35.45   ; qtot 268
+; residue 235 CLA rtp CLA  q -1.0
+   349        CLA    235    CLA    CLA    349         -1      35.45   ; qtot 267
+; residue 236 CLA rtp CLA  q -1.0
+   350        CLA    236    CLA    CLA    350         -1      35.45   ; qtot 266
+; residue 237 CLA rtp CLA  q -1.0
+   351        CLA    237    CLA    CLA    351         -1      35.45   ; qtot 265
+; residue 238 CLA rtp CLA  q -1.0
+   352        CLA    238    CLA    CLA    352         -1      35.45   ; qtot 264
+; residue 239 CLA rtp CLA  q -1.0
+   353        CLA    239    CLA    CLA    353         -1      35.45   ; qtot 263
+; residue 240 CLA rtp CLA  q -1.0
+   354        CLA    240    CLA    CLA    354         -1      35.45   ; qtot 262
+; residue 241 CLA rtp CLA  q -1.0
+   355        CLA    241    CLA    CLA    355         -1      35.45   ; qtot 261
+; residue 242 CLA rtp CLA  q -1.0
+   356        CLA    242    CLA    CLA    356         -1      35.45   ; qtot 260
+; residue 243 CLA rtp CLA  q -1.0
+   357        CLA    243    CLA    CLA    357         -1      35.45   ; qtot 259
+; residue 244 CLA rtp CLA  q -1.0
+   358        CLA    244    CLA    CLA    358         -1      35.45   ; qtot 258
+; residue 245 CLA rtp CLA  q -1.0
+   359        CLA    245    CLA    CLA    359         -1      35.45   ; qtot 257
+; residue 246 CLA rtp CLA  q -1.0
+   360        CLA    246    CLA    CLA    360         -1      35.45   ; qtot 256
+; residue 247 CLA rtp CLA  q -1.0
+   361        CLA    247    CLA    CLA    361         -1      35.45   ; qtot 255
+; residue 248 CLA rtp CLA  q -1.0
+   362        CLA    248    CLA    CLA    362         -1      35.45   ; qtot 254
+; residue 249 CLA rtp CLA  q -1.0
+   363        CLA    249    CLA    CLA    363         -1      35.45   ; qtot 253
+; residue 250 CLA rtp CLA  q -1.0
+   364        CLA    250    CLA    CLA    364         -1      35.45   ; qtot 252
+; residue 251 CLA rtp CLA  q -1.0
+   365        CLA    251    CLA    CLA    365         -1      35.45   ; qtot 251
+; residue 252 CLA rtp CLA  q -1.0
+   366        CLA    252    CLA    CLA    366         -1      35.45   ; qtot 250
+; residue 253 CLA rtp CLA  q -1.0
+   367        CLA    253    CLA    CLA    367         -1      35.45   ; qtot 249
+; residue 254 CLA rtp CLA  q -1.0
+   368        CLA    254    CLA    CLA    368         -1      35.45   ; qtot 248
+; residue 255 CLA rtp CLA  q -1.0
+   369        CLA    255    CLA    CLA    369         -1      35.45   ; qtot 247
+; residue 256 CLA rtp CLA  q -1.0
+   370        CLA    256    CLA    CLA    370         -1      35.45   ; qtot 246
+; residue 257 CLA rtp CLA  q -1.0
+   371        CLA    257    CLA    CLA    371         -1      35.45   ; qtot 245
+; residue 258 CLA rtp CLA  q -1.0
+   372        CLA    258    CLA    CLA    372         -1      35.45   ; qtot 244
+; residue 259 CLA rtp CLA  q -1.0
+   373        CLA    259    CLA    CLA    373         -1      35.45   ; qtot 243
+; residue 260 CLA rtp CLA  q -1.0
+   374        CLA    260    CLA    CLA    374         -1      35.45   ; qtot 242
+; residue 261 CLA rtp CLA  q -1.0
+   375        CLA    261    CLA    CLA    375         -1      35.45   ; qtot 241
+; residue 262 CLA rtp CLA  q -1.0
+   376        CLA    262    CLA    CLA    376         -1      35.45   ; qtot 240
+; residue 263 CLA rtp CLA  q -1.0
+   377        CLA    263    CLA    CLA    377         -1      35.45   ; qtot 239
+; residue 264 CLA rtp CLA  q -1.0
+   378        CLA    264    CLA    CLA    378         -1      35.45   ; qtot 238
+; residue 265 CLA rtp CLA  q -1.0
+   379        CLA    265    CLA    CLA    379         -1      35.45   ; qtot 237
+; residue 266 CLA rtp CLA  q -1.0
+   380        CLA    266    CLA    CLA    380         -1      35.45   ; qtot 236
+; residue 267 CLA rtp CLA  q -1.0
+   381        CLA    267    CLA    CLA    381         -1      35.45   ; qtot 235
+; residue 268 CLA rtp CLA  q -1.0
+   382        CLA    268    CLA    CLA    382         -1      35.45   ; qtot 234
+; residue 269 CLA rtp CLA  q -1.0
+   383        CLA    269    CLA    CLA    383         -1      35.45   ; qtot 233
+; residue 270 CLA rtp CLA  q -1.0
+   384        CLA    270    CLA    CLA    384         -1      35.45   ; qtot 232
+; residue 271 CLA rtp CLA  q -1.0
+   385        CLA    271    CLA    CLA    385         -1      35.45   ; qtot 231
+; residue 272 CLA rtp CLA  q -1.0
+   386        CLA    272    CLA    CLA    386         -1      35.45   ; qtot 230
+; residue 273 CLA rtp CLA  q -1.0
+   387        CLA    273    CLA    CLA    387         -1      35.45   ; qtot 229
+; residue 274 CLA rtp CLA  q -1.0
+   388        CLA    274    CLA    CLA    388         -1      35.45   ; qtot 228
+; residue 275 CLA rtp CLA  q -1.0
+   389        CLA    275    CLA    CLA    389         -1      35.45   ; qtot 227
+
+; Include Position restraint file
+#ifdef POSRES
+#include "posre_Other_chain_I.itp"
+#endif
+

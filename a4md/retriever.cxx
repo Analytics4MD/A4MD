@@ -1,7 +1,6 @@
-#include "retrieve.h"
 #include "mpi.h"
 #include "dataspaces_reader.h"
-#include "voronoi_analyzer.h"
+#include "md_analyzer.h"
 #include "md_retriever.h"
 #include <unistd.h>
 
@@ -10,7 +9,7 @@ ChunkAnalyzer* analyzer_factory(int argc, const char** argv)
 {
     
 
-    std::string analyzer_name = "voronoi_analyzer";
+    std::string analyzer_name = "md_analyzer";
     std::string reader_type = "dataspaces";
     std::string var_name = "test_var";
 
@@ -32,13 +31,13 @@ ChunkAnalyzer* analyzer_factory(int argc, const char** argv)
         throw NotImplementedException("Reader type is not implemented");
     }
 
-    if(analyzer_name == "voronoi_analyzer")
+    if(analyzer_name == "md_analyzer")
     {
         std::string name((char*)argv[1]);
         std::string func((char*)argv[2]);
-        PyVoronoiAnalyzer* py_analyzer = new PyVoronoiAnalyzer((char*)name.c_str(),(char*)func.c_str());
-        chunk_analyzer = new VoronoiAnalyzer(*chunk_reader, *py_analyzer);
-        printf("---======== Initialized voronoi analyzer\n");
+        PyRunner* py_runner = new PyRunner((char*)name.c_str(),(char*)func.c_str());
+        chunk_analyzer = new MDAnalyzer(*chunk_reader, *py_runner);
+        printf("---======== Initialized md analyzer\n");
     }
     else
     {

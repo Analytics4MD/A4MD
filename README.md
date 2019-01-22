@@ -25,27 +25,8 @@ cmake .. \
 ----------==============  Caliburn cluster ==============--------------
 make
 ```
-Now the executable a4md is in build/a4md.
+To use tau profiling in the code the cmake command can include the following flags. Of course, tau needs to be installed on the system.
 
-This code detects the python and includes the header files. 
-To demonstrate it, I have included a test function which can run a python function in a module. To test follow these steps:
-
-1) Make a simple python file
 ```
-# test_module.py
-def run(arguments):
-  print("Hello World", arguments)
+-DCMAKE_C_COMPILER=tau_cc.sh -DCMAKE_CXX_COMPILER=tau_cxx.sh
 ```
-
-2) Add the path to test_module.py to PYTHONPATH
-```
-# Typically done using export
-export PYTHONPATH={PATH TO test_module.py}:$PYTHONPATH
-```
-
-3) Invoke the "run" function in "test_module" from a4md
-```
-./a4md/retriever -p test_module run 123
-```
-
-This should output "Hello world 123"
