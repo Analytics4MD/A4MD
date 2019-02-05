@@ -33,6 +33,7 @@ build:
     - make install
     - cd ..
     - export PYTHONPATH=a4md/retrieve/test/
+    - export PATH=_install/bin:$PATH
     - ./build/a4md/tests-main -r junit -o shippable/testresults/tests-main-report.xml
     - ./build/a4md/common/test/tests-cmn -r junit -o shippable/testresults/tests-cmn-report.xml
     - ./build/a4md/retrieve/test/tests-retrieve -r junit -o shippable/testresults/tests-retrieve-report.xml
