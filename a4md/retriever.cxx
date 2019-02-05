@@ -21,7 +21,7 @@ ChunkAnalyzer* analyzer_factory(int argc, const char** argv)
     if (reader_type == "dataspaces")
     {
         printf("---======== Initializing dataspaces reader\n");
-        Chunker * chunker = new DataSpacesReader((char*)var_name.c_str(), total_chunks);
+        Chunker * chunker = new DataSpacesReader((char*)var_name.c_str(), total_chunks, MPI_COMM_WORLD);
         printf("---======== Initialized dataspaces reader\n");
         chunk_reader = new ChunkReader(* chunker);
         printf("---======== Initialized chunkreader\n");
