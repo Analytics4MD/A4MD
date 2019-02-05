@@ -9,21 +9,23 @@
 #include <sstream>
 
 
-DataSpacesReader::DataSpacesReader(char* var_name, unsigned long int total_chunks)
+DataSpacesReader::DataSpacesReader(char* var_name, unsigned long int total_chunks, MPI_Comm comm)
 : m_size_var_name("chunk_size"),
   m_var_name(var_name),
   m_total_chunks(total_chunks),
   m_total_data_read_time_ms(0.0)
 {
-    MPI_Barrier(MPI_COMM_WORLD);
-    m_gcomm = MPI_COMM_WORLD;
+    m_gcomm = comm;
+    MPI_Barrier(m_gcomm);
+    int nprocs;
+    MPI_Comm_size(m_gcomm, &nprocs);
     // Initalize DataSpaces
     // # of Peers, Application ID, ptr MPI comm, additional parameters
     // # Peers: Number of connecting clients to the DS server
     // Application ID: Unique idenitifier (integer) for application
     // Pointer to the MPI Communicator, allows DS Layer to use MPI barrier func
     // Addt'l parameters: Placeholder for future arguments, currently NULL.
-    dspaces_init(1, 2, &m_gcomm, NULL);
+    dspaces_init(nprocs, 2, &m_gcomm, NULL);
     printf("Initialized dspaces client in DataSpacesReader, var_name : %s, total_chunks: %u \n", var_name, total_chunks);
 }
 

@@ -13,7 +13,7 @@ class DataSpacesWriter : public IMSWriter
         double m_total_data_write_time_ms;
         MPI_Comm m_gcomm;
     public:
-        DataSpacesWriter(char* var_name, unsigned long int total_chunks);
+        DataSpacesWriter(char* var_name, unsigned long int total_chunks, MPI_Comm comm);
         void write_chunks(std::vector<Chunk*> chunks) override;
 };
 #endif
