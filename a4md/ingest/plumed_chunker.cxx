@@ -1,18 +1,18 @@
 #include "plumed_chunker.h"
 
 
-std::vector<Chunk*> PlumedChunker::get_chunks(int num_chunks)
-{
-    if (m_chunkq.size() < num_chunks)
-        throw "get_chunk_array asking for more chunks than what is available"; 
-    std::vector<Chunk*> chunks;
-    for (int i=0;i<num_chunks;i++)
-    {
-        chunks.push_back(m_chunkq.front());
-        m_chunkq.pop();
-    }
-    return chunks;
-}
+//std::vector<Chunk*> PlumedChunker::get_chunks(int num_chunks)
+//{
+//    if (m_chunkq.size() < num_chunks)
+//        throw "get_chunk_array asking for more chunks than what is available"; 
+//    std::vector<Chunk*> chunks;
+//    for (int i=0;i<num_chunks;i++)
+//    {
+//        chunks.push_back(m_chunkq.front());
+//        m_chunkq.pop();
+//    }
+//    return chunks;
+//}
 
 void PlumedChunker::append(unsigned long int id,
                            int time_step,
