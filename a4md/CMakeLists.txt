@@ -93,6 +93,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 #include_directories(${PROJECT_SOURCE_DIR}/extern/dataspaces/include)
 
 # add libraries
+include_directories("${PROJECT_SOURCE_DIR}/a4md/common")
 include_directories("${PROJECT_SOURCE_DIR}/a4md/ingest")
 include_directories("${PROJECT_SOURCE_DIR}/a4md/retrieve")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/include")

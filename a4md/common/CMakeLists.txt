@@ -6,6 +6,7 @@ set(_a4md_cmn_sources_
         ims_reader.cxx
         ims_writer.cxx
         chunker.cxx
+		py_runner.cxx
         )
 set(_a4md_cmn_headers_
         dataspaces_writer.h
@@ -17,6 +18,7 @@ set(_a4md_cmn_headers_
         chunker.h
         chunk.h
         exceptions.h
+		py_runner.h
         )
 
 add_library(a4md_cmn ${_a4md_cmn_sources_})
