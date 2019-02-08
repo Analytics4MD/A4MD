@@ -188,3 +188,132 @@ int PyRunner::analyze_frame(std::vector<int> types,
     } 
     return result;
 }
+
+template <typename T>
+std::vector<T> listToVector(PyObject* incoming) 
+{
+	std::vector<T> data;
+	if (std::is_same<T, int>::value)
+	{
+		if (PyList_Check(incoming)) {
+			for(Py_ssize_t i = 0; i < PyList_Size(incoming); i++) 
+			{
+				PyObject *value = PyList_GetItem(incoming, i);
+				data.push_back( PyLong_AsLong(value) );
+			}
+		} else 
+		{
+			fprintf(stderr, "Passed PyObject pointer was not a list!");
+		}
+	}
+	else if (std::is_same<T, double>::value)
+	{
+		if (PyList_Check(incoming)) {
+			for(Py_ssize_t i = 0; i < PyList_Size(incoming); i++) 
+			{
+				PyObject *value = PyList_GetItem(incoming, i);
+				data.push_back( PyFloat_AsDouble(value) );
+			}
+		} else 
+		{
+			fprintf(stderr, "Passed PyObject pointer was not a list");
+		}
+	}
+	else 
+		fprintf(stderr, "T should be integer or double\n");
+	
+	return data;
+}
+
+int PyRunner::extract_frame(char* file_path,
+							int &position,
+							Chunk* &chunk)
+{
+    int result = 0;
+    if (!m_py_module)
+    {
+        PyErr_Print();
+        fprintf(stderr,"import %s failed. See for an error message above\n",m_module_name);
+        result = -1;
+    }
+    else
+    {
+        if (m_py_func && PyCallable_Check(m_py_func))
+        {
+			PyObject* py_args = PyTuple_New(2);
+            PyObject* py_file = Py_BuildValue("s", file_path);
+	    	PyTuple_SetItem(py_args, 0, py_file);
+
+			PyObject* py_log = Py_BuildValue("i", position);
+			PyTuple_SetItem(py_args, 1, py_log);
+
+            PyObject* py_return = PyObject_CallObject(m_py_func, py_args);
+            Py_DECREF(py_args);
+            if (py_return != NULL)
+            {
+				int num = PyList_Size(py_return);
+                printf("Result of call: %d\n", num);
+				if (PyList_Check(py_return))
+				{
+					if (PyList_Size(py_return) == 5)
+					{
+						std::vector<int> types = listToVector<int>(PyList_GetItem(py_return, 0));
+
+						std::vector<double> x_cords = listToVector<double>(PyList_GetItem(py_return, 1));
+						std::vector<double> y_cords = listToVector<double>(PyList_GetItem(py_return, 2));
+						std::vector<double> z_cords = listToVector<double>(PyList_GetItem(py_return, 3));
+
+						double box_lx = 0.0, box_ly = 0.0, box_lz = 0.0;
+						double box_xy = 0.0, box_xz = 0.0, box_yz = 0.0;
+						int timestep = 0;
+						unsigned long int id = 0;
+						
+						chunk = new MDChunk(id, 
+										    timestep,
+										    types,
+										    x_cords,
+										    y_cords,
+										    z_cords,
+										    box_lx,
+										    box_ly,
+										    box_lz,
+										    box_xy,
+										    box_xz,
+										    box_yz);
+						position = PyLong_AsLong(PyList_GetItem(py_return, 4));
+					} 
+					else 
+					{
+						result = -2;
+						fprintf(stderr,"Python function %s return a list under wrong format in %s\n",m_function_name, m_module_name);
+					}
+				}
+				else
+				{
+					fprintf(stderr,"Python function %s return not a list in %s\n",m_function_name, m_module_name);
+					result = -2;
+				}
+                Py_DECREF(py_return);
+            }
+            else
+            {
+                result = -2;
+            	fprintf(stderr,"Python function %s return NULL in %s\n",m_function_name, m_module_name);
+                //print_py_error_and_rethrow();
+            }
+        }
+        else
+        {
+            fprintf(stderr,"Python function %s is not found in %s\n",m_function_name, m_module_name);
+            result = -2;
+            //print_py_error_and_rethrow();
+        }
+
+    }
+
+	if (result < 0)
+		print_py_error_and_rethrow();
+		
+    return result;
+}
+

@@ -3,7 +3,7 @@
 #include <vector>
 #include <Python.h>
 #include "exceptions.h"
-
+#include "chunk.h"
 
 class PyRunner
 {
@@ -30,6 +30,8 @@ class PyRunner
                           double z_low,
                           double z_high,
                           int step);
-
+		int extract_frame(char* file_path,
+						  int &position,
+						  Chunk* &chunk);
 };
 #endif
