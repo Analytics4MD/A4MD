@@ -4,7 +4,9 @@ set(_ingest_sources_
         ingest.cxx 
         plumed_chunker.cxx
         chunk_stager.cxx
-        pycall.cxx)
+        pycall.cxx
+		pdb_chunker.cxx
+		)
 set(_ingest_headers_
         plumed_ingest.h
         md_ingest.h
@@ -12,6 +14,7 @@ set(_ingest_headers_
         plumed_chunker.h
         chunk_stager.h
         pycall.h
+		pdb_chunker.h
         )
 
 #include_directories(${PROJECT_SOURCE_DIR}/extern/dataspaces/include)
@@ -27,6 +30,6 @@ set_target_properties(ingest PROPERTIES
 add_dependencies(ingest a4md_cmn)
 target_link_libraries(ingest a4md_cmn ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${PYTHON_LIBRARIES})
 
-#add_subdirectory(test)
+add_subdirectory(test)
 install (TARGETS ingest DESTINATION lib)
 install (FILES ${_ingest_headers_} DESTINATION include)

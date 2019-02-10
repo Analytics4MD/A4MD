@@ -6,7 +6,6 @@
 class IMSReader : public Chunker 
 {
     public:
-        std::vector<Chunk*> get_chunks(int num_chunks) override;
         std::vector<Chunk*> get_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to) override;
 };
 #endif
