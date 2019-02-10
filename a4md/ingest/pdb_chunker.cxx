@@ -23,7 +23,7 @@ int PDBChunker::extract_chunk()
     {
         append_chunk(chunk);
     } 
-    else    
+    else 
     {
         fprintf(stderr, "PDBChunker::extract_chunk is not able to extract chunk\n");
     }

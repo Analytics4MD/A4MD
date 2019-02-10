@@ -161,10 +161,10 @@ int PyRunner::analyze_frame(std::vector<int> types,
 
             //printf("C++ x_low %f %f %f %f %f %f\n",x_low,x_high,y_low,y_high,z_low,z_high);
             PyObject* py_box = Py_BuildValue("dddddd", x_low,x_high,y_low,y_high,z_low,z_high);
-        PyTuple_SetItem(py_args, 4, py_box);
+            PyTuple_SetItem(py_args, 4, py_box);
 
             PyObject* py_step = Py_BuildValue("i", step);
-        PyTuple_SetItem(py_args, 5, py_step);
+            PyTuple_SetItem(py_args, 5, py_step);
 
             PyObject* py_return = PyObject_CallObject(m_py_func, py_args);
             Py_DECREF(py_args);

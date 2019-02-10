@@ -8,7 +8,7 @@ class PDBChunker : public Chunker
     private:
         PyRunner & m_py_runner;
         char* m_file_path;
-        int m_position;     
+        int m_position; 
         
     public:
         PDBChunker(PyRunner & py_runner, char* file_path, int position = 0);
