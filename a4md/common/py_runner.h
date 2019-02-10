@@ -30,8 +30,8 @@ class PyRunner
                           double z_low,
                           double z_high,
                           int step);
-		int extract_frame(char* file_path,
-						  int &position,
-						  Chunk* &chunk);
+        int extract_frame(char* file_path,
+                          int &position,
+                          Chunk* &chunk);
 };
 #endif

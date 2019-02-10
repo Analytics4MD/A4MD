@@ -12,13 +12,12 @@ typedef std::chrono::duration<double, std::milli> DurationMilli;
 
 class Chunker 
 {
-	protected:
-		std::queue<Chunk*> m_chunkq;
+    protected:
+        std::queue<Chunk*> m_chunkq;
     public:
-		void append_chunk(Chunk* chunk);
-		std::vector<Chunk*> get_chunks(int num_chunks);
+        void append_chunk(Chunk* chunk);
+        std::vector<Chunk*> get_chunks(int num_chunks);
         virtual std::vector<Chunk*> get_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to);
-
 };
 
 #endif

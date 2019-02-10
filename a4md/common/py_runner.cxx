@@ -86,6 +86,7 @@ int PyRunner::initialize_python(char* py_path)
   PyObject* sysPath = PySys_GetObject((char*)"path");
   PyList_Append(sysPath, PyUnicode_FromString("."));
   PyList_Append(sysPath, PyUnicode_FromString(py_path));
+  printf("--------========== User defined python path %s =========----------\n", py_path);
   printf("--------========== import module %s ===========--------\n",m_module_name);
   m_py_module = PyImport_ImportModule(m_module_name);
   if (m_py_module ==NULL)
@@ -160,10 +161,10 @@ int PyRunner::analyze_frame(std::vector<int> types,
 
             //printf("C++ x_low %f %f %f %f %f %f\n",x_low,x_high,y_low,y_high,z_low,z_high);
             PyObject* py_box = Py_BuildValue("dddddd", x_low,x_high,y_low,y_high,z_low,z_high);
-	    PyTuple_SetItem(py_args, 4, py_box);
+        PyTuple_SetItem(py_args, 4, py_box);
 
             PyObject* py_step = Py_BuildValue("i", step);
-	    PyTuple_SetItem(py_args, 5, py_step);
+        PyTuple_SetItem(py_args, 5, py_step);
 
             PyObject* py_return = PyObject_CallObject(m_py_func, py_args);
             Py_DECREF(py_args);
@@ -192,42 +193,46 @@ int PyRunner::analyze_frame(std::vector<int> types,
 template <typename T>
 std::vector<T> listToVector(PyObject* incoming) 
 {
-	std::vector<T> data;
-	if (std::is_same<T, int>::value)
-	{
-		if (PyList_Check(incoming)) {
-			for(Py_ssize_t i = 0; i < PyList_Size(incoming); i++) 
-			{
-				PyObject *value = PyList_GetItem(incoming, i);
-				data.push_back( PyLong_AsLong(value) );
-			}
-		} else 
-		{
-			fprintf(stderr, "Passed PyObject pointer was not a list!");
-		}
-	}
-	else if (std::is_same<T, double>::value)
-	{
-		if (PyList_Check(incoming)) {
-			for(Py_ssize_t i = 0; i < PyList_Size(incoming); i++) 
-			{
-				PyObject *value = PyList_GetItem(incoming, i);
-				data.push_back( PyFloat_AsDouble(value) );
-			}
-		} else 
-		{
-			fprintf(stderr, "Passed PyObject pointer was not a list");
-		}
-	}
-	else 
-		fprintf(stderr, "T should be integer or double\n");
-	
-	return data;
+    std::vector<T> data;
+    if (std::is_same<T, int>::value)
+    {
+        if (PyList_Check(incoming)) 
+        {
+            for(Py_ssize_t i = 0; i < PyList_Size(incoming); i++) 
+            {
+                PyObject *value = PyList_GetItem(incoming, i);
+                data.push_back( PyLong_AsLong(value) );
+            }
+        } 
+        else 
+        {
+            fprintf(stderr, "Passed PyObject pointer was not a list!");
+        }
+    }
+    else if (std::is_same<T, double>::value)
+    {
+        if (PyList_Check(incoming)) 
+        {
+            for(Py_ssize_t i = 0; i < PyList_Size(incoming); i++) 
+            {
+                PyObject *value = PyList_GetItem(incoming, i);
+                data.push_back( PyFloat_AsDouble(value) );
+            }
+        } 
+        else 
+        {
+            fprintf(stderr, "Passed PyObject pointer was not a list");
+        }
+    }
+    else 
+        fprintf(stderr, "T should be integer or double\n");
+    
+    return data;
 }
 
 int PyRunner::extract_frame(char* file_path,
-							int &position,
-							Chunk* &chunk)
+                            int &position,
+                            Chunk* &chunk)
 {
     int result = 0;
     if (!m_py_module)
@@ -240,65 +245,105 @@ int PyRunner::extract_frame(char* file_path,
     {
         if (m_py_func && PyCallable_Check(m_py_func))
         {
-			PyObject* py_args = PyTuple_New(2);
+            PyObject* py_args = PyTuple_New(2);
             PyObject* py_file = Py_BuildValue("s", file_path);
-	    	PyTuple_SetItem(py_args, 0, py_file);
-
-			PyObject* py_log = Py_BuildValue("i", position);
-			PyTuple_SetItem(py_args, 1, py_log);
-
+            PyTuple_SetItem(py_args, 0, py_file);
+        
+            PyObject* py_log = Py_BuildValue("i", position);
+            PyTuple_SetItem(py_args, 1, py_log);
+        
             PyObject* py_return = PyObject_CallObject(m_py_func, py_args);
             Py_DECREF(py_args);
             if (py_return != NULL)
             {
-				int num = PyList_Size(py_return);
+                int num = PyList_Size(py_return);
                 printf("Result of call: %d\n", num);
-				if (PyList_Check(py_return))
-				{
-					if (PyList_Size(py_return) == 5)
-					{
-						std::vector<int> types = listToVector<int>(PyList_GetItem(py_return, 0));
-
-						std::vector<double> x_cords = listToVector<double>(PyList_GetItem(py_return, 1));
-						std::vector<double> y_cords = listToVector<double>(PyList_GetItem(py_return, 2));
-						std::vector<double> z_cords = listToVector<double>(PyList_GetItem(py_return, 3));
-
-						double box_lx = 0.0, box_ly = 0.0, box_lz = 0.0;
-						double box_xy = 0.0, box_xz = 0.0, box_yz = 0.0;
-						int timestep = 0;
-						unsigned long int id = 0;
-						
-						chunk = new MDChunk(id, 
-										    timestep,
-										    types,
-										    x_cords,
-										    y_cords,
-										    z_cords,
-										    box_lx,
-										    box_ly,
-										    box_lz,
-										    box_xy,
-										    box_xz,
-										    box_yz);
-						position = PyLong_AsLong(PyList_GetItem(py_return, 4));
-					} 
-					else 
-					{
-						result = -2;
-						fprintf(stderr,"Python function %s return a list under wrong format in %s\n",m_function_name, m_module_name);
-					}
-				}
-				else
-				{
-					fprintf(stderr,"Python function %s return not a list in %s\n",m_function_name, m_module_name);
-					result = -2;
-				}
+                if (PyList_Check(py_return))
+                {
+                    if (PyList_Size(py_return) == 13)
+                    {
+                        // ToDo: Directly casting type of PyList to vector / array  
+                        std::vector<int> types = listToVector<int>(PyList_GetItem(py_return, 0));
+                        std::vector<double> x_cords = listToVector<double>(PyList_GetItem(py_return, 1));
+                        std::vector<double> y_cords = listToVector<double>(PyList_GetItem(py_return, 2));
+                        std::vector<double> z_cords = listToVector<double>(PyList_GetItem(py_return, 3));
+                        // ToDo: Unhardcode these assignments
+                        double box_lx = 0.0, box_ly = 0.0, box_lz = 0.0;
+                        double box_xy = 0.0, box_yz = 0.0, box_xz = 0.0;
+                        PyObject* py_box_lx = PyList_GetItem(py_return, 4);
+                        if (py_box_lx != Py_None) 
+                        {
+                            box_lx = PyFloat_AsDouble(py_box_lx);
+                        }
+                        PyObject* py_box_ly = PyList_GetItem(py_return, 5);
+                        if (py_box_ly != Py_None) 
+                        {
+                            box_ly = PyFloat_AsDouble(py_box_ly);
+                        }
+                        PyObject* py_box_lz = PyList_GetItem(py_return, 6);
+                        if (py_box_lz != Py_None) 
+                        {
+                            box_lz = PyFloat_AsDouble(py_box_lz);
+                        }
+                        PyObject* py_box_xy = PyList_GetItem(py_return, 7);
+                        if (py_box_xy != Py_None) 
+                        {
+                            box_xy = PyFloat_AsDouble(py_box_xy);
+                        }
+                        PyObject* py_box_yz = PyList_GetItem(py_return, 8);
+                        if (py_box_yz != Py_None) 
+                        {
+                            box_yz = PyFloat_AsDouble(py_box_yz);
+                        }
+                        PyObject* py_box_xz = PyList_GetItem(py_return, 9);
+                        if (py_box_xz != Py_None) 
+                        {
+                            box_xz = PyFloat_AsDouble(py_box_xz);
+                        }
+                        int timestep = 0;
+                        PyObject* py_step = PyList_GetItem(py_return, 10);
+                        if (py_step != Py_None)
+                        {
+                            timestep = PyLong_AsLong(py_step);
+                        }
+                        unsigned long int id = 0;
+                        PyObject* py_id = PyList_GetItem(py_return, 11);
+                        if (py_id != Py_None)
+                        {
+                            id = PyLong_AsLong(py_id);
+                        }
+                        
+                        chunk = new MDChunk(id, 
+                                            timestep,
+                                            types,
+                                            x_cords,
+                                            y_cords,
+                                            z_cords,
+                                            box_lx,
+                                            box_ly,
+                                            box_lz,
+                                            box_xy,
+                                            box_xz,
+                                            box_yz);
+                        position = PyLong_AsLong(PyList_GetItem(py_return, 12));
+                    } 
+                    else 
+                    {
+                        result = -2;
+                        fprintf(stderr,"Python function %s return a list under wrong format in %s\n",m_function_name, m_module_name);
+                    }
+                }
+                else
+                {
+                    fprintf(stderr,"Python function %s return not a list in %s\n",m_function_name, m_module_name);
+                    result = -2;
+                }
                 Py_DECREF(py_return);
             }
             else
             {
                 result = -2;
-            	fprintf(stderr,"Python function %s return NULL in %s\n",m_function_name, m_module_name);
+                fprintf(stderr,"Python function %s return NULL in %s\n",m_function_name, m_module_name);
                 //print_py_error_and_rethrow();
             }
         }
@@ -308,12 +353,12 @@ int PyRunner::extract_frame(char* file_path,
             result = -2;
             //print_py_error_and_rethrow();
         }
-
+        
     }
-
-	if (result < 0)
-		print_py_error_and_rethrow();
-		
+    
+    if (result < 0)
+        print_py_error_and_rethrow();
+        
     return result;
 }
 
