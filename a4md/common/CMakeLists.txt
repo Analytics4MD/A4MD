@@ -37,7 +37,7 @@ target_include_directories(
     # Headers used from the installed location:
     "$<INSTALL_INTERFACE:include>"
 )
-target_link_libraries(a4md_cmn dataspaces dataspaces_cmn dataspaces_dart m ${Boost_LIBRARIES} ${MPI_LIBRARIES})
+target_link_libraries(a4md_cmn dataspaces dataspaces_cmn dataspaces_dart m rt ${Boost_LIBRARIES} ${MPI_LIBRARIES})
 
 add_subdirectory(test)
 install (TARGETS a4md_cmn DESTINATION lib)
