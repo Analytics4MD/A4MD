@@ -31,6 +31,7 @@ class PyRunner
                           double z_high,
                           int step);
         int extract_frame(char* file_path,
+                          unsigned long int id,
                           int &position,
                           Chunk* &chunk);
 };

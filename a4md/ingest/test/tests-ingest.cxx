@@ -21,7 +21,8 @@ TEST_CASE("PyRunner extract_frame Tests", "[ingest]")
 	
 	int position = 0;
 	Chunk* chunk;
-	int result = py_runner->extract_frame((char*)file_path.c_str(), position, chunk);
+    unsigned long int id = 0;
+	int result = py_runner->extract_frame((char*)file_path.c_str(), id, position, chunk);
 	printf("New position : %d\n", position);
 
 	MDChunk *plmdchunk = dynamic_cast<MDChunk *>(chunk);
@@ -53,6 +54,7 @@ TEST_CASE("PDBChunker Tests", "[ingest]")
 	
 	PDBChunker* pdb_chunker = new PDBChunker((*py_runner),
 											 (char*)file_path.c_str());
+    //unsigned long int id = 0;
 	int result = pdb_chunker->extract_chunk();
 	std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1);
 	Chunk* chunk = chunk_vector.front();

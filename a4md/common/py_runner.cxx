@@ -231,6 +231,7 @@ std::vector<T> listToVector(PyObject* incoming)
 }
 
 int PyRunner::extract_frame(char* file_path,
+                            unsigned long int id,
                             int &position,
                             Chunk* &chunk)
 {
@@ -260,7 +261,7 @@ int PyRunner::extract_frame(char* file_path,
                 printf("Result of call: %d\n", num);
                 if (PyList_Check(py_return))
                 {
-                    if (PyList_Size(py_return) == 13)
+                    if (PyList_Size(py_return) == 12)
                     {
                         // ToDo: Directly casting type of PyList to vector / array  
                         std::vector<int> types = listToVector<int>(PyList_GetItem(py_return, 0));
@@ -306,12 +307,6 @@ int PyRunner::extract_frame(char* file_path,
                         {
                             timestep = PyLong_AsLong(py_step);
                         }
-                        unsigned long int id = 0;
-                        PyObject* py_id = PyList_GetItem(py_return, 11);
-                        if (py_id != Py_None)
-                        {
-                            id = PyLong_AsLong(py_id);
-                        }
                         
                         chunk = new MDChunk(id, 
                                             timestep,
@@ -325,7 +320,7 @@ int PyRunner::extract_frame(char* file_path,
                                             box_xy,
                                             box_xz,
                                             box_yz);
-                        position = PyLong_AsLong(PyList_GetItem(py_return, 12));
+                        position = PyLong_AsLong(PyList_GetItem(py_return, 11));
                     } 
                     else 
                     {
