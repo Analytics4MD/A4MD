@@ -233,7 +233,8 @@ std::vector<T> listToVector(PyObject* incoming)
 int PyRunner::extract_frame(char* file_path,
                             unsigned long int id,
                             int &position,
-                            Chunk* &chunk)
+                            Chunk* &chunk,
+                            int natoms)
 {
     int result = 0;
     if (!m_py_module)
@@ -246,13 +247,16 @@ int PyRunner::extract_frame(char* file_path,
     {
         if (m_py_func && PyCallable_Check(m_py_func))
         {
-            PyObject* py_args = PyTuple_New(2);
+            PyObject* py_args = PyTuple_New(3);
             PyObject* py_file = Py_BuildValue("s", file_path);
             PyTuple_SetItem(py_args, 0, py_file);
         
-            PyObject* py_log = Py_BuildValue("i", position);
-            PyTuple_SetItem(py_args, 1, py_log);
+            PyObject* py_position = Py_BuildValue("i", position);
+            PyTuple_SetItem(py_args, 1, py_position);
         
+            PyObject* py_natoms = Py_BuildValue("i", natoms);
+            PyTuple_SetItem(py_args, 2, py_natoms);
+
             PyObject* py_return = PyObject_CallObject(m_py_func, py_args);
             Py_DECREF(py_args);
             if (py_return != NULL)
@@ -264,10 +268,17 @@ int PyRunner::extract_frame(char* file_path,
                     if (PyList_Size(py_return) == 12)
                     {
                         // ToDo: Directly casting type of PyList to vector / array  
-                        std::vector<int> types = listToVector<int>(PyList_GetItem(py_return, 0));
-                        std::vector<double> x_cords = listToVector<double>(PyList_GetItem(py_return, 1));
-                        std::vector<double> y_cords = listToVector<double>(PyList_GetItem(py_return, 2));
-                        std::vector<double> z_cords = listToVector<double>(PyList_GetItem(py_return, 3));
+                        PyObject *py_types = PyList_GetItem(py_return, 0);
+                        PyObject *py_x_cords = PyList_GetItem(py_return, 1);
+                        PyObject *py_y_cords = PyList_GetItem(py_return, 2);
+                        PyObject *py_z_cords = PyList_GetItem(py_return, 3);
+                        int ret_natoms = PyList_Size(py_types);
+                        printf("PyRunner::extract_frame Number of returned atoms : %d\n", ret_natoms);
+                        std::vector<int> types = listToVector<int>(py_types);
+                        std::vector<double> x_cords = listToVector<double>(py_x_cords);
+                        std::vector<double> y_cords = listToVector<double>(py_y_cords);
+                        std::vector<double> z_cords = listToVector<double>(py_z_cords);
+
                         // ToDo: Unhardcode these assignments
                         double box_lx = 0.0, box_ly = 0.0, box_lz = 0.0;
                         double box_xy = 0.0, box_yz = 0.0, box_xz = 0.0;
