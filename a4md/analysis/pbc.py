@@ -21,22 +21,12 @@ def move_bonded_atoms(central_atom, positions, axes, bond_dict):
 
 def check_bonds(positions, bonds, axes, bond_dict):
     for bond in bonds:
-        #print(bond[0],bond[1], len(positions))
         posn1 = np.array(positions[bond[0]])
         posn2 = np.array(positions[bond[1]])
-        #print(posn1, posn2)
-        #break
-        separation = posn1-posn2#hf.calculate_separation(posn1, posn2)
-        #print(separation,axes)
+        separation = posn1-posn2
         if any(separation >= axes / 2.0):
-            print(
-                "Periodic bond found:",
-                bond,
-                "because separation =",
-                separation,
-                ">=",
-                axes / 2.0,
-            )
+            print("Periodic bond found:",bond,
+                "because separation =",separation,">=",axes / 2.0)
             positions = move_bonded_atoms(bond[1], positions, axes, bond_dict)
     return positions
 

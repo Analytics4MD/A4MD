@@ -1,4 +1,6 @@
 import numpy as np
+from scipy.spatial import distance
+
 
 def com(points, masses):
     #print(masses,points)
@@ -31,8 +33,8 @@ def get_distances(atom_groups, xyzs, use_COM=True, masses=None):
         raise ValueError('use_COM=False is not implemented')
     return distances
 
-def get_bond_dict(traj, bonds):
-    bond_dict = {atom.index:[] for atom in traj.topology.atoms}
+def get_bond_dict(top, bonds):
+    bond_dict = {atom.index:[] for atom in top.atoms}
     for bond in bonds:
         if bond[1] not in bond_dict[bond[0]]:
             bond_dict[bond[0]].append(bond[1])
