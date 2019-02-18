@@ -39,3 +39,27 @@ def get_bond_dict(traj, bonds):
         if bond[0] not in bond_dict[bond[1]]:
             bond_dict[bond[1]].append(bond[0])
     return bond_dict
+
+def get_temperature(velocities, masses):
+    '''
+        Calculates the instantaneous kinetic temperature of a given set of atoms
+        whose velocities and masses are given.
+        It is important to note that the average kinetic energy used here is 
+        limited to the translational kinetic energy of the molecules. 
+        That is, they are treated as point masses and no account is made of 
+        internal degrees of freedom such as molecular rotation and vibration.
+
+        $KE_{avg} = \frac{1}{2} \overline{m v^2} = \frac{3}{2} k_BT$
+
+        k_B, the Botlzmann constant is taken as 1.38066\times10^{-23} J/K
+
+        Parameters:
+        velocities: ndarray, values expected to be in SI units (m/s)
+        masses: ndarray, values expected to be in SI units (kg)
+        output: temperature value in SI unit (Kelvin)
+    '''
+    kB = 1.38066e-23
+    d = velocities.shape[1] #  getting the dimension
+    T = np.mean(masses*velocities**2)/(d*kB)
+    return T
+    
