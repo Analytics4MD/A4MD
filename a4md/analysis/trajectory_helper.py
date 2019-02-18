@@ -56,7 +56,7 @@ def get_temperature(velocities, masses):
         k_B, the Botlzmann constant is taken as 1.38066\times10^{-23} J/K
 
         Parameters:
-        velocities: ndarray, values expected to be in SI units (m/s)
+        velocities: ndarray, shape=(Number of atoms,Number of dimensions). Values are expected to be in SI units (m/s)
         masses: ndarray, values expected to be in SI units (kg)
         output: temperature value in SI unit (Kelvin)
     '''
