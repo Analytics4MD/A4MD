@@ -10,6 +10,8 @@ import a4md.analysis.trajectory_helper as traj_helper
 
 
 nsteps = 1000
+ref_pos_index = 0 #  take reference positions from step 0
+ref_pos = None
 top = PDBTrajectoryFile(filename='reference.pdb').topology
 atom_indices_by_resid = traj_helper.get_atoms_groups(top)
 masses = traj_helper.get_masses(top)
@@ -24,10 +26,12 @@ def analyze(types, xpoints, ypoints, zpoints, box_points, step):
     print('-----======= Python : analyze ({})========-------'.format(step))
     # ---------============= analysis code goes here (start) ===========------------------- 
     points = np.vstack((xpoints, ypoints, zpoints)).T
+    if step == ref_pos_index:
+        ref_pos = points
     axes = np.asarray(box_points)[:3]
     if fix_pbc:
         points = pbc.solve_positions_for_pbc(points, bonds, axes, bond_dict)
-    rmsd = traj_helper.get_rmsd(points)
+    rmsd = traj_helper.get_rmsd(points, ref_pos, method='direct')
     rmsds.append(rmsd)
     # ---------============= analysis code goes here (end)   ===========------------------- 
     if step>=nsteps:
