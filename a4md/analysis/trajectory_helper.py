@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.spatial import distance
+import freud.msd as freud_msd
 
 
 def com(points, masses):
@@ -65,6 +66,17 @@ def get_temperature(velocities, masses):
     T = np.mean(masses*velocities**2)/(d*kB)
     return T
     
-def get_rmsd(points, method='direct'):
-    print('inside get_rmsd')
-    return 0
+def get_rmsd(points, ref_points, method='direct'):
+    if method == 'direct':
+        direct_msd = freud_msd.MSD(mode=method)
+        allpos = np.stack((ref_points, points),axis=0)
+        msd_val = direct_msd.compute(allpos)
+        rmsd = np.sqrt(msd_val.msd)
+    elif method == 'window':
+        window_msd = freud_msd.MSD(mode=method)
+        allpos = np.stack((ref_points, points),axis=0)
+        msd_val = window_msd.compute(allpos)
+        rmsd = np.sqrt(msd_val.msd)
+    else:
+        raise NotImplementedError('rmsd method {} is not implemeted'.format(method))
+    return rmsd
