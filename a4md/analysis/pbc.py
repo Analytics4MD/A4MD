@@ -1,4 +1,4 @@
-import trajectory_helper
+import a4md.analysis.trajectory_helper
 import numpy as np
 
 

@@ -65,3 +65,6 @@ def get_temperature(velocities, masses):
     T = np.mean(masses*velocities**2)/(d*kB)
     return T
     
+def get_rmsd(points, method='direct'):
+    print('inside get_rmsd')
+    return 0
