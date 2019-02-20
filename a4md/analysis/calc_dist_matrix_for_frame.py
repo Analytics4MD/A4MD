@@ -5,8 +5,8 @@ import time
 from mdtraj.formats import PDBTrajectoryFile
 from mdtraj import Trajectory
 import pickle
-import pbc as pbc
-import trajectory_helper as traj_helper
+import a4md.analysis.pbc as pbc
+import a4md.analysis.trajectory_helper as traj_helper
 
 
 nsteps = 1000
