@@ -11,16 +11,16 @@
 
 int main(int argc, const char** argv)
 {
-	MPI_Init(NULL, NULL);
-	if (argc != 5)
-	{
-		fprintf(stderr, "ERROR: ./mdgenerator py_path py_func file_path n_frames\n"); 
-		return -1;
-	}
+    MPI_Init(NULL, NULL);
+    if (argc != 5)
+    {
+        fprintf(stderr, "ERROR: ./mdgenerator py_path py_func file_path n_frames\n"); 
+        return -1;
+    }
     printf("----===== Initializing PDBChunker =====----\n");
-	std::string py_path((char*)argv[1]);
-	std::string py_func((char*)argv[2]);
-	std::string file_path((char*)argv[3]);
+    std::string py_path((char*)argv[1]);
+    std::string py_func((char*)argv[2]);
+    std::string file_path((char*)argv[3]);
     std::size_t botDirPos = py_path.find_last_of("/");
     // get directory
     std::string py_dir = py_path.substr(0, botDirPos);
@@ -30,10 +30,10 @@ int main(int argc, const char** argv)
     printf("Python script name : %s\n", py_name.c_str());
     printf("Python function: %s\n", py_func.c_str());
 
-	PyRunner* py_runner = new PyRunner((char*)py_name.c_str(), 
-									   (char*)py_func.c_str(),
-									   (char*)py_path.c_str());
-	PDBChunker* pdb_chunker = new PDBChunker((*py_runner), (char*)file_path.c_str());
+    PyRunner* py_runner = new PyRunner((char*)py_name.c_str(), 
+                                       (char*)py_func.c_str(),
+                                       (char*)py_path.c_str());
+    PDBChunker* pdb_chunker = new PDBChunker((*py_runner), (char*)file_path.c_str());
     printf("----===== Initialized PDBChunker =====----\n");
     
     printf("----===== Initializing DataSpaces Writer ====----\n");
@@ -44,26 +44,26 @@ int main(int argc, const char** argv)
     printf("----===== Initialized DataSpaces Writer ====----\n");
 
     TimeVar t_start = timeNow();
-	for (auto step = 0; step < total_chunks; step++) 
-	{
-		std::cout << "Iteration : " << step << std::endl;
-		if (pdb_chunker->extract_chunk() == 0) 
-		{
-			std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1);
-			Chunk* chunk = chunk_vector.front(); 
-			//MDChunk *plmdchunk = dynamic_cast<MDChunk *>(chunk);
-			//plmdchunk->print();
+    for (auto step = 0; step < total_chunks; step++) 
+    {
+        std::cout << "Iteration : " << step << std::endl;
+        if (pdb_chunker->extract_chunk() == 0) 
+        {
+            std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1);
+            Chunk* chunk = chunk_vector.front(); 
+            //MDChunk *plmdchunk = dynamic_cast<MDChunk *>(chunk);
+            //plmdchunk->print();
 
             std::vector<Chunk*> chunks = {chunk};
             printf("----===== Writing Chunk %i to DataSpaces START====----\n",step);
             dataspaces_writer_ptr->write_chunks(chunks);
-		}
-	}
+        }
+    }
     DurationMilli md_generator_time_ms = timeNow() - t_start;
     auto total_md_generator_time_ms = md_generator_time_ms.count();
     printf("total_md_generator_time_ms : %f\n", total_md_generator_time_ms);
     // ToDo: check if actually finish writing to DataSpaces
 
-	MPI_Finalize();
+    MPI_Finalize();
     return 0;
 }
