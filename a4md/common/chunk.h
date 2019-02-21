@@ -32,7 +32,7 @@ class Chunk
 
         virtual void print()
         {
-            std::cout << "chunk id " << m_id << std::endl;
+            printf("chunk id %lu\n",  m_id);
         }
 
         int get_chunk_id()
@@ -108,11 +108,11 @@ class MDChunk : public Chunk
         {
             printf("--------==========MDChunk::print start=============--------------\n");
             Chunk::print();
-            std::cout << "types : ";
+            printf("types : ");
             for (auto i: m_types)
-                std::cout << i << ' ';
-            std::cout << std::endl;
-            std::cout << "positions :\n";
+                printf("%d ", i);
+            printf("\n");
+            printf("positions :\n");
             for( auto iterator = m_x_cords.begin() ; iterator != m_x_cords.end() ; ++iterator )
             {
                 int position = std::distance( m_x_cords.begin(), iterator ) ;

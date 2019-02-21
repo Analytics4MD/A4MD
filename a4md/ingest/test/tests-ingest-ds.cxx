@@ -23,22 +23,23 @@ void ds_write_and_read()
     DataSpacesReader* dataspaces_reader_ptr;
     unsigned long int current_chunk_id = 0;
 
-	std::string name = "load";
-	std::string func = "extract_frame";
-	std::string py_path = "./a4md/ingest/test";
-	std::string file_path = "./a4md/ingest/test/test.pdb";
+    std::string name = "load";
+    std::string func = "extract_frame";
+    std::string py_path = "./a4md/ingest/test";
+    std::string file_path = "./a4md/ingest/test/test.pdb";
 
-	PyRunner* py_runner = new PyRunner((char*)name.c_str(), 
-									   (char*)func.c_str(),
-									   (char*)py_path.c_str());
-	PDBChunker* pdb_chunker = new PDBChunker((*py_runner),
-											 (char*)file_path.c_str());
-	int result = pdb_chunker->extract_chunk();
-	std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1);
-	Chunk* chunk = chunk_vector.front(); 
-	MDChunk *md_chunk = dynamic_cast<MDChunk *>(chunk);
+    PyRunner* py_runner = new PyRunner((char*)name.c_str(), 
+                                       (char*)func.c_str(),
+                                       (char*)py_path.c_str());
+    PDBChunker* pdb_chunker = new PDBChunker((*py_runner),
+                                             (char*)file_path.c_str());
+    //unsigned long int id = 0;
+    int result = pdb_chunker->extract_chunk();
+    std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1);
+    Chunk* chunk = chunk_vector.front(); 
+    MDChunk *md_chunk = dynamic_cast<MDChunk *>(chunk);
     //md_chunk->print();
-	
+    
     char* temp_var_name = "test_var";
     unsigned long int total_chunks = 1;
     dataspaces_writer_ptr = new DataSpacesWriter(temp_var_name, total_chunks, MPI_COMM_WORLD);
@@ -46,29 +47,29 @@ void ds_write_and_read()
     std::vector<Chunk*> chunks = {chunk};
     dataspaces_writer_ptr->write_chunks(chunks);
     std::vector<Chunk*> recieved_chunks = dataspaces_reader_ptr->get_chunks(current_chunk_id, current_chunk_id);
-	
-	for (Chunk* chunk: recieved_chunks)
+    
+    for (Chunk* chunk: recieved_chunks)
     {
-      MDChunk *recieved_chunk = dynamic_cast<MDChunk *>(chunk);
-	  //recieved_chunk->print();
-      auto recieved_x_positions = recieved_chunk->get_x_positions();
-      auto recieved_y_positions = recieved_chunk->get_y_positions();
-      auto recieved_z_positions = recieved_chunk->get_z_positions();
-      auto recieved_types_vector = recieved_chunk->get_types();
-     
-      double recieved_lx = recieved_chunk->get_box_lx();
-      double recieved_ly = recieved_chunk->get_box_ly();
-      double recieved_lz = recieved_chunk->get_box_lz();
-      double recieved_xy = recieved_chunk->get_box_xy(); // 0 for orthorhombic
-      double recieved_xz = recieved_chunk->get_box_xz(); // 0 for orthorhombic
-      double recieved_yz = recieved_chunk->get_box_yz(); // 0 for orthorhombic
-      int recieved_step = recieved_chunk->get_timestep();
-
-      REQUIRE( chunk->get_chunk_id() == recieved_chunk->get_chunk_id() );
-      REQUIRE( md_chunk->get_timestep() == recieved_chunk->get_timestep() );
-      REQUIRE( md_chunk->get_types()[0] == recieved_chunk->get_types()[0] );
-      REQUIRE( md_chunk->get_x_positions()[0] == recieved_chunk->get_x_positions()[0] );
-      REQUIRE( md_chunk->get_box_lx() == recieved_chunk->get_box_lx() );
+        MDChunk *recieved_chunk = dynamic_cast<MDChunk *>(chunk);
+        //recieved_chunk->print();
+        auto recieved_x_positions = recieved_chunk->get_x_positions();
+        auto recieved_y_positions = recieved_chunk->get_y_positions();
+        auto recieved_z_positions = recieved_chunk->get_z_positions();
+        auto recieved_types_vector = recieved_chunk->get_types();
+        
+        double recieved_lx = recieved_chunk->get_box_lx();
+        double recieved_ly = recieved_chunk->get_box_ly();
+        double recieved_lz = recieved_chunk->get_box_lz();
+        double recieved_xy = recieved_chunk->get_box_xy(); // 0 for orthorhombic
+        double recieved_xz = recieved_chunk->get_box_xz(); // 0 for orthorhombic
+        double recieved_yz = recieved_chunk->get_box_yz(); // 0 for orthorhombic
+        int recieved_step = recieved_chunk->get_timestep();
+        
+        REQUIRE( chunk->get_chunk_id() == recieved_chunk->get_chunk_id() );
+        REQUIRE( md_chunk->get_timestep() == recieved_chunk->get_timestep() );
+        REQUIRE( md_chunk->get_types()[0] == recieved_chunk->get_types()[0] );
+        REQUIRE( md_chunk->get_x_positions()[0] == recieved_chunk->get_x_positions()[0] );
+        REQUIRE( md_chunk->get_box_lx() == recieved_chunk->get_box_lx() );
     }
     MPI_Finalize(); 
     printf("Completed dataspaces write and read successfully\n");
@@ -104,12 +105,12 @@ TEST_CASE( "DS PDBChunker Ingest Test", "[ingest]" )
 
     if (status == 0) 
     {
-	    printf("sleeping 3 seconds\n");
-	    sleep(3);
-	    printf("done sleeping\n");
-	    ds_write_and_read();
+        printf("sleeping 3 seconds\n");
+        sleep(3);
+        printf("done sleeping\n");
+        ds_write_and_read();
 
-	    status = kill(child_pid, SIGTERM);
+        status = kill(child_pid, SIGTERM);
         printf("Child exited with status %i\n", status);
     }
     else 

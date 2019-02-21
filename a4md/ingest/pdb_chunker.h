@@ -12,7 +12,7 @@ class PDBChunker : public Chunker
         
     public:
         PDBChunker(PyRunner & py_runner, char* file_path, int position = 0);
-        int extract_chunk();
+        int extract_chunk(int natoms = 0);
         int get_position();
 };
 

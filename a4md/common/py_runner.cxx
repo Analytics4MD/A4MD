@@ -231,8 +231,10 @@ std::vector<T> listToVector(PyObject* incoming)
 }
 
 int PyRunner::extract_frame(char* file_path,
+                            unsigned long int id,
                             int &position,
-                            Chunk* &chunk)
+                            Chunk* &chunk,
+                            int natoms)
 {
     int result = 0;
     if (!m_py_module)
@@ -245,13 +247,16 @@ int PyRunner::extract_frame(char* file_path,
     {
         if (m_py_func && PyCallable_Check(m_py_func))
         {
-            PyObject* py_args = PyTuple_New(2);
+            PyObject* py_args = PyTuple_New(3);
             PyObject* py_file = Py_BuildValue("s", file_path);
             PyTuple_SetItem(py_args, 0, py_file);
         
-            PyObject* py_log = Py_BuildValue("i", position);
-            PyTuple_SetItem(py_args, 1, py_log);
+            PyObject* py_position = Py_BuildValue("i", position);
+            PyTuple_SetItem(py_args, 1, py_position);
         
+            PyObject* py_natoms = Py_BuildValue("i", natoms);
+            PyTuple_SetItem(py_args, 2, py_natoms);
+
             PyObject* py_return = PyObject_CallObject(m_py_func, py_args);
             Py_DECREF(py_args);
             if (py_return != NULL)
@@ -260,59 +265,89 @@ int PyRunner::extract_frame(char* file_path,
                 printf("Result of call: %d\n", num);
                 if (PyList_Check(py_return))
                 {
-                    if (PyList_Size(py_return) == 13)
+                    if (PyList_Size(py_return) == 7)
                     {
                         // ToDo: Directly casting type of PyList to vector / array  
-                        std::vector<int> types = listToVector<int>(PyList_GetItem(py_return, 0));
-                        std::vector<double> x_cords = listToVector<double>(PyList_GetItem(py_return, 1));
-                        std::vector<double> y_cords = listToVector<double>(PyList_GetItem(py_return, 2));
-                        std::vector<double> z_cords = listToVector<double>(PyList_GetItem(py_return, 3));
+                        PyObject *py_types = PyList_GetItem(py_return, 0);
+                        PyObject *py_x_cords = PyList_GetItem(py_return, 1);
+                        PyObject *py_y_cords = PyList_GetItem(py_return, 2);
+                        PyObject *py_z_cords = PyList_GetItem(py_return, 3);
+                        int ret_natoms = PyList_Size(py_types);
+                        printf("PyRunner::extract_frame Number of returned atoms : %d\n", ret_natoms);
+                        std::vector<int> types = listToVector<int>(py_types);
+                        std::vector<double> x_cords = listToVector<double>(py_x_cords);
+                        std::vector<double> y_cords = listToVector<double>(py_y_cords);
+                        std::vector<double> z_cords = listToVector<double>(py_z_cords);
+                        Py_DECREF(py_types);
+                        Py_DECREF(py_x_cords);
+                        Py_DECREF(py_y_cords);
+                        Py_DECREF(py_z_cords);
+
                         // ToDo: Unhardcode these assignments
                         double box_lx = 0.0, box_ly = 0.0, box_lz = 0.0;
                         double box_xy = 0.0, box_yz = 0.0, box_xz = 0.0;
-                        PyObject* py_box_lx = PyList_GetItem(py_return, 4);
-                        if (py_box_lx != Py_None) 
+                        PyObject* py_box = PyList_GetItem(py_return, 4);
+                        if (PyList_Check(py_box))
                         {
-                            box_lx = PyFloat_AsDouble(py_box_lx);
+
+                            if (PyList_Size(py_box) == 6)
+                            {
+                        
+                                PyObject* py_box_lx = PyList_GetItem(py_box, 0);
+                                if (py_box_lx != Py_None) 
+                                {
+                                    box_lx = PyFloat_AsDouble(py_box_lx);
+                                }
+                                PyObject* py_box_ly = PyList_GetItem(py_box, 1);
+                                if (py_box_ly != Py_None) 
+                                {
+                                    box_ly = PyFloat_AsDouble(py_box_ly);
+                                }
+                                PyObject* py_box_lz = PyList_GetItem(py_box, 2);
+                                if (py_box_lz != Py_None) 
+                                {
+                                    box_lz = PyFloat_AsDouble(py_box_lz);
+                                }
+                                PyObject* py_box_xy = PyList_GetItem(py_box, 3);
+                                if (py_box_xy != Py_None) 
+                                {
+                                    box_xy = PyFloat_AsDouble(py_box_xy);
+                                }
+                                PyObject* py_box_yz = PyList_GetItem(py_box, 4);
+                                if (py_box_yz != Py_None) 
+                                {
+                                    box_yz = PyFloat_AsDouble(py_box_yz);
+                                }
+                                PyObject* py_box_xz = PyList_GetItem(py_box, 5);
+                                if (py_box_xz != Py_None) 
+                                {
+                                    box_xz = PyFloat_AsDouble(py_box_xz);
+                                }
+                                Py_DECREF(py_box_lx);
+                                Py_DECREF(py_box_ly);
+                                Py_DECREF(py_box_lz);
+                                Py_DECREF(py_box_xy);
+                                Py_DECREF(py_box_yz);
+                                Py_DECREF(py_box_xz);
+                            }
                         }
-                        PyObject* py_box_ly = PyList_GetItem(py_return, 5);
-                        if (py_box_ly != Py_None) 
+                        else 
                         {
-                            box_ly = PyFloat_AsDouble(py_box_ly);
+                            result = -2;
+                            fprintf(stderr, "ERROR: PyRunner::extract_frame box tupple returned is wrong format\n");
                         }
-                        PyObject* py_box_lz = PyList_GetItem(py_return, 6);
-                        if (py_box_lz != Py_None) 
-                        {
-                            box_lz = PyFloat_AsDouble(py_box_lz);
-                        }
-                        PyObject* py_box_xy = PyList_GetItem(py_return, 7);
-                        if (py_box_xy != Py_None) 
-                        {
-                            box_xy = PyFloat_AsDouble(py_box_xy);
-                        }
-                        PyObject* py_box_yz = PyList_GetItem(py_return, 8);
-                        if (py_box_yz != Py_None) 
-                        {
-                            box_yz = PyFloat_AsDouble(py_box_yz);
-                        }
-                        PyObject* py_box_xz = PyList_GetItem(py_return, 9);
-                        if (py_box_xz != Py_None) 
-                        {
-                            box_xz = PyFloat_AsDouble(py_box_xz);
-                        }
+                        Py_DECREF(py_box);
+
                         int timestep = 0;
-                        PyObject* py_step = PyList_GetItem(py_return, 10);
+                        PyObject* py_step = PyList_GetItem(py_return, 5);
                         if (py_step != Py_None)
                         {
                             timestep = PyLong_AsLong(py_step);
                         }
-                        unsigned long int id = 0;
-                        PyObject* py_id = PyList_GetItem(py_return, 11);
-                        if (py_id != Py_None)
-                        {
-                            id = PyLong_AsLong(py_id);
-                        }
-                        
+                        Py_DECREF(py_step);
+
+                        //printf("box: %f %f %f %f %f %f\n", box_lx, box_ly, box_lz, box_xy, box_yz, box_xz);
+
                         chunk = new MDChunk(id, 
                                             timestep,
                                             types,
@@ -325,7 +360,7 @@ int PyRunner::extract_frame(char* file_path,
                                             box_xy,
                                             box_xz,
                                             box_yz);
-                        position = PyLong_AsLong(PyList_GetItem(py_return, 12));
+                        position = PyLong_AsLong(PyList_GetItem(py_return, 6));
                     } 
                     else 
                     {

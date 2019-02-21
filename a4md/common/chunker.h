@@ -14,6 +14,7 @@ class Chunker
 {
     protected:
         std::queue<Chunk*> m_chunkq;
+        unsigned long int m_next_id;
     public:
         void append_chunk(Chunk* chunk);
         std::vector<Chunk*> get_chunks(int num_chunks);
