@@ -21,11 +21,13 @@ int main(int argc, const char** argv)
     std::string py_path((char*)argv[1]);
     std::string py_func((char*)argv[2]);
     std::string file_path((char*)argv[3]);
-    std::size_t botDirPos = py_path.find_last_of("/");
+    std::size_t module_start = py_path.find_last_of("/");
+    std::size_t module_end = py_path.find_last_of(".");
+
     // get directory
-    std::string py_dir = py_path.substr(0, botDirPos);
+    std::string py_dir = py_path.substr(0, module_start);
     // get file
-    std::string py_name = py_path.substr(botDirPos+1, py_path.length()-5);
+    std::string py_name = py_path.substr(module_start+1, module_end-module_start-1);
     printf("Python directory : %s\n", py_dir.c_str());
     printf("Python script name : %s\n", py_name.c_str());
     printf("Python function: %s\n", py_func.c_str());
