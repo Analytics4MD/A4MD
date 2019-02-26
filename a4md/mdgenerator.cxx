@@ -12,15 +12,17 @@
 int main(int argc, const char** argv)
 {
     MPI_Init(NULL, NULL);
-    if (argc != 5)
+    if (argc != 6)
     {
-        fprintf(stderr, "ERROR: ./mdgenerator py_path py_func file_path n_frames\n"); 
+        fprintf(stderr, "ERROR: ./mdgenerator py_path py_func file_path n_frames n_atoms\n"); 
         return -1;
     }
     printf("----===== Initializing PDBChunker =====----\n");
     std::string py_path((char*)argv[1]);
     std::string py_func((char*)argv[2]);
     std::string file_path((char*)argv[3]);
+    int n_frames = std::stoi(argv[4]);
+    int n_atoms = std::stoi(argv[5]);
     std::size_t module_start = py_path.find_last_of("/");
     std::size_t module_end = py_path.rfind(".py");
     if (module_end == std::string::npos)
@@ -44,7 +46,6 @@ int main(int argc, const char** argv)
     
     printf("----===== Initializing DataSpaces Writer ====----\n");
     char* var_name = "test_var";
-    int n_frames = std::stoi(argv[4]);
     unsigned long int total_chunks = n_frames;
     DataSpacesWriter *dataspaces_writer_ptr = new DataSpacesWriter(var_name, total_chunks, MPI_COMM_WORLD);
     printf("----===== Initialized DataSpaces Writer ====----\n");
@@ -53,7 +54,7 @@ int main(int argc, const char** argv)
     for (auto step = 0; step < total_chunks; step++) 
     {
         std::cout << "Iteration : " << step << std::endl;
-        if (pdb_chunker->extract_chunk() == 0) 
+        if (pdb_chunker->extract_chunk(n_atoms) == 0) 
         {
             std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1);
             Chunk* chunk = chunk_vector.front(); 
