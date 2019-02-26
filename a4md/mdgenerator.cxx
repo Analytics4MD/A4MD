@@ -25,11 +25,11 @@ int main(int argc, const char** argv)
     std::size_t module_end = py_path.rfind(".py");
     if (module_end == std::string::npos)
     {
-	fprintf(stderr, "ERROR: Expecting a python module in the py_path argument. Received %s instead\n",py_path);
+	fprintf(stderr, "ERROR: Expecting a python module in the py_path argument.\n");
         return -1;
     }
     // get directory
-    std::string py_dir = (std::string::npos==module_start)? std::string(".") : str.substr(0,module_start);
+    std::string py_dir = (std::string::npos==module_start)? std::string(".") : py_path.substr(0,module_start);
     // get file
     std::string py_name = py_path.substr(module_start+1, module_end-module_start-1);
     printf("Python directory : %s\n", py_dir.c_str());
