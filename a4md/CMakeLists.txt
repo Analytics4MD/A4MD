@@ -42,7 +42,7 @@ if (MPI_FOUND)
     if (MPI_FORTRAN_FOUND)
         message(STATUS "--==MPI FORTRAN COMPILER FOUND==--" ${MPI_FORTRAN_COMPILER})
     else (MPI_FORTRAN_FOUND)
-        message(STATUS "MPI_FORTRSN_COMPILE_FLAGS" ${MPI_Fortran_COMPILE_FLAGS})
+        message(STATUS "MPI_FORTRAN_COMPILE_FLAGS" ${MPI_Fortran_COMPILE_FLAGS})
         message(STATUS "MPI_FORTRAN_INCLUDE_PATH" ${MPI_Fortran_INCLUDE_PATH})
         message(STATUS "MPI_FORTRAN_LIBRARIES" ${MPI_Fortran_INCLUDE_PATH})
 
@@ -58,10 +58,15 @@ endif (MPI_FOUND)
 message(STATUS "Adding Dataspaces library to project")
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
+set(DS_CONF_ENABLES "--enable-dart-tcp")
+if (nersc)
+    set(DS_CONF_ENABLES "--enable-drc;--enable-dimes;--enable-shmem")
+endif (nersc)
+
 ExternalProject_Add(project_dataspaces
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/a4md/extern/dataspaces
   BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND ./autogen.sh COMMAND ./configure CC=mpicc FC=mpif90 CFLAGS=-fPIC --enable-dart-tcp LIBS=-lm --prefix=${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces
+  CONFIGURE_COMMAND ./autogen.sh COMMAND ./configure CC=${MPI_C_COMPILER} CXX=${MPI_CXX_COMPILER} FC=${MPI_FORTRAN_COMPILER} ${DS_CONF_ENABLES} --prefix=${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces
   BUILD_COMMAND ${MAKE}
 )
 add_library(dataspaces STATIC IMPORTED)

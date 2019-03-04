@@ -28,6 +28,11 @@ endif()
 # Custom CMake scripts
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
 
+set(nersc FALSE)
+if(DEFINED ENV{NERSC_HOST})
+    message("The code is built at NERSC/" $ENV{NERSC_HOST})
+    set(nersc TRUE)
+    message(STATUS "NERSC build is enabled")
+endif()
+
 add_subdirectory(a4md)
-
-
