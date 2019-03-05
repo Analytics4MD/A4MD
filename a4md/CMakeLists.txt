@@ -61,6 +61,9 @@ include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 set(DS_CONF_ENABLES "--enable-dart-tcp")
 if (nersc)
     set(DS_CONF_ENABLES "--enable-drc;--enable-dimes;--enable-shmem")
+else (nersc)
+    # ToDo: Fix MPI_FORTRAN not found to unhardcode this
+    set(MPI_FORTRAN_COMPILER "mpif90")
 endif (nersc)
 
 ExternalProject_Add(project_dataspaces
