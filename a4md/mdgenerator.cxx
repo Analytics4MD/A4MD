@@ -12,20 +12,28 @@
 int main(int argc, const char** argv)
 {
     MPI_Init(NULL, NULL);
-    if (argc != 5)
+    if (argc != 6)
     {
-        fprintf(stderr, "ERROR: ./mdgenerator py_path py_func file_path n_frames\n"); 
+        fprintf(stderr, "ERROR: ./mdgenerator py_path py_func file_path n_frames n_atoms\n"); 
         return -1;
     }
     printf("----===== Initializing PDBChunker =====----\n");
     std::string py_path((char*)argv[1]);
     std::string py_func((char*)argv[2]);
     std::string file_path((char*)argv[3]);
-    std::size_t botDirPos = py_path.find_last_of("/");
+    int n_frames = std::stoi(argv[4]);
+    int n_atoms = std::stoi(argv[5]);
+    std::size_t module_start = py_path.find_last_of("/");
+    std::size_t module_end = py_path.rfind(".py");
+    if (module_end == std::string::npos)
+    {
+	fprintf(stderr, "ERROR: Expecting a python module in the py_path argument.\n");
+        return -1;
+    }
     // get directory
-    std::string py_dir = py_path.substr(0, botDirPos);
+    std::string py_dir = (std::string::npos==module_start)? std::string(".") : py_path.substr(0,module_start);
     // get file
-    std::string py_name = py_path.substr(botDirPos+1, py_path.length()-5);
+    std::string py_name = py_path.substr(module_start+1, module_end-module_start-1);
     printf("Python directory : %s\n", py_dir.c_str());
     printf("Python script name : %s\n", py_name.c_str());
     printf("Python function: %s\n", py_func.c_str());
@@ -38,7 +46,6 @@ int main(int argc, const char** argv)
     
     printf("----===== Initializing DataSpaces Writer ====----\n");
     char* var_name = "test_var";
-    int n_frames = std::stoi(argv[4]);
     unsigned long int total_chunks = n_frames;
     DataSpacesWriter *dataspaces_writer_ptr = new DataSpacesWriter(var_name, total_chunks, MPI_COMM_WORLD);
     printf("----===== Initialized DataSpaces Writer ====----\n");
@@ -47,7 +54,7 @@ int main(int argc, const char** argv)
     for (auto step = 0; step < total_chunks; step++) 
     {
         std::cout << "Iteration : " << step << std::endl;
-        if (pdb_chunker->extract_chunk() == 0) 
+        if (pdb_chunker->extract_chunk(n_atoms) == 0) 
         {
             std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1);
             Chunk* chunk = chunk_vector.front(); 
