@@ -46,7 +46,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
     {
         //chk_ary.print();
 
-        //SerializableChunk *serializable_chunk = new SerializableChunk(chunk);
+        //SerializableChunk serializable_chunk = SerializableChunk(chunk);
         // ToDo: May don't need alignment, only rounding up via padding
         std::size_t align_size = 64;    
         std::size_t request_size = sizeof(SerializableChunk) + align_size;
@@ -64,7 +64,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         {
             boost::archive::text_oarchive oa(oss);
             // write class instance to archive
-            // oa << serializable_chunk;
+            //oa << serializable_chunk;
             oa << *serializable_chunk;
         }
         
@@ -117,6 +117,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         //else
         //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
         dspaces_unlock_on_write("my_test_lock", &m_gcomm);
+        delete[] c_data;
     }
     MPI_Barrier(m_gcomm);
     DurationMilli write_time_ms = timeNow()-t_start;
