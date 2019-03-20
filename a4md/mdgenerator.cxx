@@ -7,14 +7,16 @@
 #include <string>
 #include <vector>
 #include <unistd.h>
+#include <chrono>
+#include <thread>
 
 
 int main(int argc, const char** argv)
 {
     MPI_Init(NULL, NULL);
-    if (argc != 6)
+    if (argc != 7)
     {
-        fprintf(stderr, "ERROR: ./mdgenerator py_path py_func file_path n_frames n_atoms\n"); 
+        fprintf(stderr, "ERROR: ./mdgenerator py_path py_func file_path n_frames n_atoms delay_ms\n"); 
         return -1;
     }
     printf("----===== Initializing PDBChunker =====----\n");
@@ -23,6 +25,7 @@ int main(int argc, const char** argv)
     std::string file_path((char*)argv[3]);
     int n_frames = std::stoi(argv[4]);
     int n_atoms = std::stoi(argv[5]);
+    int n_delay_ms = std::stoi(argv[6]);
     std::size_t module_start = py_path.find_last_of("/");
     std::size_t module_end = py_path.rfind(".py");
     if (module_end == std::string::npos)
@@ -65,6 +68,7 @@ int main(int argc, const char** argv)
             printf("----===== Writing Chunk %i to DataSpaces START====----\n",step);
             dataspaces_writer_ptr->write_chunks(chunks);
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(n_delay_ms));
     }
     DurationMilli md_generator_time_ms = timeNow() - t_start;
     auto total_md_generator_time_ms = md_generator_time_ms.count();
