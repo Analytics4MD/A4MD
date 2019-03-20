@@ -121,7 +121,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
         dspaces_unlock_on_write("my_test_lock", &m_gcomm);
         DurationMilli write_chunk_time_ms = timeNow()-t_wstart;
-        m_total_chunk_write_time_ms += write_chunk_ms.count();
+        m_total_chunk_write_time_ms += write_chunk_time_ms.count();
         delete[] c_data;
     }
     MPI_Barrier(m_gcomm);
