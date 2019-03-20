@@ -46,26 +46,26 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
     {
         //chk_ary.print();
 
-        //SerializableChunk serializable_chunk = SerializableChunk(chunk);
+        SerializableChunk serializable_chunk = SerializableChunk(chunk);
         // ToDo: May don't need alignment, only rounding up via padding
-        std::size_t align_size = 64;    
-        std::size_t request_size = sizeof(SerializableChunk) + align_size;
-        void *alloc = ::operator new(request_size); 
-        printf("Old allocated address: %p\n", (void*)alloc);
-        boost::alignment::align(align_size, sizeof(SerializableChunk), alloc, request_size);
-        if (boost::alignment::is_aligned(alloc, align_size))
-        {
-            printf("New aligned address: %p\n", (void*)alloc);
-        }
-        SerializableChunk* serializable_chunk = reinterpret_cast<SerializableChunk*>(alloc);
-        *serializable_chunk = SerializableChunk(chunk);
+        //std::size_t align_size = 64;    
+        //std::size_t request_size = sizeof(SerializableChunk) + align_size;
+        //void *alloc = ::operator new(request_size); 
+        //printf("Old allocated address: %p\n", (void*)alloc);
+        //boost::alignment::align(align_size, sizeof(SerializableChunk), alloc, request_size);
+        //if (boost::alignment::is_aligned(alloc, align_size))
+        //{
+        //    printf("New aligned address: %p\n", (void*)alloc);
+        //}
+        //SerializableChunk* serializable_chunk = reinterpret_cast<SerializableChunk*>(alloc);
+        //*serializable_chunk = SerializableChunk(chunk);
 
         std::ostringstream oss;
         {
             boost::archive::text_oarchive oa(oss);
             // write class instance to archive
-            //oa << serializable_chunk;
-            oa << *serializable_chunk;
+            oa << serializable_chunk;
+            //oa << *serializable_chunk;
         }
         
         //ChunkArray inchunks;
@@ -85,10 +85,13 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         std::size_t size = data.length();
         //printf("MAX SIZE of string is %zu \n", data.max_size());
         printf("chunk size for chunk_id %i is %zu\n",chunk_id,size);
+       
+        // Padding to multiple of 8 byte
         std::size_t c_size = round_up_8(size);
         char *c_data = new char [c_size];
         strcpy(c_data, data.c_str());
         printf("Padded chunk size %zu\n", c_size);
+
         m_total_size += c_size;
         dspaces_lock_on_write("size_lock", &m_gcomm);
         int error = dspaces_put(m_size_var_name.c_str(),
