@@ -105,6 +105,9 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
             printf("----====== ERROR: Did not write size of chunk id: %i to dataspaces successfully\n",chunk_id);
         //else
         //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
+        error = dspaces_put_sync();
+        if (error != 0) 
+            printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_size_var_name.c_str());
         dspaces_unlock_on_write("size_lock", &m_gcomm);
         //printf("writing char array to dataspace:\n %s\n",data.c_str());
         dspaces_lock_on_write("my_test_lock", &m_gcomm);
@@ -119,6 +122,9 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
             printf("----====== ERROR: Did not write chunk id: %i to dataspaces successfully\n",chunk_id);
         //else
         //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
+        error = dspaces_put_sync();
+        if (error != 0)
+            printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_var_name.c_str());
         dspaces_unlock_on_write("my_test_lock", &m_gcomm);
         delete[] c_data;
     }
