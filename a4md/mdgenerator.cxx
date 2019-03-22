@@ -64,6 +64,7 @@ int main(int argc, const char** argv)
             std::vector<Chunk*> chunks = {chunk};
             printf("----===== Writing Chunk %i to DataSpaces START====----\n",step);
             dataspaces_writer_ptr->write_chunks(chunks);
+            delete[] chunk;
         }
     }
     DurationMilli md_generator_time_ms = timeNow() - t_start;
@@ -71,6 +72,9 @@ int main(int argc, const char** argv)
     printf("total_md_generator_time_ms : %f\n", total_md_generator_time_ms);
     // ToDo: check if actually finish writing to DataSpaces
 
+    delete [] dataspaces_writer_ptr;
+    delete [] pdb_chunker;
+    delete [] py_runner;
     MPI_Finalize();
     return 0;
 }
