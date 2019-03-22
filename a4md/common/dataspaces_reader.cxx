@@ -100,3 +100,9 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
     return chunks;
 }
 
+DataSpacesReader::~DataSpacesReader()
+{
+    MPI_Barrier(m_gcomm);
+    dspaces_finalize();
+    printf("Finalized dspaces client in DataSpacesReader\n");
+}

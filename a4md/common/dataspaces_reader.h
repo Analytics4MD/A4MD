@@ -13,6 +13,7 @@ class DataSpacesReader : public IMSReader
         MPI_Comm m_gcomm;
     public:
         DataSpacesReader(char* var_name, unsigned long int total_chunks, MPI_Comm comm);
+        ~DataSpacesReader();
         std::vector<Chunk*> get_chunks(unsigned long int chunks_from, unsigned long int chunks_to) override;
 
 };
