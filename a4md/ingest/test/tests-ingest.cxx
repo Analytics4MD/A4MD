@@ -22,7 +22,7 @@ TEST_CASE("PyRunner extract_frame Tests", "[ingest]")
     int position = 0;
     Chunk* chunk;
     unsigned long int id = 0;
-    int result = py_runner->extract_frame((char*)file_path.c_str(), id, position, chunk);
+    int result = py_runner->extract_frame((char*)file_path.c_str(), id, position, &chunk);
     printf("New position : %d\n", position);
 
     MDChunk *plmdchunk = dynamic_cast<MDChunk *>(chunk);

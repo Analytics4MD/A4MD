@@ -233,7 +233,7 @@ std::vector<T> listToVector(PyObject* incoming)
 int PyRunner::extract_frame(char* file_path,
                             unsigned long int id,
                             int &position,
-                            Chunk* &chunk,
+                            Chunk **chunk,
                             int natoms)
 {
     int result = 0;
@@ -348,7 +348,7 @@ int PyRunner::extract_frame(char* file_path,
 
                         //printf("box: %f %f %f %f %f %f\n", box_lx, box_ly, box_lz, box_xy, box_yz, box_xz);
 
-                        chunk = new MDChunk(id, 
+                        *chunk = new MDChunk(id, 
                                             timestep,
                                             types,
                                             x_cords,
