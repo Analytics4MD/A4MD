@@ -14,7 +14,7 @@ PyRunner::PyRunner(char* module_name, char* function_name, char* py_path)
   m_function_name(function_name)
 {
     initialize_python(py_path);
-    printf("Initialized Retrieve\n");
+    printf("Initialized PyRunner\n");
 }
 
 PyRunner::~PyRunner()
@@ -22,6 +22,7 @@ PyRunner::~PyRunner()
     Py_DECREF(m_py_module);
     Py_DECREF(m_py_func); 
     Py_FinalizeEx(); 
+    printf("Finalized PyRunner\n");
 }
 
 void print_py_error_and_rethrow()
@@ -107,6 +108,7 @@ int PyRunner::initialize_python(char* py_path)
     printf("--------========= ERROR : Could not load %s in %s. Please check if the function signature matches specification\n",m_module_name,m_function_name); 
     print_py_error_and_rethrow();
   }
+  Py_DECREF(sysPath);
   return 0;
 }
 
@@ -200,8 +202,7 @@ std::vector<T> listToVector(PyObject* incoming)
         {
             for(Py_ssize_t i = 0; i < PyList_Size(incoming); i++) 
             {
-                PyObject *value = PyList_GetItem(incoming, i);
-                data.push_back( PyLong_AsLong(value) );
+                data.push_back(PyLong_AsLong(PyList_GetItem(incoming, i)));
             }
         } 
         else 
@@ -215,8 +216,7 @@ std::vector<T> listToVector(PyObject* incoming)
         {
             for(Py_ssize_t i = 0; i < PyList_Size(incoming); i++) 
             {
-                PyObject *value = PyList_GetItem(incoming, i);
-                data.push_back( PyFloat_AsDouble(value) );
+                data.push_back(PyFloat_AsDouble(PyList_GetItem(incoming, i)));
             }
         } 
         else 
