@@ -138,3 +138,11 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         printf("total_chunks written : %u\n",m_total_chunks);
     }
 }
+
+DataSpacesWriter::~DataSpacesWriter() 
+{
+    MPI_Barrier(m_gcomm);
+    dspaces_finalize();
+    printf("Finalized dspaces client in DataSpacesWriter\n");
+}
+
