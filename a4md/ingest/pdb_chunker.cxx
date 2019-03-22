@@ -11,6 +11,10 @@ PDBChunker::PDBChunker(PyRunner & py_runner,
     m_next_id = 0;
 }
 
+PDBChunker::~PDBChunker()
+{
+}
+
 int PDBChunker::get_position() 
 {
     return m_position;
