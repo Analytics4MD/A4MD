@@ -42,7 +42,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
     unsigned long int chunk_id; 
     MPI_Barrier(m_gcomm);
     //printf("Printing chunk before serializing\n");
-    for (auto chunk:chunks)
+    for(Chunk* chunk:chunks)
     {
         //chk_ary.print();
 
@@ -82,7 +82,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         uint64_t lb[1] = {0}, ub[1] = {0};
         chunk_id = chunk->get_chunk_id();
         std::string data = oss.str();
-        std::size_t size = data.length();
+        std::size_t size = data.length() + 1;
         //printf("MAX SIZE of string is %zu \n", data.max_size());
         printf("chunk size for chunk_id %i is %zu\n",chunk_id,size);
        
@@ -127,6 +127,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
             printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_var_name.c_str());
         dspaces_unlock_on_write("my_test_lock", &m_gcomm);
         delete[] c_data;
+        delete chunk;
     }
     MPI_Barrier(m_gcomm);
     DurationMilli write_time_ms = timeNow()-t_start;
