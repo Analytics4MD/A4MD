@@ -108,7 +108,6 @@ int PyRunner::initialize_python(char* py_path)
     printf("--------========= ERROR : Could not load %s in %s. Please check if the function signature matches specification\n",m_module_name,m_function_name); 
     print_py_error_and_rethrow();
   }
-  Py_DECREF(sysPath);
   return 0;
 }
 
@@ -278,10 +277,6 @@ int PyRunner::extract_frame(char* file_path,
                         std::vector<double> x_cords = listToVector<double>(py_x_cords);
                         std::vector<double> y_cords = listToVector<double>(py_y_cords);
                         std::vector<double> z_cords = listToVector<double>(py_z_cords);
-                        Py_DECREF(py_types);
-                        Py_DECREF(py_x_cords);
-                        Py_DECREF(py_y_cords);
-                        Py_DECREF(py_z_cords);
 
                         // ToDo: Unhardcode these assignments
                         double box_lx = 0.0, box_ly = 0.0, box_lz = 0.0;
@@ -289,10 +284,8 @@ int PyRunner::extract_frame(char* file_path,
                         PyObject* py_box = PyList_GetItem(py_return, 4);
                         if (PyList_Check(py_box))
                         {
-
                             if (PyList_Size(py_box) == 6)
-                            {
-                        
+                            {                        
                                 PyObject* py_box_lx = PyList_GetItem(py_box, 0);
                                 if (py_box_lx != Py_None) 
                                 {
@@ -323,12 +316,6 @@ int PyRunner::extract_frame(char* file_path,
                                 {
                                     box_xz = PyFloat_AsDouble(py_box_xz);
                                 }
-                                Py_DECREF(py_box_lx);
-                                Py_DECREF(py_box_ly);
-                                Py_DECREF(py_box_lz);
-                                Py_DECREF(py_box_xy);
-                                Py_DECREF(py_box_yz);
-                                Py_DECREF(py_box_xz);
                             }
                         }
                         else 
@@ -336,7 +323,6 @@ int PyRunner::extract_frame(char* file_path,
                             result = -2;
                             fprintf(stderr, "ERROR: PyRunner::extract_frame box tupple returned is wrong format\n");
                         }
-                        Py_DECREF(py_box);
 
                         int timestep = 0;
                         PyObject* py_step = PyList_GetItem(py_return, 5);
@@ -344,7 +330,6 @@ int PyRunner::extract_frame(char* file_path,
                         {
                             timestep = PyLong_AsLong(py_step);
                         }
-                        Py_DECREF(py_step);
 
                         //printf("box: %f %f %f %f %f %f\n", box_lx, box_ly, box_lz, box_xy, box_yz, box_xz);
 
@@ -379,16 +364,13 @@ int PyRunner::extract_frame(char* file_path,
             {
                 result = -2;
                 fprintf(stderr,"Python function %s return NULL in %s\n",m_function_name, m_module_name);
-                //print_py_error_and_rethrow();
             }
         }
         else
         {
             fprintf(stderr,"Python function %s is not found in %s\n",m_function_name, m_module_name);
             result = -2;
-            //print_py_error_and_rethrow();
-        }
-        
+        } 
     }
     
     if (result < 0)
