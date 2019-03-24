@@ -45,7 +45,8 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
     for(Chunk* chunk:chunks)
     {
         //chk_ary.print();
-
+        //chunk->print();
+        
         SerializableChunk serializable_chunk = SerializableChunk(chunk);
         // ToDo: May don't need alignment, only rounding up via padding
         //std::size_t align_size = 64;    
@@ -82,15 +83,17 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         uint64_t lb[1] = {0}, ub[1] = {0};
         chunk_id = chunk->get_chunk_id();
         std::string data = oss.str();
-        std::size_t size = data.length() + 1;
+        std::size_t size = data.length();
         //printf("MAX SIZE of string is %zu \n", data.max_size());
         printf("chunk size for chunk_id %i is %zu\n",chunk_id,size);
        
         // Padding to multiple of 8 byte
         std::size_t c_size = round_up_8(size);
         char *c_data = new char [c_size];
-        strcpy(c_data, data.c_str());
+        strncpy(c_data, data.c_str(), size);
+        //std::size_t r_size = data.copy(c_data, size, 0);
         printf("Padded chunk size %zu\n", c_size);
+        //printf("Copied chunk size %zu\n", r_size);
 
         m_total_size += c_size;
         dspaces_lock_on_write("size_lock", &m_gcomm);
@@ -129,7 +132,8 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         delete[] c_data;
         delete chunk;
     }
-    MPI_Barrier(m_gcomm);
+    //printf("Finished putting data\n");
+    //MPI_Barrier(m_gcomm);
     DurationMilli write_time_ms = timeNow()-t_start;
     m_total_data_write_time_ms += write_time_ms.count();
     if (chunk_id == m_total_chunks-1)
