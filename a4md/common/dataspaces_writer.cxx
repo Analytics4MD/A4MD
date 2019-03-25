@@ -130,9 +130,9 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
             printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_var_name.c_str());
         dspaces_unlock_on_write("my_test_lock", &m_gcomm);
         delete[] c_data;
-        delete chunk;
+        //ToDo: better way to free memory of chunk
+        //delete chunk;
     }
-    //printf("Finished putting data\n");
     //MPI_Barrier(m_gcomm);
     DurationMilli write_time_ms = timeNow()-t_start;
     m_total_data_write_time_ms += write_time_ms.count();
