@@ -16,7 +16,8 @@ DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunk
   m_var_name(var_name),
   m_total_chunks(total_chunks),
   m_total_data_write_time_ms(0.0),
-  m_total_chunk_write_time_ms(0.0)
+  m_total_chunk_write_time_ms(0.0),
+  m_total_writer_idle_time_ms(0.0)
 {
     m_gcomm = comm;
     MPI_Barrier(m_gcomm);
@@ -64,6 +65,8 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
 	m_total_size += size;
 	TimeVar t_wstart = timeNow();
         dspaces_lock_on_write("size_lock", &m_gcomm);
+        DurationMilli writer_idle_time_ms = timeNow()-t_wstart;
+	m_total_writer_idle_time_ms += writer_idle_time_ms.count();
         int error = dspaces_put(m_size_var_name.c_str(),
                                 chunk_id,
                                 sizeof(std::string::size_type),
@@ -103,6 +106,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
     {
         printf("total_data_write_time_ms : %f\n",m_total_data_write_time_ms);
         printf("total_chunk_write_time_ms : %f\n",m_total_chunk_write_time_ms);
+	printf("total_writer_idle_time_ms : %f\n",m_total_writer_idle_time_ms);
         printf("total_chunk_data_written : %u\n",m_total_size);
         printf("total_chunks written : %u\n",m_total_chunks);
     }
