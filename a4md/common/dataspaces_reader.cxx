@@ -40,12 +40,12 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
     uint64_t lb[1] = {0}, ub[1] = {0};
     for (chunk_id = chunks_from; chunk_id<=chunks_to; chunk_id++)
     {
-        std::string::size_type chunk_size;
+        std::size_t chunk_size;
         dspaces_lock_on_read("size_lock", &m_gcomm);
         //printf("---==== Reading chunk id %u\n",chunk_id);
         int error = dspaces_get(m_size_var_name.c_str(),
                                 chunk_id,
-                                sizeof(std::string::size_type),
+                                sizeof(std::size_t),
                                 ndim,
                                 lb,
                                 ub,
@@ -57,7 +57,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         dspaces_unlock_on_read("size_lock", &m_gcomm);
         //printf("chunk size read from ds for chunkid %i : %u\n", chunk_id, chunk_size);
 
-        char input_data[chunk_size];
+        char *input_data = new char [chunk_size];
 
         dspaces_lock_on_read("my_test_lock", &m_gcomm);
         error = dspaces_get(m_var_name.c_str(),
@@ -88,7 +88,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         //chunks.print();
         chunks.push_back(chunk.get_chunk());
     }
-    MPI_Barrier(m_gcomm);
+    //MPI_Barrier(m_gcomm);
     DurationMilli read_time_ms = timeNow()-t_start;
     m_total_data_read_time_ms += read_time_ms.count();
     if (chunk_id-1 == m_total_chunks-1)
