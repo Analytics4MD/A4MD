@@ -11,6 +11,7 @@ class DataSpacesReader : public IMSReader
         unsigned int m_total_chunks;
         double m_total_data_read_time_ms;
         double m_total_chunk_read_time_ms;
+	double m_total_reader_idle_time_ms;
         MPI_Comm m_gcomm;
     public:
         DataSpacesReader(char* var_name, unsigned long int total_chunks, MPI_Comm comm);
