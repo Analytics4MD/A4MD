@@ -47,38 +47,13 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
     {
         //chk_ary.print();
 
-        //SerializableChunk serializable_chunk = SerializableChunk(chunk);
-        // ToDo: May don't need alignment, only rounding up via padding
-        std::size_t align_size = 64;    
-        std::size_t request_size = sizeof(SerializableChunk) + align_size;
-        void *alloc = ::operator new(request_size); 
-        printf("Old allocated address: %p\n", (void*)alloc);
-        boost::alignment::align(align_size, sizeof(SerializableChunk), alloc, request_size);
-        if (boost::alignment::is_aligned(alloc, align_size))
-        {
-            printf("New aligned address: %p\n", (void*)alloc);
-        }
-        SerializableChunk* serializable_chunk = reinterpret_cast<SerializableChunk*>(alloc);
-        *serializable_chunk = SerializableChunk(chunk);
-
+        SerializableChunk serializable_chunk = SerializableChunk(chunk);
         std::ostringstream oss;
         {
             boost::archive::text_oarchive oa(oss);
             // write class instance to archive
-            //oa << serializable_chunk;
-            oa << *serializable_chunk;
+            oa << serializable_chunk;
         }
-        
-        //ChunkArray inchunks;
-        //std::string instr(oss.str());
-        //std::istringstream iss(instr);//oss.str());
-        //{
-        //    boost::archive::text_iarchive ia(iss);
-        //    ia >> inchunks;
-        //}
-        //printf("Printing chunk after serializing\n");
-        //inchunks.print();
- 
         int ndim = 1;
         uint64_t lb[1] = {0}, ub[1] = {0};
         chunk_id = chunk->get_chunk_id();
@@ -86,35 +61,33 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         std::size_t size = data.length();
         //printf("MAX SIZE of string is %zu \n", data.max_size());
         printf("chunk size for chunk_id %i is %zu\n",chunk_id,size);
-        std::size_t c_size = round_up_8(size);
-        char *c_data = new char [c_size];
-        strcpy(c_data, data.c_str());
-        printf("Padded chunk size %zu\n", c_size);
-        m_total_size += c_size;
-        TimeVar t_wstart = timeNow();
+	m_total_size += size;
+	TimeVar t_wstart = timeNow();
         dspaces_lock_on_write("size_lock", &m_gcomm);
         int error = dspaces_put(m_size_var_name.c_str(),
                                 chunk_id,
-                                sizeof(std::size_t),
+                                sizeof(std::string::size_type),
                                 ndim,
                                 lb,
                                 ub,
-                                &c_size);
+				&size);
+
+       
         if (error != 0)
             printf("----====== ERROR: Did not write size of chunk id: %i to dataspaces successfully\n",chunk_id);
         //else
         //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
-        dspaces_unlock_on_write("size_lock", &m_gcomm);
+              
+	dspaces_unlock_on_write("size_lock", &m_gcomm);
         //printf("writing char array to dataspace:\n %s\n",data.c_str());
         dspaces_lock_on_write("my_test_lock", &m_gcomm);
         error = dspaces_put(m_var_name.c_str(),
                             chunk_id,
-                            c_size,
+                            data.length(),
                             ndim,
                             lb,
                             ub,
-                            c_data);
-        
+			    data.c_str());
         if (error != 0)
             printf("----====== ERROR: Did not write chunk id: %i to dataspaces successfully\n",chunk_id);
         //else
@@ -122,7 +95,6 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         dspaces_unlock_on_write("my_test_lock", &m_gcomm);
         DurationMilli write_chunk_time_ms = timeNow()-t_wstart;
         m_total_chunk_write_time_ms += write_chunk_time_ms.count();
-        delete[] c_data;
     }
     MPI_Barrier(m_gcomm);
     DurationMilli write_time_ms = timeNow()-t_start;
