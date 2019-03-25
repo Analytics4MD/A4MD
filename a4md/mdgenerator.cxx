@@ -59,12 +59,7 @@ int main(int argc, const char** argv)
         std::cout << "Iteration : " << step << std::endl;
         if (pdb_chunker->extract_chunk(n_atoms) == 0) 
         {
-            std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1);
-            Chunk* chunk = chunk_vector.front(); 
-            //MDChunk *plmdchunk = dynamic_cast<MDChunk *>(chunk);
-            //plmdchunk->print();
-
-            std::vector<Chunk*> chunks = {chunk};
+            std::vector<Chunk*> chunks = pdb_chunker->get_chunks(1);
             printf("----===== Writing Chunk %i to DataSpaces START====----\n",step);
             dataspaces_writer_ptr->write_chunks(chunks);
         }

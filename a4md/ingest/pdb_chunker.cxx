@@ -19,7 +19,7 @@ int PDBChunker::get_position()
 int PDBChunker::extract_chunk(int natoms)
 {   
     Chunk* chunk;
-    int result  = m_py_runner.extract_frame(m_file_path, m_next_id, m_position, chunk, natoms);
+    int result  = m_py_runner.extract_frame(m_file_path, m_next_id, m_position, &chunk, natoms);
     if (result == 0 && chunk != NULL)
     {
         append_chunk(chunk);
