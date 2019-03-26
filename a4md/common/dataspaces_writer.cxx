@@ -15,7 +15,9 @@ DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunk
 : m_size_var_name("chunk_size"),
   m_var_name(var_name),
   m_total_chunks(total_chunks),
-  m_total_data_write_time_ms(0.0)
+  m_total_data_write_time_ms(0.0),
+  m_total_chunk_write_time_ms(0.0),
+  m_total_writer_idle_time_ms(0.0)
 {
     m_gcomm = comm;
     MPI_Barrier(m_gcomm);
@@ -68,17 +70,6 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
             oa << serializable_chunk;
             //oa << *serializable_chunk;
         }
-        
-        //ChunkArray inchunks;
-        //std::string instr(oss.str());
-        //std::istringstream iss(instr);//oss.str());
-        //{
-        //    boost::archive::text_iarchive ia(iss);
-        //    ia >> inchunks;
-        //}
-        //printf("Printing chunk after serializing\n");
-        //inchunks.print();
- 
         int ndim = 1;
         uint64_t lb[1] = {0}, ub[1] = {0};
         chunk_id = chunk->get_chunk_id();
@@ -96,7 +87,10 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         //printf("Copied chunk size %zu\n", r_size);
 
         m_total_size += c_size;
+        TimeVar t_wstart = timeNow();
         dspaces_lock_on_write("size_lock", &m_gcomm);
+        DurationMilli writer_idle_time_ms = timeNow()-t_wstart;
+        m_total_writer_idle_time_ms += writer_idle_time_ms.count();
         int error = dspaces_put(m_size_var_name.c_str(),
                                 chunk_id,
                                 sizeof(std::size_t),
@@ -104,6 +98,8 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
                                 lb,
                                 ub,
                                 &c_size);
+
+       
         if (error != 0)
             printf("----====== ERROR: Did not write size of chunk id: %i to dataspaces successfully\n",chunk_id);
         //else
@@ -111,6 +107,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         error = dspaces_put_sync();
         if (error != 0) 
             printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_size_var_name.c_str());
+        
         dspaces_unlock_on_write("size_lock", &m_gcomm);
         //printf("writing char array to dataspace:\n %s\n",data.c_str());
         dspaces_lock_on_write("my_test_lock", &m_gcomm);
@@ -129,6 +126,8 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         if (error != 0)
             printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_var_name.c_str());
         dspaces_unlock_on_write("my_test_lock", &m_gcomm);
+        DurationMilli write_chunk_time_ms = timeNow()-t_wstart;
+        m_total_chunk_write_time_ms += write_chunk_time_ms.count();
         delete[] c_data;
         //ToDo: better way to free memory of chunk
         //delete chunk;
@@ -139,6 +138,8 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
     if (chunk_id == m_total_chunks-1)
     {
         printf("total_data_write_time_ms : %f\n",m_total_data_write_time_ms);
+        printf("total_chunk_write_time_ms : %f\n",m_total_chunk_write_time_ms);
+        printf("total_writer_idle_time_ms : %f\n",m_total_writer_idle_time_ms);
         printf("total_chunk_data_written : %u\n",m_total_size);
         printf("total_chunks written : %u\n",m_total_chunks);
     }

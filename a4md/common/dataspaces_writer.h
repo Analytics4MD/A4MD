@@ -11,6 +11,8 @@ class DataSpacesWriter : public IMSWriter
         unsigned int m_total_chunks;
         unsigned long int m_total_size = 0; 
         double m_total_data_write_time_ms;
+        double m_total_chunk_write_time_ms;
+        double m_total_writer_idle_time_ms;
         MPI_Comm m_gcomm;
     public:
         DataSpacesWriter(char* var_name, unsigned long int total_chunks, MPI_Comm comm);
