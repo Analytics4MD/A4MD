@@ -370,7 +370,7 @@ int PyRunner::extract_frame(char* file_path,
         {
             fprintf(stderr,"Python function %s is not found in %s\n",m_function_name, m_module_name);
             result = -2;
-        } 
+        }  
     }
     
     if (result < 0)
