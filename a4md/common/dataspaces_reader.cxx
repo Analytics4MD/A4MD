@@ -13,7 +13,9 @@ DataSpacesReader::DataSpacesReader(char* var_name, unsigned long int total_chunk
 : m_size_var_name("chunk_size"),
   m_var_name(var_name),
   m_total_chunks(total_chunks),
-  m_total_data_read_time_ms(0.0)
+  m_total_data_read_time_ms(0.0),
+  m_total_chunk_read_time_ms(0.0),
+  m_total_reader_idle_time_ms(0.0)
 {
     m_gcomm = comm;
     MPI_Barrier(m_gcomm);
@@ -41,7 +43,10 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
     for (chunk_id = chunks_from; chunk_id<=chunks_to; chunk_id++)
     {
         std::size_t chunk_size;
+        TimeVar t_rstart = timeNow();
         dspaces_lock_on_read("size_lock", &m_gcomm);
+        DurationMilli reader_idle_time_ms = timeNow()-t_rstart;
+        m_total_reader_idle_time_ms += reader_idle_time_ms.count();
         //printf("---==== Reading chunk id %u\n",chunk_id);
         int error = dspaces_get(m_size_var_name.c_str(),
                                 chunk_id,
@@ -74,6 +79,8 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         //    printf("Read chunk id %i from dataspacess successfull\n",chunk_id);
         
         dspaces_unlock_on_read("my_test_lock", &m_gcomm);
+        DurationMilli read_chunk_time_ms = timeNow()-t_rstart;
+        m_total_chunk_read_time_ms += read_chunk_time_ms.count();
 
         //printf("Read char array from dataspace:\n %s\n",input_data);
         SerializableChunk chunk;
@@ -94,6 +101,8 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
     if (chunk_id-1 == m_total_chunks-1)
     {
         printf("total_data_read_time_ms : %f\n",m_total_data_read_time_ms);
+        printf("total_chunk_read_time_ms : %f\n",m_total_chunk_read_time_ms);
+        printf("total_reader_idle_time_ms : %f\n",m_total_reader_idle_time_ms);
         printf("total_chunks read : %u\n",m_total_chunks);
     }
 
