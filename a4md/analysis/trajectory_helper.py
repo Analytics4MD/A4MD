@@ -52,7 +52,7 @@ def chunks(l, n):
         yield l[i:i + n]
         
 def get_segments(topology, segment_length, include_last=True):
-    CA_indices = get_atoms_groups(traj.topology, group_method='alpha_carbon')
+    CA_indices = get_atoms_groups(topology, group_method='alpha_carbon')
     segment_ids = chunks(CA_indices, segment_length)
     sids = [segid for segid in segment_ids]
     if len(sids[-1]) != segment_length:
