@@ -19,6 +19,8 @@ DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunk
   m_total_chunk_write_time_ms(0.0),
   m_total_writer_idle_time_ms(0.0)
 {
+    m_step_chunk_write_time_ms = new double[m_total_chunks];
+    m_step_writer_idle_time_ms = new double[m_total_chunks];
     m_gcomm = comm;
     MPI_Barrier(m_gcomm);
     int nprocs;
@@ -87,10 +89,12 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         //printf("Copied chunk size %zu\n", r_size);
 
         m_total_size += c_size;
-        TimeVar t_wstart = timeNow();
+        TimeVar t_istart = timeNow();
         dspaces_lock_on_write("size_lock", &m_gcomm);
-        DurationMilli writer_idle_time_ms = timeNow()-t_wstart;
-        m_total_writer_idle_time_ms += writer_idle_time_ms.count();
+        DurationMilli writer_idle_time_ms = timeNow()-t_istart;
+        m_step_writer_idle_time_ms[chunk_id] = writer_idle_time_ms.count();
+        m_total_writer_idle_time_ms += m_step_writer_idle_time_ms[chunk_id];
+        TimeVar t_wstart = timeNow();
         int error = dspaces_put(m_size_var_name.c_str(),
                                 chunk_id,
                                 sizeof(std::size_t),
@@ -125,9 +129,11 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         error = dspaces_put_sync();
         if (error != 0)
             printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_var_name.c_str());
-        dspaces_unlock_on_write("my_test_lock", &m_gcomm);
         DurationMilli write_chunk_time_ms = timeNow()-t_wstart;
-        m_total_chunk_write_time_ms += write_chunk_time_ms.count();
+        m_step_chunk_write_time_ms[chunk_id] = write_chunk_time_ms.count();
+        printf("Chunk %lu : step_write_chunk_time_ms : %f\n", m_step_chunk_write_time_ms[chunk_id]);
+        m_total_chunk_write_time_ms += m_step_chunk_write_time_ms[chunk_id];
+        dspaces_unlock_on_write("my_test_lock", &m_gcomm);
         delete[] c_data;
         //ToDo: better way to free memory of chunk
         //delete chunk;
@@ -142,6 +148,21 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         printf("total_writer_idle_time_ms : %f\n",m_total_writer_idle_time_ms);
         printf("total_chunk_data_written : %u\n",m_total_size);
         printf("total_chunks written : %u\n",m_total_chunks);
+        printf("step_chunk_write_time_ms : ");
+        for (auto step = 0; step < m_total_chunks; step++)
+        {
+            printf(" %f ", m_step_chunk_write_time_ms[step]);
+        }
+        printf("\n");
+        printf("step_writer_idle_time_ms : ");
+        for (auto step = 0; step < m_total_chunks; step++)
+        {
+            printf(" %f ", m_step_writer_idle_time_ms[step]);
+        }
+        printf("\n");
+        //ToDo: delete in destructor
+        delete[] m_step_chunk_write_time_ms;
+        delete[] m_step_writer_idle_time_ms;
     }
 }
 
