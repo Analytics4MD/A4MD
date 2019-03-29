@@ -23,16 +23,43 @@ def get_masses(topology, group_method=None):
         raise NotImplementedError('get_masses not implemented')
     return np.asarray(masses)
 
-def get_distances(atom_groups, xyzs, use_COM=True, masses=None):
-    if use_COM and masses is not None:   
+def get_distances(atom_groups, xyzs, use_COM=False, masses=None):
+    if use_COM and masses is not None:
         coms_by_resid = [com(xyzs[r],masses[r]) for r in atom_groups]
         coords = np.asarray(coms_by_resid)
         #print(coords)
-        distances = distance.cdist(coords, coords, 'euclidean')
+        distances = distance.cdist(coords, coords, 'sqeuclidean')
         #distances = coms_by_resid
+    elif masses == None:
+        atom_groups = np.asarray(atom_groups)
+        coords = xyzs[atom_groups]
+        print('coords',coords)
+        distances = distance.cdist(coords, coords, 'sqeuclidean')
     else:
         raise ValueError('use_COM=False is not implemented')
     return distances
+
+def get_atoms_groups(topology, group_method='residue'):
+    if group_method == 'residue':
+        atom_indices = [[a.index for a in r.atoms] for r in topology.residues if r.is_protein]
+    elif group_method == 'alpha_carbon':
+        atom_indices = [atom.index for atom in topology.atoms if (atom.name == 'CA')] 
+    return np.asarray(atom_indices)   
+
+def chunks(l, n):
+    """Yield successive n-sized chunks from l."""
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
+        
+def get_segments(topology, segment_length, include_last=True):
+    CA_indices = get_atoms_groups(traj.topology, group_method='alpha_carbon')
+    segment_ids = chunks(CA_indices, segment_length)
+    sids = [segid for segid in segment_ids]
+    if len(sids[-1]) != segment_length:
+        if include_last:  
+            # use a backward view for the last segment. Ok with overlap.
+            sids[-1] = CA_indices[-segment_length*2:-segment_length]
+    return sids
 
 def get_bond_dict(top, bonds):
     bond_dict = {atom.index:[] for atom in top.atoms}
