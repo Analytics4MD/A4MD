@@ -33,7 +33,6 @@ def get_distances(atom_groups, xyzs, use_COM=False, masses=None):
     elif masses == None:
         atom_groups = np.asarray(atom_groups)
         coords = xyzs[atom_groups]
-        print('coords',coords)
         distances = distance.cdist(coords, coords, 'sqeuclidean')
     else:
         raise ValueError('use_COM=False is not implemented')
