@@ -52,6 +52,13 @@ def chunks(l, n):
         
 def get_segments(topology, segment_length, include_last=True):
     CA_indices = get_atoms_groups(topology, group_method='alpha_carbon')
+    print('CA_indices',CA_indices)
+    if segment_length > len(CA_indices):
+        print('WARNING: number of alpha carbon atoms is less than segment length.')
+        print('Number of CA atoms:',len(CA_indices))
+        print('Segment length assigned:',segment_length)
+        print('Choosing {} as the segment length'.format(len(CA_indices)))
+        segment_length = len(CA_indices)
     segment_ids = chunks(CA_indices, segment_length)
     sids = [segid for segid in segment_ids]
     if len(sids[-1]) != segment_length:
