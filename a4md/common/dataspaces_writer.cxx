@@ -139,19 +139,17 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         //ToDo: better way to free memory of chunk
         //delete chunk;
         if (m_count_lost_frames)
-	    {
+        {
             dspaces_lock_on_write("last_write_lock", &m_gcomm);
-	        error = dspaces_put("last_written_chunk",
+            error = dspaces_put("last_written_chunk",
                                     0,
                                     sizeof(unsigned long int),
                                     ndim,
                                     lb,
                                     ub,
                                     &chunk_id);
-	        dspaces_unlock_on_write("last_write_lock", &m_gcomm);
-	    }
-        
-        
+            dspaces_unlock_on_write("last_write_lock", &m_gcomm);
+        }
     }
     //MPI_Barrier(m_gcomm);
     DurationMilli write_time_ms = timeNow()-t_start;

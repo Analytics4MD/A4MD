@@ -15,9 +15,9 @@ class DataSpacesReader : public IMSReader
         double *m_step_chunk_read_time_ms;
         double *m_step_reader_idle_time_ms;
         unsigned long int m_wait_ms;
-	unsigned long int m_min_wait_ms;
+        unsigned long int m_min_wait_ms;
         unsigned long int m_max_wait_ms;
-	bool m_count_lost_frames;
+        bool m_count_lost_frames;
         unsigned int m_lost_frames_count; 	
         MPI_Comm m_gcomm;
     public:

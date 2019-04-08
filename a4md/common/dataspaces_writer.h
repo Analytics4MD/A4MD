@@ -15,7 +15,7 @@ class DataSpacesWriter : public IMSWriter
         double m_total_writer_idle_time_ms;
         double *m_step_chunk_write_time_ms;
         double *m_step_writer_idle_time_ms;
-	bool m_count_lost_frames;
+        bool m_count_lost_frames;
         MPI_Comm m_gcomm;
     public:
         DataSpacesWriter(char* var_name, unsigned long int total_chunks, MPI_Comm comm, bool count_lost_frames=false);
