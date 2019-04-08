@@ -130,7 +130,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         error = dspaces_put_sync();
         if (error != 0)
             printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_var_name.c_str());
-	DurationMilli write_chunk_time_ms = timeNow()-t_wstart;
+        DurationMilli write_chunk_time_ms = timeNow()-t_wstart;
         m_step_chunk_write_time_ms[chunk_id] = write_chunk_time_ms.count();
         printf("Chunk %lu : step_write_chunk_time_ms : %f\n", chunk_id, m_step_chunk_write_time_ms[chunk_id]);
         m_total_chunk_write_time_ms += m_step_chunk_write_time_ms[chunk_id];
@@ -138,18 +138,18 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         delete[] c_data;
         //ToDo: better way to free memory of chunk
         //delete chunk;
-	if (m_count_lost_frames)
-	{
+        if (m_count_lost_frames)
+	    {
             dspaces_lock_on_write("last_write_lock", &m_gcomm);
-	    error = dspaces_put("last_written_chunk",
-                                0,
-                                sizeof(unsigned long int),
-                                ndim,
-                                lb,
-                                ub,
-                                &chunk_id);
-	    dspaces_unlock_on_write("last_write_lock", &m_gcomm);
-	}
+	        error = dspaces_put("last_written_chunk",
+                                    0,
+                                    sizeof(unsigned long int),
+                                    ndim,
+                                    lb,
+                                    ub,
+                                    &chunk_id);
+	        dspaces_unlock_on_write("last_write_lock", &m_gcomm);
+	    }
         
         
     }

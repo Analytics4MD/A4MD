@@ -58,8 +58,8 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
 	    bool try_next_chunk = false;
 	    auto temp_chunk_id = chunk_id;
 	    while (last_chunk_id < temp_chunk_id)
-	    {
-	        dspaces_lock_on_read("last_write_lock", &m_gcomm);
+	    {	       
+                dspaces_lock_on_read("last_write_lock", &m_gcomm);
                 int error = dspaces_get("last_written_chunk",
                                     0,
                                     sizeof(unsigned long int),
@@ -68,14 +68,13 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
                                     ub,
                                     &last_chunk_id);
                 dspaces_unlock_on_read("last_write_lock", &m_gcomm);
-	        int dchunk = last_chunk_id-temp_chunk_id;
-	        //printf("dchunk:%i\n",dchunk);
-	        if (error != -11)
-	        {
-	            if (dchunk == 0)
+                int dchunk = last_chunk_id-temp_chunk_id;
+                if (error != -11)
+                {
+                    if (dchunk == 0)
 	            {
                         //printf("---=== last chunk id as expected. Reading %lu\n",chunk_id);
-	    	        m_wait_ms = std::max(m_min_wait_ms, m_wait_ms / 2);
+               	        m_wait_ms = std::max(m_min_wait_ms, m_wait_ms / 2);
 	            }
 	            else if(dchunk > 0)
 	            {
@@ -93,12 +92,12 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
 	        else
 	        {
                     printf("---=== Something went terribly wrong while trying to get chunk: %lu \n",chunk_id);
-	    	break;
+                    break;
 	        }
 	    }
 	    if (try_next_chunk)
             {
-		m_lost_frames_count++;
+                m_lost_frames_count++;
                 continue;
 	    }
 	}
