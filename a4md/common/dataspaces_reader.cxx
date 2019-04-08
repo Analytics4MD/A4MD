@@ -52,13 +52,13 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
 
     for (chunk_id = chunks_from; chunk_id<=chunks_to; chunk_id++)
     {
-	if (m_count_lost_frames)
-	{
+	    if (m_count_lost_frames)
+	    {
             unsigned long int last_chunk_id = 0;
-	    bool try_next_chunk = false;
-	    auto temp_chunk_id = chunk_id;
-	    while (last_chunk_id < temp_chunk_id)
-	    {	       
+	        bool try_next_chunk = false;
+	        auto temp_chunk_id = chunk_id;
+	        while (last_chunk_id < temp_chunk_id)
+	        {	       
                 dspaces_lock_on_read("last_write_lock", &m_gcomm);
                 int error = dspaces_get("last_written_chunk",
                                     0,
@@ -72,35 +72,35 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
                 if (error != -11)
                 {
                     if (dchunk == 0)
-	            {
+	                {
                         //printf("---=== last chunk id as expected. Reading %lu\n",chunk_id);
-               	        m_wait_ms = std::max(m_min_wait_ms, m_wait_ms / 2);
+                        m_wait_ms = std::max(m_min_wait_ms, m_wait_ms / 2);
+	                }
+	                else if(dchunk > 0)
+	                {
+	                    //printf("---=== lost %i frames before %lu. Current chunk is %lu\n",dchunk,last_chunk_id,chunk_id);
+	                    try_next_chunk = true;
+	                    m_wait_ms = std::min(m_max_wait_ms, m_wait_ms * 2);
+	                    break;
+	                }
+	        	    else
+	        	    {
+	        	        printf("Dont have chunk %lu yet. So waiting %lu ms to poll\n",chunk_id,m_wait_ms);
+	        	        std::this_thread::sleep_for(std::chrono::milliseconds(m_wait_ms));
+	        	    }
 	            }
-	            else if(dchunk > 0)
+	            else
 	            {
-	                //printf("---=== lost %i frames before %lu. Current chunk is %lu\n",dchunk,last_chunk_id,chunk_id);
-	    	        try_next_chunk = true;
-	    	        m_wait_ms = std::min(m_max_wait_ms, m_wait_ms * 2);
-	                break;
-	            }
-	    	else
-	    	{
-	    	    printf("Dont have chunk %lu yet. So waiting %lu ms to poll\n",chunk_id,m_wait_ms);
-	    	    std::this_thread::sleep_for(std::chrono::milliseconds(m_wait_ms));
-	    	}
-	        }
-	        else
-	        {
                     printf("---=== Something went terribly wrong while trying to get chunk: %lu \n",chunk_id);
                     break;
+	            }
 	        }
-	    }
-	    if (try_next_chunk)
+	        if (try_next_chunk)
             {
                 m_lost_frames_count++;
                 continue;
+	        }
 	    }
-	}
 	
         std::size_t chunk_size;
         TimeVar t_istart = timeNow();
@@ -123,19 +123,19 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
 
         if (error != 0)
             printf("----====== ERROR (%i): Did not read SIZE of chunk id: %lu from dataspaces successfully\n",error, chunk_id);
-	if (error == -11)
-	{
-	    printf("Recieved -11 from dspaces get. Probably lost chunk %lu\n",chunk_id);
-	    if (m_count_lost_frames)
+	    if (error == -11)
 	    {
+	        printf("Recieved -11 from dspaces get. Probably lost chunk %lu\n",chunk_id);
+	        if (m_count_lost_frames)
+	        {
                 m_lost_frames_count++;
-	        continue;
-	    }
-	    else
-	    {
+                continue;
+	        }
+	        else
+	        {
                 throw new DataLayerException("Dataspaces get recieved error code -11. This is not expected for lock type 2, but expected for lock type 1 or 3. Check lock type used.\n");
+	        }
 	    }
-	}
         //    printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
         //else
         //printf("chunk size read from ds for chunkid %i : %u\n", chunk_id, chunk_size);
@@ -156,18 +156,18 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         //else
         //    printf("Read chunk id %i from dataspacess successfull\n",chunk_id);
         if (error == -11)
-	{
-	    printf("Recieved -11 from dspaces get. Probably lost chunk %lu\n",chunk_id);
-	    if (m_count_lost_frames)
 	    {
+	        printf("Recieved -11 from dspaces get. Probably lost chunk %lu\n",chunk_id);
+	        if (m_count_lost_frames)
+	        {
                 m_lost_frames_count++;
-	        continue;
-	    }
-	    else
-	    {
+                continue;
+	        }
+	        else
+	        {
                 throw new DataLayerException("Dataspaces get recieved error code -11. This is not expected for lock type 2, but expected for lock type 1 or 3. Check lock type used.\n");
+	        }
 	    }
-	}
 
         DurationMilli read_chunk_time_ms = timeNow()-t_rstart;
         m_step_chunk_read_time_ms[chunk_id] = read_chunk_time_ms.count();
@@ -196,7 +196,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         printf("total_chunk_read_time_ms : %f\n",m_total_chunk_read_time_ms);
         printf("total_reader_idle_time_ms : %f\n",m_total_reader_idle_time_ms);
         printf("total_chunks read : %u\n",m_total_chunks);
-	printf("total_lost_frames : %u\n",m_lost_frames_count);
+        printf("total_lost_frames : %u\n",m_lost_frames_count);
         printf("step_chunk_read_time_ms : ");
         for (auto step = 0; step < m_total_chunks; step++)
         {
