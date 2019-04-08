@@ -14,7 +14,7 @@
 int main(int argc, const char** argv)
 {
     MPI_Init(NULL, NULL);
-    if (argc != 7)
+    if (argc != 8)
     {
         fprintf(stderr, "ERROR: ./mdgenerator py_path py_func file_path n_frames n_atoms delay_ms\n"); 
         return -1;
@@ -26,6 +26,8 @@ int main(int argc, const char** argv)
     int n_frames = std::stoi(argv[4]);
     int n_atoms = std::stoi(argv[5]);
     int n_delay_ms = std::stoi(argv[6]);
+    int count_lf = std::stoi(argv[7]);
+    bool count_lost_frames = (count_lf)==1?true:false;
     std::size_t module_start = py_path.find_last_of("/");
     std::size_t module_end = py_path.rfind(".py");
     if (module_end == std::string::npos)
@@ -50,7 +52,7 @@ int main(int argc, const char** argv)
     printf("----===== Initializing DataSpaces Writer ====----\n");
     char* var_name = "test_var";
     unsigned long int total_chunks = n_frames;
-    DataSpacesWriter *dataspaces_writer_ptr = new DataSpacesWriter(var_name, total_chunks, MPI_COMM_WORLD);
+    DataSpacesWriter *dataspaces_writer_ptr = new DataSpacesWriter(var_name, total_chunks, MPI_COMM_WORLD,count_lost_frames);
     printf("----===== Initialized DataSpaces Writer ====----\n");
 
     TimeVar t_start = timeNow();

@@ -16,12 +16,14 @@ ChunkAnalyzer* analyzer_factory(int argc, const char** argv)
     ChunkAnalyzer* chunk_analyzer;
     ChunkReader* chunk_reader;
     int n_frames = atoi(argv[3]);
+    int count_lf = std::stoi(argv[4]);
+    bool count_lost_frames = (count_lf)==1?true:false;
     int n_analysis_stride = 1;
     unsigned long int total_chunks = n_frames;// +1 for the call before simulation starts
     if (reader_type == "dataspaces")
     {
         printf("---======== Initializing dataspaces reader\n");
-        Chunker * chunker = new DataSpacesReader((char*)var_name.c_str(), total_chunks, MPI_COMM_WORLD);
+        Chunker * chunker = new DataSpacesReader((char*)var_name.c_str(), total_chunks, MPI_COMM_WORLD, count_lost_frames);
         printf("---======== Initialized dataspaces reader\n");
         chunk_reader = new ChunkReader(* chunker);
         printf("---======== Initialized chunkreader\n");
@@ -60,8 +62,8 @@ Retriever* retriever_factory (int argc, const char** argv)
 
 int main (int argc, const char** argv)
 {
-    if (argc != 4)
-        printf("ERROR: Expecting 4 command line arguments 1) python module name 2) function name 3) n_frames\n");
+    if (argc != 5)
+        printf("ERROR: Expecting 4 command line arguments 1) python module name 2) function name 3) n_frames 4) count_lost_frames(1 or 0)\n");
     MPI_Init(NULL,NULL);
     printf("---======== In Retriever::main()\n");
 

@@ -11,13 +11,14 @@
 #include <sstream>
 
 
-DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunks, MPI_Comm comm)
+DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunks, MPI_Comm comm, bool count_lost_frames)
 : m_size_var_name("chunk_size"),
   m_var_name(var_name),
   m_total_chunks(total_chunks),
   m_total_data_write_time_ms(0.0),
   m_total_chunk_write_time_ms(0.0),
-  m_total_writer_idle_time_ms(0.0)
+  m_total_writer_idle_time_ms(0.0),
+  m_count_lost_frames(count_lost_frames)
 {
     m_step_chunk_write_time_ms = new double[m_total_chunks];
     m_step_writer_idle_time_ms = new double[m_total_chunks];
@@ -78,7 +79,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         std::string data = oss.str();
         std::size_t size = data.length();
         //printf("MAX SIZE of string is %zu \n", data.max_size());
-        printf("chunk size for chunk_id %i is %zu\n",chunk_id,size);
+        printf("chunk size for chunk_id %lu is %zu\n",chunk_id,size);
        
         // Padding to multiple of 8 byte
         std::size_t c_size = round_up_8(size);
@@ -105,7 +106,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
 
        
         if (error != 0)
-            printf("----====== ERROR: Did not write size of chunk id: %i to dataspaces successfully\n",chunk_id);
+            printf("----====== ERROR: Did not write size of chunk id: %lu to dataspaces successfully\n",chunk_id);
         //else
         //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
         error = dspaces_put_sync();
@@ -123,20 +124,34 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
                             ub,
                             c_data);
         if (error != 0)
-            printf("----====== ERROR: Did not write chunk id: %i to dataspaces successfully\n",chunk_id);
+            printf("----====== ERROR: Did not write chunk id: %lu to dataspaces successfully\n",chunk_id);
         //else
         //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
         error = dspaces_put_sync();
         if (error != 0)
             printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_var_name.c_str());
-        DurationMilli write_chunk_time_ms = timeNow()-t_wstart;
+	DurationMilli write_chunk_time_ms = timeNow()-t_wstart;
         m_step_chunk_write_time_ms[chunk_id] = write_chunk_time_ms.count();
-        printf("Chunk %lu : step_write_chunk_time_ms : %f\n", m_step_chunk_write_time_ms[chunk_id]);
+        printf("Chunk %lu : step_write_chunk_time_ms : %f\n", chunk_id, m_step_chunk_write_time_ms[chunk_id]);
         m_total_chunk_write_time_ms += m_step_chunk_write_time_ms[chunk_id];
         dspaces_unlock_on_write("my_test_lock", &m_gcomm);
         delete[] c_data;
         //ToDo: better way to free memory of chunk
         //delete chunk;
+	if (m_count_lost_frames)
+	{
+            dspaces_lock_on_write("last_write_lock", &m_gcomm);
+	    error = dspaces_put("last_written_chunk",
+                                0,
+                                sizeof(unsigned long int),
+                                ndim,
+                                lb,
+                                ub,
+                                &chunk_id);
+	    dspaces_unlock_on_write("last_write_lock", &m_gcomm);
+	}
+        
+        
     }
     //MPI_Barrier(m_gcomm);
     DurationMilli write_time_ms = timeNow()-t_start;
@@ -146,7 +161,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         printf("total_data_write_time_ms : %f\n",m_total_data_write_time_ms);
         printf("total_chunk_write_time_ms : %f\n",m_total_chunk_write_time_ms);
         printf("total_writer_idle_time_ms : %f\n",m_total_writer_idle_time_ms);
-        printf("total_chunk_data_written : %u\n",m_total_size);
+        printf("total_chunk_data_written : %lu\n",m_total_size);
         printf("total_chunks written : %u\n",m_total_chunks);
         printf("step_chunk_write_time_ms : ");
         for (auto step = 0; step < m_total_chunks; step++)
