@@ -19,6 +19,8 @@ DataSpacesReader::DataSpacesReader(char* var_name, unsigned long int total_chunk
 {
     m_step_chunk_read_time_ms = new double [m_total_chunks];
     m_step_reader_idle_time_ms = new double [m_total_chunks];
+    m_step_size_read_time_ms = new double [m_total_chunks];
+    m_step_between_read_time_ms = new double [m_total_chunks];
     m_gcomm = comm;
     MPI_Barrier(m_gcomm);
     int nprocs;
@@ -51,7 +53,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         m_step_reader_idle_time_ms[chunk_id] = reader_idle_time_ms.count();
         m_total_reader_idle_time_ms += m_step_reader_idle_time_ms[chunk_id];
         //printf("---==== Reading chunk id %u\n",chunk_id);
-        TimeVar t_rstart = timeNow();
+        TimeVar t_rsstart = timeNow();
         int error = dspaces_get(m_size_var_name.c_str(),
                                 chunk_id,
                                 sizeof(std::size_t),
@@ -63,12 +65,19 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
             printf("----====== ERROR (%i): Did not read SIZE of chunk id: %i from dataspaces successfully\n",error, chunk_id);
         //    printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
         //else
+        DurationMilli size_read_time_ms = timeNow() - t_rsstart;
+        m_step_size_read_time_ms[chunk_id] = size_read_time_ms.count();
         dspaces_unlock_on_read("size_lock", &m_gcomm);
         //printf("chunk size read from ds for chunkid %i : %u\n", chunk_id, chunk_size);
 
         char *input_data = new char [chunk_size];
 
+        TimeVar t_rbstart = timeNow();
         dspaces_lock_on_read("my_test_lock", &m_gcomm);
+        DurationMilli between_read_time_ms = timeNow() - t_rbstart;
+        m_step_between_read_time_ms[chunk_id] = between_read_time_ms.count();
+        
+        TimeVar t_rcstart = timeNow();
         error = dspaces_get(m_var_name.c_str(),
                             chunk_id,
                             chunk_size,
@@ -82,7 +91,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         //else
         //    printf("Read chunk id %i from dataspacess successfull\n",chunk_id);
         
-        DurationMilli read_chunk_time_ms = timeNow()-t_rstart;
+        DurationMilli read_chunk_time_ms = timeNow()-t_rcstart;
         m_step_chunk_read_time_ms[chunk_id] = read_chunk_time_ms.count();
         m_total_chunk_read_time_ms += m_step_chunk_read_time_ms[chunk_id];
         dspaces_unlock_on_read("my_test_lock", &m_gcomm);
@@ -121,9 +130,23 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
             printf(" %f ", m_step_reader_idle_time_ms[step]);
         }
         printf("\n");
+        printf("step_size_read_time_ms : ");
+        for (auto step = 0; step < m_total_chunks; step++)
+        {
+            printf(" %f ", m_step_size_read_time_ms[step]);
+        }
+        printf("\n");
+        printf("step_between_read_time_ms : ");
+        for (auto step = 0; step < m_total_chunks; step++)
+        {
+            printf(" %f ", m_step_between_read_time_ms[step]);
+        }
+        printf("\n");
         //ToDo: delete in destructor
         delete[] m_step_chunk_read_time_ms;
         delete[] m_step_reader_idle_time_ms;
+        delete[] m_step_size_read_time_ms;
+        delete[] m_step_between_read_time_ms;
     }
 
     return chunks;
