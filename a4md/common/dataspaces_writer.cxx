@@ -22,6 +22,9 @@ DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunk
 {
     m_step_chunk_write_time_ms = new double[m_total_chunks];
     m_step_writer_idle_time_ms = new double[m_total_chunks];
+    m_step_size_write_time_ms = new double[m_total_chunks];
+    m_step_between_write_time_ms = new double[m_total_chunks];
+
     m_gcomm = comm;
     MPI_Barrier(m_gcomm);
     int nprocs;
@@ -79,7 +82,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         std::string data = oss.str();
         std::size_t size = data.length();
         //printf("MAX SIZE of string is %zu \n", data.max_size());
-        printf("chunk size for chunk_id %lu is %zu\n",chunk_id,size);
+        //printf("chunk size for chunk_id %i is %zu\n",chunk_id,size);
        
         // Padding to multiple of 8 byte
         std::size_t c_size = round_up_8(size);
@@ -95,7 +98,8 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         DurationMilli writer_idle_time_ms = timeNow()-t_istart;
         m_step_writer_idle_time_ms[chunk_id] = writer_idle_time_ms.count();
         m_total_writer_idle_time_ms += m_step_writer_idle_time_ms[chunk_id];
-        TimeVar t_wstart = timeNow();
+       
+        TimeVar t_wsstart = timeNow();
         int error = dspaces_put(m_size_var_name.c_str(),
                                 chunk_id,
                                 sizeof(std::size_t),
@@ -112,10 +116,18 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         error = dspaces_put_sync();
         if (error != 0) 
             printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_size_var_name.c_str());
-        
+        DurationMilli size_write_time_ms = timeNow() - t_wsstart;
+        m_step_size_write_time_ms[chunk_id] = size_write_time_ms.count();
+
         dspaces_unlock_on_write("size_lock", &m_gcomm);
         //printf("writing char array to dataspace:\n %s\n",data.c_str());
+        
+        TimeVar t_wbstart = timeNow();
         dspaces_lock_on_write("my_test_lock", &m_gcomm);
+        DurationMilli between_write_time_ms = timeNow() - t_wbstart;
+        m_step_between_write_time_ms[chunk_id] = between_write_time_ms.count();
+
+        TimeVar t_wcstart = timeNow();
         error = dspaces_put(m_var_name.c_str(),
                             chunk_id,
                             c_size,
@@ -124,13 +136,13 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
                             ub,
                             c_data);
         if (error != 0)
-            printf("----====== ERROR: Did not write chunk id: %lu to dataspaces successfully\n",chunk_id);
+            printf("----====== ERROR(%d): Did not write chunk id: %i to dataspaces successfully\n",error,chunk_id);
         //else
         //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
         error = dspaces_put_sync();
         if (error != 0)
             printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_var_name.c_str());
-        DurationMilli write_chunk_time_ms = timeNow()-t_wstart;
+        DurationMilli write_chunk_time_ms = timeNow()-t_wcstart;
         m_step_chunk_write_time_ms[chunk_id] = write_chunk_time_ms.count();
         printf("Chunk %lu : step_write_chunk_time_ms : %f\n", chunk_id, m_step_chunk_write_time_ms[chunk_id]);
         m_total_chunk_write_time_ms += m_step_chunk_write_time_ms[chunk_id];
@@ -173,9 +185,23 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
             printf(" %f ", m_step_writer_idle_time_ms[step]);
         }
         printf("\n");
+        printf("step_size_write_time_ms : ");
+        for (auto step = 0; step < m_total_chunks; step++)
+        {
+            printf(" %f ", m_step_size_write_time_ms[step]);
+        }
+        printf("\n");
+        printf("step_between_write_time_ms : ");
+        for (auto step = 0; step < m_total_chunks; step++)
+        {
+            printf(" %f ", m_step_between_write_time_ms[step]);
+        }
+        printf("\n");
         //ToDo: delete in destructor
         delete[] m_step_chunk_write_time_ms;
         delete[] m_step_writer_idle_time_ms;
+        delete[] m_step_size_write_time_ms;
+        delete[] m_step_between_write_time_ms;
     }
 }
 
