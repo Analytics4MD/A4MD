@@ -51,7 +51,6 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
     MPI_Barrier(m_gcomm);
     int ndim = 1;
     uint64_t lb[1] = {0}, ub[1] = {0};
-
     for (chunk_id = chunks_from; chunk_id<=chunks_to; chunk_id++)
     {
 	    if (m_count_lost_frames)
@@ -126,8 +125,8 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         if (error != 0)
             printf("----====== ERROR (%i): Did not read SIZE of chunk id: %lu from dataspaces successfully\n",error, chunk_id); 
         if (error == -11)
-	    {
-	        printf("Recieved -11 from dspaces get. Probably lost chunk %lu\n",chunk_id);
+        {
+	    printf("Recieved -11 from dspaces get. Probably lost chunk %lu\n",chunk_id);
             if (m_count_lost_frames)
             {
                 m_lost_frames_count++;
@@ -137,7 +136,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
             {
                 throw new DataLayerException("Dataspaces get recieved error code -11. This is not expected for lock type 2, but expected for lock type 1 or 3. Check lock type used.\n");
             }
-	    }
+        }
         //    printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
         //else
         DurationMilli size_read_time_ms = timeNow() - t_rsstart;
