@@ -121,20 +121,24 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
                                 &chunk_size);
 
         if (error != 0)
-            printf("----====== ERROR (%i): Did not read SIZE of chunk id: %lu from dataspaces successfully\n",error, chunk_id); 
-        if (error == -11)
         {
-            printf("Recieved -11 from dspaces get. Probably lost chunk %lu\n",chunk_id);
-            if (m_count_lost_frames)
+            if (error == -11)
             {
-                m_lost_frames_count++;
-                m_lost_frames_id.push_back(chunk_id);
-                continue;
+                printf("Recieved -11 from dspaces get. Probably lost chunk %lu\n",chunk_id);
+                if (m_count_lost_frames)
+                {
+                    dspaces_unlock_on_read("size_lock", &m_gcomm);
+                    m_lost_frames_count++;
+                    m_lost_frames_id.push_back(chunk_id);
+                    continue;
+                }
+                else
+                {
+                    throw new DataLayerException("Dataspaces get recieved error code -11. This is not expected for lock type 2, but expected for lock type 1 or 3. Check lock type used.\n");
+                }
             }
             else
-            {
-                throw new DataLayerException("Dataspaces get recieved error code -11. This is not expected for lock type 2, but expected for lock type 1 or 3. Check lock type used.\n");
-            }
+                printf("----====== ERROR (%i): Did not read SIZE of chunk id: %lu from dataspaces successfully\n",error, chunk_id); 
         }
         //    printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
         //else
@@ -142,7 +146,6 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         m_step_size_read_time_ms[chunk_id] = size_read_time_ms.count();
         dspaces_unlock_on_read("size_lock", &m_gcomm);
         //printf("chunk size read from ds for chunkid %i : %u\n", chunk_id, chunk_size);
-
         char *input_data = new char [chunk_size];
 
         TimeVar t_rbstart = timeNow();
@@ -160,29 +163,33 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
                             input_data);
 
         if (error != 0)
-            printf("----====== ERROR (%i): Did not read chunkid %lu from dataspaces successfully\n",error, chunk_id);
-        //else
-        //    printf("Read chunk id %i from dataspacess successfull\n",chunk_id);
-        if (error == -11)
         {
-            printf("Recieved -11 from dspaces get. Probably lost chunk %lu\n",chunk_id);
-            if (m_count_lost_frames)
+            if (error == -11)
             {
-                m_lost_frames_count++;
-                m_lost_frames_id.push_back(chunk_id);
-                continue;
+                printf("Recieved -11 from dspaces get. Probably lost chunk %lu\n",chunk_id);
+                if (m_count_lost_frames)
+                {
+                    dspaces_unlock_on_read("my_test_lock", &m_gcomm);
+                    m_lost_frames_count++;
+                    m_lost_frames_id.push_back(chunk_id);
+                    continue;
+                }
+                else
+                {
+                    throw new DataLayerException("Dataspaces get recieved error code -11. This is not expected for lock type 2, but expected for lock type 1 or 3. Check lock type used.\n");
+                }
             }
             else
-            {
-                throw new DataLayerException("Dataspaces get recieved error code -11. This is not expected for lock type 2, but expected for lock type 1 or 3. Check lock type used.\n");
-            }
+                printf("----====== ERROR (%i): Did not read chunkid %lu from dataspaces successfully\n",error, chunk_id);
         }
-                
+        //else
+        //    printf("Read chunk id %i from dataspacess successfull\n",chunk_id);
+                        
         DurationMilli read_chunk_time_ms = timeNow()-t_rcstart;
         m_step_chunk_read_time_ms[chunk_id] = read_chunk_time_ms.count();
         m_total_chunk_read_time_ms += m_step_chunk_read_time_ms[chunk_id];
         dspaces_unlock_on_read("my_test_lock", &m_gcomm);
-
+       
         //printf("Read char array from dataspace:\n %s\n",input_data);
         SerializableChunk chunk;
         std::string instr(input_data);

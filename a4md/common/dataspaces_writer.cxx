@@ -26,7 +26,9 @@ DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunk
     m_step_between_write_time_ms = new double[m_total_chunks];
 
     m_gcomm = comm;
+    printf("In dataspaces writer\n");
     MPI_Barrier(m_gcomm);
+    printf("Got through barrier\n");
     int nprocs;
     MPI_Comm_size(m_gcomm, &nprocs);
     // Initalize DataSpaces
@@ -35,6 +37,7 @@ DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunk
     // Application ID: Unique idenitifier (integer) for application
     // Pointer to the MPI Communicator, allows DS Layer to use MPI barrier func
     // Addt'l parameters: Placeholder for future argumenchunk_id, currently NULL.
+    printf("Initializing dpsaces\n");
     dspaces_init(nprocs, 1, &m_gcomm, NULL);
     printf("Initialized dspaces client in DataSpacesWriter, var_name: %s, total_chunks: %u\n",m_var_name.c_str(), m_total_chunks);
 }
@@ -49,26 +52,9 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
     TimeVar t_start = timeNow();
     unsigned long int chunk_id; 
     MPI_Barrier(m_gcomm);
-    //printf("Printing chunk before serializing\n");
     for(Chunk* chunk:chunks)
     {
-        //chk_ary.print();
-        //chunk->print();
-        
         SerializableChunk serializable_chunk = SerializableChunk(chunk);
-        // ToDo: May don't need alignment, only rounding up via padding
-        //std::size_t align_size = 64;    
-        //std::size_t request_size = sizeof(SerializableChunk) + align_size;
-        //void *alloc = ::operator new(request_size); 
-        //printf("Old allocated address: %p\n", (void*)alloc);
-        //boost::alignment::align(align_size, sizeof(SerializableChunk), alloc, request_size);
-        //if (boost::alignment::is_aligned(alloc, align_size))
-        //{
-        //    printf("New aligned address: %p\n", (void*)alloc);
-        //}
-        //SerializableChunk* serializable_chunk = reinterpret_cast<SerializableChunk*>(alloc);
-        //*serializable_chunk = SerializableChunk(chunk);
-
         std::ostringstream oss;
         {
             boost::archive::text_oarchive oa(oss);
