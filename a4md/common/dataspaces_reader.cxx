@@ -126,6 +126,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
             printf("Recieved -11 from dspaces get. Probably lost chunk %lu\n",chunk_id);
             if (m_count_lost_frames)
             {
+                dspaces_unlock_on_read("size_lock", &m_gcomm);
                 m_lost_frames_count++;
                 continue;
             }
@@ -140,7 +141,6 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         m_step_size_read_time_ms[chunk_id] = size_read_time_ms.count();
         dspaces_unlock_on_read("size_lock", &m_gcomm);
         //printf("chunk size read from ds for chunkid %i : %u\n", chunk_id, chunk_size);
-
         char *input_data = new char [chunk_size];
 
         TimeVar t_rbstart = timeNow();
@@ -166,6 +166,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
             printf("Recieved -11 from dspaces get. Probably lost chunk %lu\n",chunk_id);
             if (m_count_lost_frames)
             {
+                dspaces_unlock_on_read("size_lock", &m_gcomm);
                 m_lost_frames_count++;
                 continue;
             }
@@ -179,7 +180,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         m_step_chunk_read_time_ms[chunk_id] = read_chunk_time_ms.count();
         m_total_chunk_read_time_ms += m_step_chunk_read_time_ms[chunk_id];
         dspaces_unlock_on_read("my_test_lock", &m_gcomm);
-
+       
         //printf("Read char array from dataspace:\n %s\n",input_data);
         SerializableChunk chunk;
         std::string instr(input_data);
