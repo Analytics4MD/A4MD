@@ -53,8 +53,8 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
     uint64_t lb[1] = {0}, ub[1] = {0};
     for (chunk_id = chunks_from; chunk_id<=chunks_to; chunk_id++)
     {
-	    if (m_count_lost_frames)
-	    {
+        if (m_count_lost_frames)
+        {
             unsigned long int last_chunk_id = 0;
             bool try_next_chunk = false;
             auto temp_chunk_id = chunk_id;
@@ -86,7 +86,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
                     }
             	    else
             	    {
-            	        printf("Dont have chunk %lu yet. So waiting %lu ms to poll\n",chunk_id,m_wait_ms);
+            	        //printf("Dont have chunk %lu yet. So waiting %lu ms to poll\n",chunk_id,m_wait_ms);
             	        std::this_thread::sleep_for(std::chrono::milliseconds(m_wait_ms));
             	    }
                 }
@@ -99,6 +99,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
             if (try_next_chunk)
             {
                 m_lost_frames_count++;
+                m_lost_frames_id.push_back(chunk_id);
                 continue;
             }
         }
@@ -127,6 +128,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
             if (m_count_lost_frames)
             {
                 m_lost_frames_count++;
+                m_lost_frames_id.push_back(chunk_id);
                 continue;
             }
             else
@@ -167,6 +169,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
             if (m_count_lost_frames)
             {
                 m_lost_frames_count++;
+                m_lost_frames_id.push_back(chunk_id);
                 continue;
             }
             else
@@ -227,6 +230,12 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
             printf(" %f ", m_step_between_read_time_ms[step]);
         }
         printf("\n");
+        printf("\n");
+        printf("lost frame ids : ");
+        for(unsigned int lost_ids : m_lost_frames_id) 
+            printf(" %lu ", lost_ids);
+        printf("\n");
+
         //ToDo: delete in destructor
         delete[] m_step_chunk_read_time_ms;
         delete[] m_step_reader_idle_time_ms;
