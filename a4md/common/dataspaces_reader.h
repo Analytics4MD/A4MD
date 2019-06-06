@@ -9,13 +9,11 @@ class DataSpacesReader : public IMSReader
         std::string m_var_name;
         std::string m_size_var_name;
         unsigned int m_total_chunks;
-        double m_total_data_read_time_ms;
-        double m_total_chunk_read_time_ms;
-        double m_total_reader_idle_time_ms;
-        double *m_step_chunk_read_time_ms;
-        double *m_step_reader_idle_time_ms;
-        double *m_step_size_read_time_ms;
-        double *m_step_between_read_time_ms;
+        //double m_total_data_read_time_ms;
+        //double m_total_chunk_read_time_ms;
+        //double m_total_reader_idle_time_ms;
+        //double *m_step_chunk_read_time_ms;
+        //double *m_step_reader_idle_time_ms;
         MPI_Comm m_gcomm;
     public:
         DataSpacesReader(char* var_name, unsigned long int total_chunks, MPI_Comm comm);

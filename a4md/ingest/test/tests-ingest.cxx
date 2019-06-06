@@ -53,10 +53,10 @@ TEST_CASE("PDBChunker Tests", "[ingest]")
                                        (char*)py_path.c_str());
     
     PDBChunker* pdb_chunker = new PDBChunker((*py_runner),
-                                             (char*)file_path.c_str());
+                                             (char*)file_path.c_str(), 0);
     //unsigned long int id = 0;
     int result = pdb_chunker->extract_chunk();
-    std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1);
+    std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1,1);
     Chunk* chunk = chunk_vector.front();
     MDChunk *plmdchunk = dynamic_cast<MDChunk *>(chunk);
     
@@ -87,11 +87,10 @@ TEST_CASE("Knob nAtoms Tests", "[ingest]")
                                        (char*)func.c_str(),
                                        (char*)py_path.c_str());
     
-    PDBChunker* pdb_chunker = new PDBChunker((*py_runner),
-                                             (char*)file_path.c_str());
     int natoms = 100;
-    int result = pdb_chunker->extract_chunk(natoms);
-    std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1);
+    PDBChunker* pdb_chunker = new PDBChunker((*py_runner), (char*)file_path.c_str(), 0, natoms);
+    int result = pdb_chunker->extract_chunk();
+    std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1,1);
     Chunk* chunk = chunk_vector.front();
     MDChunk *plmdchunk = dynamic_cast<MDChunk *>(chunk);
     //plmdchunk->print();

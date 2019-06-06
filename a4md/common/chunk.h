@@ -29,6 +29,9 @@ class Chunk
              m_id(id)
         {
         }
+        virtual ~Chunk()
+        {
+        }
 
         virtual void print()
         {
@@ -103,6 +106,10 @@ class MDChunk : public Chunk
                   m_box_yz(box_yz)
         {
         } 
+        ~MDChunk()
+        {
+            printf("---===== Called destructor of MDChunk\n");
+        }
 
         void print()
         {
@@ -160,6 +167,10 @@ class SerializableChunk
 
         SerializableChunk(Chunk* chunk)
         :m_chunk(chunk)
+        {
+        }
+
+        ~SerializableChunk()
         {
         }
 

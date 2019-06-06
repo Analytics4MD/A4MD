@@ -3,7 +3,7 @@
 #include "md_analyzer.h"
 #include "md_retriever.h"
 #include <unistd.h>
-
+#include "timer.h"
 
 ChunkAnalyzer* analyzer_factory(int argc, const char** argv)
 {

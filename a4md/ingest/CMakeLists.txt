@@ -1,19 +1,17 @@
 set(_ingest_sources_
-        plumed_ingest.cxx
-        md_ingest.cxx
-        ingest.cxx 
+        ingester.cxx
+        md_generator.cxx
         plumed_chunker.cxx
         chunk_stager.cxx
-        pycall.cxx
+        md_stager.cxx
 		pdb_chunker.cxx
 		)
 set(_ingest_headers_
-        plumed_ingest.h
-        md_ingest.h
-        ingest.h
+        ingester.h
+        md_generator.h
         plumed_chunker.h
         chunk_stager.h
-        pycall.h
+        md_stager.h
 		pdb_chunker.h
         )
 
@@ -28,7 +26,7 @@ set_target_properties(ingest PROPERTIES
 )
 
 add_dependencies(ingest a4md_cmn)
-target_link_libraries(ingest a4md_cmn ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${PYTHON_LIBRARIES})
+target_link_libraries(ingest a4md_cmn ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${PYTHON_LIBRARIES} ${TAU_LIBRARIES})
 
 add_subdirectory(test)
 install (TARGETS ingest DESTINATION lib)

@@ -9,6 +9,7 @@ class ChunkReader
         Chunker & m_chunker; 
     public:
         ChunkReader(Chunker & chunker);
-        std::vector<Chunk*> read_chunks(int chunks_from, int chunks_to);
+        ~ChunkReader();
+        std::vector<Chunk*> read_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to);
 };
 #endif

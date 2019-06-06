@@ -12,6 +12,7 @@ class MDRetriever : public Retriever
         MDRetriever(ChunkAnalyzer & chunk_analyzer,
                     int n_frames,
                     int n_window_width=1);
+        ~MDRetriever();
         void run() override;
 };
 #endif

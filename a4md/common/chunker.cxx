@@ -1,6 +1,10 @@
 #include "chunker.h"
 #include "pycall.h"
 
+Chunker::~Chunker()
+{
+    printf("---===== Finalized Chunker\n");
+}
 
 std::vector<Chunk*> Chunker::get_chunks(int num_chunks)
 {

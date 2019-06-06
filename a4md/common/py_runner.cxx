@@ -14,7 +14,7 @@ PyRunner::PyRunner(char* module_name, char* function_name, char* py_path)
   m_function_name(function_name)
 {
     initialize_python(py_path);
-    printf("Initialized PyRunner\n");
+    printf("---===== Initialized PyRunner\n");
 }
 
 PyRunner::~PyRunner()
@@ -22,7 +22,7 @@ PyRunner::~PyRunner()
     Py_DECREF(m_py_module);
     Py_DECREF(m_py_func); 
     Py_FinalizeEx(); 
-    printf("Finalized PyRunner\n");
+    printf("---===== Finalized PyRunner\n");
 }
 
 void print_py_error_and_rethrow()

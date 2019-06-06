@@ -9,21 +9,18 @@
 #include <boost/align/align.hpp>
 #include <boost/align/is_aligned.hpp>
 #include <sstream>
-
+//#include <TAU.h>
 
 DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunks, MPI_Comm comm)
 : m_size_var_name("chunk_size"),
   m_var_name(var_name),
-  m_total_chunks(total_chunks),
-  m_total_data_write_time_ms(0.0),
-  m_total_chunk_write_time_ms(0.0),
-  m_total_writer_idle_time_ms(0.0)
+  m_total_chunks(total_chunks)
+//  m_total_data_write_time_ms(0.0),
+//  m_total_chunk_write_time_ms(0.0),
+//  m_total_writer_idle_time_ms(0.0)
 {
-    m_step_chunk_write_time_ms = new double[m_total_chunks];
-    m_step_writer_idle_time_ms = new double[m_total_chunks];
-    m_step_size_write_time_ms = new double[m_total_chunks];
-    m_step_between_write_time_ms = new double[m_total_chunks];
-
+    //m_step_chunk_write_time_ms = new double[m_total_chunks];
+    //m_step_writer_idle_time_ms = new double[m_total_chunks];
     m_gcomm = comm;
     MPI_Barrier(m_gcomm);
     int nprocs;
@@ -35,7 +32,7 @@ DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunk
     // Pointer to the MPI Communicator, allows DS Layer to use MPI barrier func
     // Addt'l parameters: Placeholder for future argumenchunk_id, currently NULL.
     dspaces_init(nprocs, 1, &m_gcomm, NULL);
-    printf("Initialized dspaces client in DataSpacesWriter, var_name: %s, total_chunks: %u\n",m_var_name.c_str(), m_total_chunks);
+    printf("---===== Initialized dspaces client in DataSpacesWriter, var_name: %s, total_chunks: %u\n",m_var_name.c_str(), m_total_chunks);
 }
 
 static inline std::size_t round_up_8(std::size_t n)
@@ -45,7 +42,7 @@ static inline std::size_t round_up_8(std::size_t n)
 
 void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
 {
-    TimeVar t_start = timeNow();
+    //TimeVar t_start = timeNow();
     unsigned long int chunk_id; 
     MPI_Barrier(m_gcomm);
     //printf("Printing chunk before serializing\n");
@@ -92,13 +89,18 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         //printf("Copied chunk size %zu\n", r_size);
 
         m_total_size += c_size;
-        TimeVar t_istart = timeNow();
+        //TimeVar t_istart = timeNow();
+        //TAU_STATIC_TIMER_START("total_write_idle_time");
+        //TAU_DYNAMIC_TIMER_START("write_idle_time");
         dspaces_lock_on_write("size_lock", &m_gcomm);
-        DurationMilli writer_idle_time_ms = timeNow()-t_istart;
-        m_step_writer_idle_time_ms[chunk_id] = writer_idle_time_ms.count();
-        m_total_writer_idle_time_ms += m_step_writer_idle_time_ms[chunk_id];
-       
-        TimeVar t_wsstart = timeNow();
+        //TAU_DYNAMIC_TIMER_STOP("write_idle_time");
+        //TAU_STATIC_TIMER_STOP("total_write_idle_time");
+        //DurationMilli writer_idle_time_ms = timeNow()-t_istart;
+        //m_step_writer_idle_time_ms[chunk_id] = writer_idle_time_ms.count();
+        //m_total_writer_idle_time_ms += m_step_writer_idle_time_ms[chunk_id];
+        //TimeVar t_wstart = timeNow();
+        //TAU_STATIC_TIMER_START("total_write_size_time");
+        //TAU_DYNAMIC_TIMER_START("write_size_time");
         int error = dspaces_put(m_size_var_name.c_str(),
                                 chunk_id,
                                 sizeof(std::size_t),
@@ -115,18 +117,21 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         error = dspaces_put_sync();
         if (error != 0) 
             printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_size_var_name.c_str());
-        DurationMilli size_write_time_ms = timeNow() - t_wsstart;
-        m_step_size_write_time_ms[chunk_id] = size_write_time_ms.count();
-
+        //TAU_DYNAMIC_TIMER_STOP("write_size_time");
+        //TAU_STATIC_TIMER_STOP("total_write_size_time");
+        
         dspaces_unlock_on_write("size_lock", &m_gcomm);
         //printf("writing char array to dataspace:\n %s\n",data.c_str());
-        
-        TimeVar t_wbstart = timeNow();
+        //TAU_STATIC_TIMER_START("total_between_write_time");
+        //TAU_DYNAMIC_TIMER_START("between_write_time");
         dspaces_lock_on_write("my_test_lock", &m_gcomm);
-        DurationMilli between_write_time_ms = timeNow() - t_wbstart;
-        m_step_between_write_time_ms[chunk_id] = between_write_time_ms.count();
-
-        TimeVar t_wcstart = timeNow();
+        //TAU_DYNAMIC_TIMER_STOP("between_write_time");
+        //TAU_STATIC_TIMER_STOP("total_between_write_time");
+        
+        //TAU_STATIC_TIMER_START("total_write_chunk_time");
+        //TAU_DYNAMIC_TIMER_START("write_chunk_time");
+        //TAU_TRACK_MEMORY_FOOTPRINT();
+        //TAU_TRACK_MEMORY_FOOTPRINT_HERE();
         error = dspaces_put(m_var_name.c_str(),
                             chunk_id,
                             c_size,
@@ -135,60 +140,48 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
                             ub,
                             c_data);
         if (error != 0)
-            printf("----====== ERROR(%d): Did not write chunk id: %i to dataspaces successfully\n",error,chunk_id);
+            printf("----====== ERROR: Did not write chunk id: %i to dataspaces successfully\n",chunk_id);
         //else
         //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
         error = dspaces_put_sync();
         if (error != 0)
             printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_var_name.c_str());
-        DurationMilli write_chunk_time_ms = timeNow()-t_wcstart;
-        m_step_chunk_write_time_ms[chunk_id] = write_chunk_time_ms.count();
-        printf("Chunk %lu : step_write_chunk_time_ms : %f\n", m_step_chunk_write_time_ms[chunk_id]);
-        m_total_chunk_write_time_ms += m_step_chunk_write_time_ms[chunk_id];
+        //TAU_DYNAMIC_TIMER_STOP("write_chunk_time");
+        //TAU_STATIC_TIMER_STOP("total_write_chunk_time");
+        //DurationMilli write_chunk_time_ms = timeNow()-t_wstart;
+        //m_step_chunk_write_time_ms[chunk_id] = write_chunk_time_ms.count();
+        //printf("Chunk %lu : step_write_chunk_time_ms : %f\n", m_step_chunk_write_time_ms[chunk_id]);
+        //m_total_chunk_write_time_ms += m_step_chunk_write_time_ms[chunk_id];
         dspaces_unlock_on_write("my_test_lock", &m_gcomm);
         delete[] c_data;
         //ToDo: better way to free memory of chunk
         //delete chunk;
     }
     //MPI_Barrier(m_gcomm);
-    DurationMilli write_time_ms = timeNow()-t_start;
-    m_total_data_write_time_ms += write_time_ms.count();
+    //DurationMilli write_time_ms = timeNow()-t_start;
+    //m_total_data_write_time_ms += write_time_ms.count();
     if (chunk_id == m_total_chunks-1)
     {
-        printf("total_data_write_time_ms : %f\n",m_total_data_write_time_ms);
-        printf("total_chunk_write_time_ms : %f\n",m_total_chunk_write_time_ms);
-        printf("total_writer_idle_time_ms : %f\n",m_total_writer_idle_time_ms);
         printf("total_chunk_data_written : %u\n",m_total_size);
-        printf("total_chunks written : %u\n",m_total_chunks);
-        printf("step_chunk_write_time_ms : ");
-        for (auto step = 0; step < m_total_chunks; step++)
-        {
-            printf(" %f ", m_step_chunk_write_time_ms[step]);
-        }
-        printf("\n");
-        printf("step_writer_idle_time_ms : ");
-        for (auto step = 0; step < m_total_chunks; step++)
-        {
-            printf(" %f ", m_step_writer_idle_time_ms[step]);
-        }
-        printf("\n");
-        printf("step_size_write_time_ms : ");
-        for (auto step = 0; step < m_total_chunks; step++)
-        {
-            printf(" %f ", m_step_size_write_time_ms[step]);
-        }
-        printf("\n");
-        printf("step_between_write_time_ms : ");
-        for (auto step = 0; step < m_total_chunks; step++)
-        {
-            printf(" %f ", m_step_between_write_time_ms[step]);
-        }
-        printf("\n");
-        //ToDo: delete in destructor
-        delete[] m_step_chunk_write_time_ms;
-        delete[] m_step_writer_idle_time_ms;
-        delete[] m_step_size_write_time_ms;
-        delete[] m_step_between_write_time_ms;
+    //    printf("total_data_write_time_ms : %f\n",m_total_data_write_time_ms);
+    //    printf("total_chunk_write_time_ms : %f\n",m_total_chunk_write_time_ms);
+    //    printf("total_writer_idle_time_ms : %f\n",m_total_writer_idle_time_ms);
+    //    printf("total_chunks written : %u\n",m_total_chunks);
+    //    printf("step_chunk_write_time_ms : ");
+    //    for (auto step = 0; step < m_total_chunks; step++)
+    //    {
+    //        printf(" %f ", m_step_chunk_write_time_ms[step]);
+    //    }
+    //    printf("\n");
+    //    printf("step_writer_idle_time_ms : ");
+    //    for (auto step = 0; step < m_total_chunks; step++)
+    //    {
+    //        printf(" %f ", m_step_writer_idle_time_ms[step]);
+    //    }
+    //    printf("\n");
+    //    //ToDo: delete in destructor
+    //    delete[] m_step_chunk_write_time_ms;
+    //    delete[] m_step_writer_idle_time_ms;
     }
 }
 
@@ -196,6 +189,6 @@ DataSpacesWriter::~DataSpacesWriter()
 {
     MPI_Barrier(m_gcomm);
     dspaces_finalize();
-    printf("Finalized dspaces client in DataSpacesWriter\n");
+    printf("---===== Finalized dspaces client in DataSpacesWriter\n");
 }
 

@@ -32,10 +32,10 @@ void ds_write_and_read()
                                        (char*)func.c_str(),
                                        (char*)py_path.c_str());
     PDBChunker* pdb_chunker = new PDBChunker((*py_runner),
-                                             (char*)file_path.c_str());
+                                             (char*)file_path.c_str(), 0);
     //unsigned long int id = 0;
     int result = pdb_chunker->extract_chunk();
-    std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1);
+    std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1, 1);
     Chunk* chunk = chunk_vector.front(); 
     MDChunk *md_chunk = dynamic_cast<MDChunk *>(chunk);
     //md_chunk->print();
@@ -46,6 +46,7 @@ void ds_write_and_read()
     dataspaces_reader_ptr = new DataSpacesReader(temp_var_name, total_chunks, MPI_COMM_WORLD);
     std::vector<Chunk*> chunks = {chunk};
     dataspaces_writer_ptr->write_chunks(chunks);
+    
     std::vector<Chunk*> recieved_chunks = dataspaces_reader_ptr->get_chunks(current_chunk_id, current_chunk_id);
     
     for (Chunk* chunk: recieved_chunks)
