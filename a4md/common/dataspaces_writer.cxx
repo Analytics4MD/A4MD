@@ -12,7 +12,9 @@
 #ifdef BUILT_IN_PERF
 #include "timer.h"
 #endif
-//#include <TAU.h>
+#ifdef TAU_PERF
+#include <TAU.h>
+#endif
 
 DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunks, MPI_Comm comm)
 : m_size_var_name("chunk_size"),
@@ -101,19 +103,26 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
 #ifdef BUILT_IN_PERF
         TimeVar t_istart = timeNow();
 #endif
-        //TAU_STATIC_TIMER_START("total_write_idle_time");
-        //TAU_DYNAMIC_TIMER_START("write_idle_time");
+#ifdef TAU_PERF
+        TAU_STATIC_TIMER_START("total_write_idle_time");
+        TAU_DYNAMIC_TIMER_START("write_idle_time");
+#endif
         dspaces_lock_on_write("size_lock", &m_gcomm);
-        //TAU_DYNAMIC_TIMER_STOP("write_idle_time");
-        //TAU_STATIC_TIMER_STOP("total_write_idle_time");
+#ifdef TAU_PERF
+        TAU_DYNAMIC_TIMER_STOP("write_idle_time");
+        TAU_STATIC_TIMER_STOP("total_write_idle_time");
+#endif
 #ifdef BUILT_IN_PERF
         DurationMilli writer_idle_time_ms = timeNow()-t_istart;
         m_step_writer_idle_time_ms[chunk_id] = writer_idle_time_ms.count();
         m_total_writer_idle_time_ms += m_step_writer_idle_time_ms[chunk_id];
         TimeVar t_wsstart = timeNow();
 #endif
-        //TAU_STATIC_TIMER_START("total_write_size_time");
-        //TAU_DYNAMIC_TIMER_START("write_size_time");
+
+#ifdef TAU_PERF
+        TAU_STATIC_TIMER_START("total_write_size_time");
+        TAU_DYNAMIC_TIMER_START("write_size_time");
+#endif
         int error = dspaces_put(m_size_var_name.c_str(),
                                 chunk_id,
                                 sizeof(std::size_t),
@@ -134,13 +143,19 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         DurationMilli size_write_time_ms = timeNow() - t_wsstart;
         m_step_size_write_time_ms[chunk_id] = size_write_time_ms.count();
 #endif
-        //TAU_DYNAMIC_TIMER_STOP("write_size_time");
-        //TAU_STATIC_TIMER_STOP("total_write_size_time");
+
+#ifdef TAU_PERF
+        TAU_DYNAMIC_TIMER_STOP("write_size_time");
+        TAU_STATIC_TIMER_STOP("total_write_size_time");
+#endif
         
         dspaces_unlock_on_write("size_lock", &m_gcomm);
         //printf("writing char array to dataspace:\n %s\n",data.c_str());
-        //TAU_STATIC_TIMER_START("total_between_write_time");
-        //TAU_DYNAMIC_TIMER_START("between_write_time");
+#ifdef TAU_PERF
+        TAU_STATIC_TIMER_START("total_between_write_time");
+        TAU_DYNAMIC_TIMER_START("between_write_time");
+#endif
+
 #ifdef BUILT_IN_PERF
         TimeVar t_wbstart = timeNow();
 #endif
@@ -150,13 +165,15 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         m_step_between_write_time_ms[chunk_id] = between_write_time_ms.count();
         TimeVar t_wcstart = timeNow();
 #endif
-        //TAU_DYNAMIC_TIMER_STOP("between_write_time");
-        //TAU_STATIC_TIMER_STOP("total_between_write_time");
+#ifdef TAU_PERF
+        TAU_DYNAMIC_TIMER_STOP("between_write_time");
+        TAU_STATIC_TIMER_STOP("total_between_write_time");
         
-        //TAU_STATIC_TIMER_START("total_write_chunk_time");
-        //TAU_DYNAMIC_TIMER_START("write_chunk_time");
-        //TAU_TRACK_MEMORY_FOOTPRINT();
-        //TAU_TRACK_MEMORY_FOOTPRINT_HERE();
+        TAU_STATIC_TIMER_START("total_write_chunk_time");
+        TAU_DYNAMIC_TIMER_START("write_chunk_time");
+        TAU_TRACK_MEMORY_FOOTPRINT();
+        TAU_TRACK_MEMORY_FOOTPRINT_HERE();
+#endif
         error = dspaces_put(m_var_name.c_str(),
                             chunk_id,
                             c_size,
@@ -171,8 +188,10 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         error = dspaces_put_sync();
         if (error != 0)
             printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_var_name.c_str());
-        //TAU_DYNAMIC_TIMER_STOP("write_chunk_time");
-        //TAU_STATIC_TIMER_STOP("total_write_chunk_time");
+#ifdef TAU_PERF
+        TAU_DYNAMIC_TIMER_STOP("write_chunk_time");
+        TAU_STATIC_TIMER_STOP("total_write_chunk_time");
+#endif
 #ifdef BUILT_IN_PERF
         DurationMilli write_chunk_time_ms = timeNow()-t_wcstart;
         m_step_chunk_write_time_ms[chunk_id] = write_chunk_time_ms.count();

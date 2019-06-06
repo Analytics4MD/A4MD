@@ -42,6 +42,7 @@ set(TAU_LIBRARIES "")
 if(DEFINED ENV{TAU_LIBS})
     set(TAU_LIBRARIES "$ENV{TAU_LIBS}")
     message("TAU libraries " ${TAU_LIBRARIES})
+    add_definitions(-DTAU_PERF)
 endif()
 
 if(BUILT_IN_PERF)
