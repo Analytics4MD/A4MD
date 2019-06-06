@@ -1,5 +1,6 @@
 [![Run Status](https://api.shippable.com/projects/5bcf364bec335d0700dbc0ec/badge?branch=master)]()
 # A4MD
+A framework that enables in situ molecular dynamic analytics via using in-memory staging areas
 
 ## Getting Started
 ```
