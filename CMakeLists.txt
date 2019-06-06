@@ -44,4 +44,9 @@ if(DEFINED ENV{TAU_LIBS})
     message("TAU libraries " ${TAU_LIBRARIES})
 endif()
 
+if(BUILT_IN_PERF)
+    message("BUILT_IN_PERF is enabled")
+    add_definitions(-DBUILT_IN_PERF)
+endif()
+
 add_subdirectory(a4md)
