@@ -43,7 +43,12 @@ Create Anaconda environement (i.e test_env), if not
 ```
 source activate test_env
 export LD_LIBRARY_PATH="$HOME/.conda/envs/test_env/lib:$LD_LIBRARY_PATH"
-
+```
+Build 
+```
+cd a4md
+mkdir build
+cd build
 cmake .. \
 -DCMAKE_INSTALL_PREFIX=../_install \
 -DBOOST_ROOT=${BOOST_ROOT}
@@ -55,6 +60,11 @@ cmake .. \
 
 make
 make install
+```
+Build A4MD Python package
+```
+cd a4md
+pip install -e .
 ```
 To use TAU manual instrumentation
 ```
