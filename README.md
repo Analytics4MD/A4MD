@@ -66,7 +66,7 @@ Build A4MD Python package
 cd a4md
 pip install -e .
 ```
-To use TAU manual instrumentation
+To use TAU manual instrumentation, install TAU at ${TAU_ROOT}
 ```
 module unload darshan
 module load papi
