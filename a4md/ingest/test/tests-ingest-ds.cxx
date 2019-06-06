@@ -21,7 +21,7 @@ void ds_write_and_read()
     MPI_Init(NULL,NULL);
     DataSpacesWriter* dataspaces_writer_ptr;
     DataSpacesReader* dataspaces_reader_ptr;
-    unsigned long int current_chunk_id = 0;
+    unsigned long int current_chunk_id = 1;
 
     std::string name = "load";
     std::string func = "extract_frame";
