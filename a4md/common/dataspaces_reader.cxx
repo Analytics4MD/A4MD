@@ -64,7 +64,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         TAU_DYNAMIC_TIMER_START("read_idle_time");
 #endif
         dspaces_lock_on_read("size_lock", &m_gcomm);
-#ifdef
+#ifdef TAU_PERF
         TAU_DYNAMIC_TIMER_STOP("read_idle_time");
         TAU_STATIC_TIMER_STOP("total_read_idle_time");
 #endif
