@@ -9,7 +9,7 @@ class MDStager : public ChunkStager
     public:
         MDStager(ChunkReader & chunk_reader, ChunkWriter & chunk_writer);
         ~MDStager();
-        void free(Chunk* chunk) override;
+        void free_chunk(Chunk* chunk) override;
 };
 
 #endif

@@ -30,11 +30,11 @@ void ChunkStager::stage_chunks(unsigned long int chunk_id_from, unsigned long in
     m_chunk_writer.write_chunks(chunks);
     for (Chunk* chunk : chunks)
     {
-        free(chunk);
+        free_chunk(chunk);
     }
 }
 
-void ChunkStager::free(Chunk* chunk)
+void ChunkStager::free_chunk(Chunk* chunk)
 {
     throw NotImplementedException("This should not be called, override free in the concrete function to free chunk aallocated dynamically!");
 }

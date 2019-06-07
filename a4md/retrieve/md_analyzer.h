@@ -12,6 +12,6 @@ class MDAnalyzer : public ChunkAnalyzer
         MDAnalyzer(ChunkReader & chunk_reader, PyRunner & py_runner);
         ~MDAnalyzer();
         void analyze(Chunk* chunk) override;
-        void free(Chunk* chunk) override;
+        void free_chunk(Chunk* chunk) override;
 };
 #endif

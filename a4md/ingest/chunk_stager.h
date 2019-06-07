@@ -13,7 +13,7 @@ class ChunkStager
         virtual ~ChunkStager();
         bool stage_chunks(int num_chunks=1);
         void stage_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to);
-        virtual void free(Chunk* chunk);
+        virtual void free_chunk(Chunk* chunk);
 };
 
 #endif

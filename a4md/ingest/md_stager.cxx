@@ -12,7 +12,7 @@ MDStager::~MDStager()
     printf("---===== Finalized MDStager\n");
 }
 
-void MDStager::free(Chunk* chunk)
+void MDStager::free_chunk(Chunk* chunk)
 {
     printf("MDStager::free --> Free memory of MDChunk\n");
     delete chunk;

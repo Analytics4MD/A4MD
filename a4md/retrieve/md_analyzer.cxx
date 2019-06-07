@@ -53,7 +53,7 @@ void MDAnalyzer::analyze(Chunk* chunk)
                                 step);
 }
 
-void MDAnalyzer::free(Chunk* chunk)
+void MDAnalyzer::free_chunk(Chunk* chunk)
 {
     printf("MDAnalyzer::free() --> Free memory of MDChunk\n");
     delete chunk;

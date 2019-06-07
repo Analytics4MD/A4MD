@@ -11,7 +11,7 @@ class ChunkAnalyzer
         ChunkAnalyzer(ChunkReader & chunk_reader);
         virtual ~ChunkAnalyzer();
         virtual void analyze(Chunk* chunk);
-        virtual void free(Chunk* chunk);
+        virtual void free_chunk(Chunk* chunk);
         void analyze_chunks(int chunk_id_from, int chunk_id_to);
 };
 #endif
