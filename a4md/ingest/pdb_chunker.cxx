@@ -25,9 +25,9 @@ int PDBChunker::get_position()
 
 int PDBChunker::extract_chunk()
 {   
-    Chunk* chunk = NULL;
+    Chunk* chunk = nullptr;
     int result  = m_py_runner.extract_frame(m_file_path, m_next_id, m_position, &chunk, m_natoms);
-    if (result == 0 && chunk != NULL)
+    if (result == 0 && chunk != nullptr)
     {
         append_chunk(chunk);
     } 
@@ -44,9 +44,9 @@ std::vector<Chunk*> PDBChunker::get_chunks(unsigned long int chunk_id_from, unsi
     std::vector<Chunk*> chunks;
     for (unsigned long int chunk_id = chunk_id_from; chunk_id <= chunk_id_from; chunk_id++)
     {
-        Chunk* chunk = NULL;
+        Chunk* chunk = nullptr;
         int error = m_py_runner.extract_frame(m_file_path, chunk_id, m_position, &chunk, m_natoms);
-        if (error == 0 && chunk != NULL)
+        if (error == 0 && chunk != nullptr)
         {
             printf("PDBChunker::get_chunks --> Successfully extract frame with chunk_id = %lu\n", chunk_id);
             chunks.push_back(chunk);
