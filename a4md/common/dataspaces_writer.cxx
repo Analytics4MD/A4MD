@@ -19,12 +19,14 @@
 DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunks, MPI_Comm comm)
 : m_size_var_name("chunk_size"),
   m_var_name(var_name),
+#ifdef BUILT_IN_PERF
+  m_total_data_write_time_ms(0.0),
+  m_total_chunk_write_time_ms(0.0),
+  m_total_writer_idle_time_ms(0.0),
+#endif
   m_total_chunks(total_chunks)
 {
 #ifdef BUILT_IN_PERF
-    m_total_data_write_time_ms = 0.0;
-    m_total_chunk_write_time_ms = 0.0;
-    m_total_writer_idle_time_ms = 0.0;
     m_step_chunk_write_time_ms = new double[m_total_chunks];
     m_step_writer_idle_time_ms = new double[m_total_chunks];
     m_step_size_write_time_ms = new double[m_total_chunks];
@@ -40,6 +42,7 @@ DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunk
     // Application ID: Unique idenitifier (integer) for application
     // Pointer to the MPI Communicator, allows DS Layer to use MPI barrier func
     // Addt'l parameters: Placeholder for future argumenchunk_id, currently NULL.
+    printf("Initializing dpsaces\n");
     dspaces_init(nprocs, 1, &m_gcomm, NULL);
     printf("---===== Initialized dspaces client in DataSpacesWriter, var_name: %s, total_chunks: %u\n",m_var_name.c_str(), m_total_chunks);
 }
@@ -56,32 +59,14 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
 #endif
     unsigned long int chunk_id; 
     MPI_Barrier(m_gcomm);
-    //printf("Printing chunk before serializing\n");
     for(Chunk* chunk:chunks)
     {
-        //chk_ary.print();
-        //chunk->print();
-        
         SerializableChunk serializable_chunk = SerializableChunk(chunk);
-        // ToDo: May don't need alignment, only rounding up via padding
-        //std::size_t align_size = 64;    
-        //std::size_t request_size = sizeof(SerializableChunk) + align_size;
-        //void *alloc = ::operator new(request_size); 
-        //printf("Old allocated address: %p\n", (void*)alloc);
-        //boost::alignment::align(align_size, sizeof(SerializableChunk), alloc, request_size);
-        //if (boost::alignment::is_aligned(alloc, align_size))
-        //{
-        //    printf("New aligned address: %p\n", (void*)alloc);
-        //}
-        //SerializableChunk* serializable_chunk = reinterpret_cast<SerializableChunk*>(alloc);
-        //*serializable_chunk = SerializableChunk(chunk);
-
         std::ostringstream oss;
         {
             boost::archive::text_oarchive oa(oss);
             // write class instance to archive
             oa << serializable_chunk;
-            //oa << *serializable_chunk;
         }
         int ndim = 1;
         uint64_t lb[1] = {0}, ub[1] = {0};
@@ -133,7 +118,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
 
        
         if (error != 0)
-            printf("----====== ERROR: Did not write size of chunk id: %i to dataspaces successfully\n",chunk_id);
+            printf("----====== ERROR: Did not write size of chunk id: %lu to dataspaces successfully\n",chunk_id);
         //else
         //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
         error = dspaces_put_sync();
@@ -200,6 +185,17 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         //printf("Chunk %lu : step_write_chunk_time_ms : %f\n", m_step_chunk_write_time_ms[chunk_id]);
         dspaces_unlock_on_write("my_test_lock", &m_gcomm);
         delete[] c_data;
+#ifdef COUNT_LOST_FRAMES   
+        dspaces_lock_on_write("last_write_lock", &m_gcomm);
+        error = dspaces_put("last_written_chunk",
+                            0,
+                            sizeof(unsigned long int),
+                            ndim,
+                            lb,
+                            ub,
+                            &chunk_id);
+        dspaces_unlock_on_write("last_write_lock", &m_gcomm);
+#endif    
     }
     //MPI_Barrier(m_gcomm);
 #ifdef BUILT_IN_PERF
@@ -237,7 +233,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         }
         printf("\n");
 
-        //ToDo: delete in destructor
+        //Free Built-in Performance Variables
         delete[] m_step_chunk_write_time_ms;
         delete[] m_step_writer_idle_time_ms;
         delete[] m_step_size_write_time_ms;
@@ -252,4 +248,3 @@ DataSpacesWriter::~DataSpacesWriter()
     dspaces_finalize();
     printf("---===== Finalized dspaces client in DataSpacesWriter\n");
 }
-

@@ -18,6 +18,13 @@ class DataSpacesReader : public IMSReader
         double *m_step_size_read_time_ms;
         double *m_step_between_read_time_ms;
 #endif
+#ifdef COUNT_LOST_FRAMES
+        unsigned long int m_wait_ms;
+        unsigned long int m_min_wait_ms;
+        unsigned long int m_max_wait_ms;
+        unsigned int m_lost_frames_count; 	
+        std::vector<unsigned int> m_lost_frames_id;
+#endif
         MPI_Comm m_gcomm;
     public:
         DataSpacesReader(char* var_name, unsigned long int total_chunks, MPI_Comm comm);

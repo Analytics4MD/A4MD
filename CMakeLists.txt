@@ -50,4 +50,8 @@ if(BUILT_IN_PERF)
     add_definitions(-DBUILT_IN_PERF)
 endif()
 
+if(COUNT_LOST_FRAMES)
+    message("COUNT_LOST_FRAMES is enabled")
+    add_definitions(-DCOUNT_LOST_FRAMES)
+endif()
 add_subdirectory(a4md)
