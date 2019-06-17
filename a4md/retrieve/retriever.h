@@ -10,6 +10,6 @@ class Retriever
     public:
         Retriever(ChunkAnalyzer & chunk_analyzer);
         virtual ~Retriever();
-        virtual void run();
+        virtual void run() = 0;
 };
 #endif

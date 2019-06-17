@@ -3,10 +3,10 @@
 #include "chunk.h"
 
 // Writes chunks into an IMS. No application logic here.
-class IMSWriter 
+class IMSWriter
 {
     public:
         virtual ~IMSWriter();
-        virtual void write_chunks(std::vector<Chunk*> chunks);
+        virtual void write_chunks(std::vector<Chunk*> chunks) = 0;
 };
 #endif

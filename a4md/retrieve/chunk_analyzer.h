@@ -10,8 +10,8 @@ class ChunkAnalyzer
     public:
         ChunkAnalyzer(ChunkReader & chunk_reader);
         virtual ~ChunkAnalyzer();
-        virtual void analyze(Chunk* chunk);
-        virtual void free_chunk(Chunk* chunk);
+        virtual void analyze(Chunk* chunk) = 0;
+        virtual void free_chunk(Chunk* chunk) = 0;
         void analyze_chunks(int chunk_id_from, int chunk_id_to);
 };
 #endif

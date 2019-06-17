@@ -10,9 +10,3 @@ Ingester::~Ingester()
 {
     printf("---===== Finalized Ingester\n");
 }
-
-void Ingester::run()
-{
-    printf("Ingester::Run() --> Run\n");
-    throw NotImplementedException("This should not be called. Override this function in the concrete class");
-}

@@ -3,7 +3,7 @@
 #include "chunk_writer.h"
 #include "chunk_reader.h"
 
-class ChunkStager 
+class ChunkStager
 {
     protected:
         ChunkReader & m_chunk_reader;
@@ -13,7 +13,7 @@ class ChunkStager
         virtual ~ChunkStager();
         bool stage_chunks(int num_chunks=1);
         void stage_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to);
-        virtual void free_chunk(Chunk* chunk);
+        virtual void free_chunk(Chunk* chunk) = 0;
 };
 
 #endif

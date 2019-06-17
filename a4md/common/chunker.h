@@ -6,7 +6,7 @@
 #include "chunk.h"
 
 
-class Chunker 
+class Chunker
 {
     protected:
         std::queue<Chunk*> m_chunkq;
@@ -15,7 +15,7 @@ class Chunker
         virtual ~Chunker();
         void append_chunk(Chunk* chunk);
         std::vector<Chunk*> get_chunks(int num_chunks);
-        virtual std::vector<Chunk*> get_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to);
+        virtual std::vector<Chunk*> get_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to) = 0;
 };
 
 #endif

@@ -27,8 +27,3 @@ void Chunker::append_chunk(Chunk* chunk)
     m_chunkq.push(chunk);
     m_next_id += 1;
 }
-
-std::vector<Chunk*> Chunker::get_chunks(unsigned long int chunks_from, unsigned long int chunks_to)
-{
-    throw NotImplementedException("Chunker::get_chunks should not be called. It should be overridden in a concrete class\n");
-}

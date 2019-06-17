@@ -10,6 +10,6 @@ class Ingester
     public:
         Ingester(ChunkStager & chunk_stager);
         ~Ingester();
-        virtual void run();
+        virtual void run() = 0;
 };
 #endif

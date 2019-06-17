@@ -11,9 +11,3 @@ Retriever::~Retriever()
 {
     printf("---===== Finalized Retriever\n");
 }
-
-void Retriever::run()
-{
-    printf("Retriever::run() --> Run\n");
-    throw NotImplementedException("This should not be called. Override ths function in the concrete class");
-}

@@ -20,7 +20,7 @@ bool ChunkStager::stage_chunks(int num_chunks)
     //auto chunks = m_chunk_reader.read_chunks(num_chunks);
     //success = m_chunk_writer.write_chunks(chunks);
     //throw NotImplementedException();
-    return success; 
+    return success;
 }
 
 void ChunkStager::stage_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to)
@@ -32,9 +32,4 @@ void ChunkStager::stage_chunks(unsigned long int chunk_id_from, unsigned long in
     {
         free_chunk(chunk);
     }
-}
-
-void ChunkStager::free_chunk(Chunk* chunk)
-{
-    throw NotImplementedException("This should not be called, override free in the concrete function to free chunk aallocated dynamically!");
 }
