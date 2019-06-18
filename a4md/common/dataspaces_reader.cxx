@@ -160,7 +160,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
                 m_lost_frames_id.push_back(chunk_id);
                 continue;
 #endif /* COUNT_LOST_FRAMES */
-                throw new DataLayerException("Dataspaces get recieved error code -11. This is not expected for lock type 2, but expected for lock type 1 or 3. Check lock type used.\n");
+                throw DataLayerException("Dataspaces get recieved error code -11. This is not expected for lock type 2, but expected for lock type 1 or 3. Check lock type used.\n");
             }
         }
         //    printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
@@ -216,9 +216,10 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
                 dspaces_unlock_on_read("my_test_lock", &m_gcomm);
                 m_lost_frames_count++;
                 m_lost_frames_id.push_back(chunk_id);
+		delete [] input_data;
                 continue;
 #endif /* COUNT_LOST_FRAMES */
-                throw new DataLayerException("Dataspaces get recieved error code -11. This is not expected for lock type 2, but expected for lock type 1 or 3. Check lock type used.\n");
+                throw DataLayerException("Dataspaces get recieved error code -11. This is not expected for lock type 2, but expected for lock type 1 or 3. Check lock type used.\n");
             }
             else 
                 printf("----====== ERROR (%i): Did not read chunkid %lu from dataspaces successfully\n",error, chunk_id);
