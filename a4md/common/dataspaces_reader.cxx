@@ -286,14 +286,6 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         }
         printf("\n");
 
-#ifdef COUNT_LOST_FRAMES        
-        printf("total_lost_frames : %u\n",m_lost_frames_count);
-        printf("lost frame ids : ");
-        for(unsigned int lost_ids : m_lost_frames_id) 
-            printf(" %lu ", lost_ids);
-        printf("\n");
-#endif /* COUNT_LOST_FRAMES */
-
         //ToDo: delete in destructor
         delete[] m_step_chunk_read_time_ms;
         delete[] m_step_reader_idle_time_ms;
@@ -301,6 +293,16 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         delete[] m_step_between_read_time_ms;
     }
 #endif
+#ifdef COUNT_LOST_FRAMES        
+    if (chunk_id-1 == m_total_chunks-1)
+    {
+        printf("total_lost_frames : %u\n",m_lost_frames_count);
+        printf("lost frame ids : ");
+        for(unsigned int lost_ids : m_lost_frames_id) 
+            printf(" %lu ", lost_ids);
+        printf("\n");
+    }
+#endif /* COUNT_LOST_FRAMES */
     return chunks;
 }
 
