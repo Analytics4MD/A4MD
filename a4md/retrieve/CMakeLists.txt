@@ -20,7 +20,7 @@ set_target_properties(retrieve PROPERTIES
 )
 
 add_dependencies(retrieve a4md_cmn)
-target_link_libraries(retrieve a4md_cmn ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${PYTHON_LIBRARIES})
+target_link_libraries(retrieve a4md_cmn ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${PYTHON_LIBRARIES} ${TAU_LIBRARIES})
 
 add_subdirectory(test)
 install (TARGETS retrieve DESTINATION lib)

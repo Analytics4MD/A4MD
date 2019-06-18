@@ -72,4 +72,39 @@ public:
     }
 };
 
+class DataLayerException : public std::logic_error
+{
+private:
+
+    std::string _text;
+
+    DataLayerException(const char* message, const char* function)
+        :
+        std::logic_error("Data layer encountered an error")
+    {
+        _text = message;
+        _text += " : ";
+        _text += function;
+    };
+
+public:
+
+    DataLayerException()
+        :
+        DataLayerException("Data layer encountered an error", __FUNCTION__)
+    {
+    }
+
+    DataLayerException(const char* message)
+        :
+        DataLayerException(message, __FUNCTION__)
+    {
+    }
+
+    virtual const char *what() const noexcept override 
+    {
+        return _text.c_str();
+    }
+};
+
 #endif

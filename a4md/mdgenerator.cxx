@@ -62,14 +62,20 @@ int main(int argc, const char** argv)
             std::vector<Chunk*> chunks = pdb_chunker->get_chunks(1);
             printf("----===== Writing Chunk %i to DataSpaces START====----\n",step);
             dataspaces_writer_ptr->write_chunks(chunks);
+            MDChunk *chunk = dynamic_cast<MDChunk *>(chunks.front());
+            delete chunk;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(n_delay_ms));
     }
     DurationMilli md_generator_time_ms = timeNow() - t_start;
     auto total_md_generator_time_ms = md_generator_time_ms.count();
     printf("total_md_generator_time_ms : %f\n", total_md_generator_time_ms);
-    // ToDo: check if actually finish writing to DataSpaces
+    // ToDo: check if actually finish writing to DataSpaces by adding dspaces_put_sync or --enable-sync-msg
 
+    // ToDo: Free memory
+    //delete dataspaces_writer_ptr;
+    //delete pdb_chunker;
+    //delete py_runner;
     MPI_Finalize();
     return 0;
 }

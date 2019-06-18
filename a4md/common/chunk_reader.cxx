@@ -8,8 +8,13 @@ ChunkReader::ChunkReader(Chunker & chunker)
     printf("---===== Created ChunkReader with %s chunker\n",typeid(m_chunker).name());
 }
 
-std::vector<Chunk*> ChunkReader::read_chunks(int chunk_id_from, int chunk_id_to)
+ChunkReader::~ChunkReader()
 {
-    //printf("Calling m_chunker.get_chunks in ChunkReader::read_chunks, chunkidfrom %i, chunkidto %i\n",chunk_id_from, chunk_id_to);
+    printf("---===== Finalized ChunkReader\n");
+}
+
+std::vector<Chunk*> ChunkReader::read_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to)
+{
+    printf("ChunkReader::read_chunks() --> Read chunks from chunk_id_from %lu to chunk_id_to %lu\n",chunk_id_from, chunk_id_to);
     return m_chunker.get_chunks(chunk_id_from, chunk_id_to);
 }

@@ -1,6 +1,9 @@
 cmake_minimum_required (VERSION 2.8.12)
 add_compile_options(-std=c++11)
 project (a4md)
+set(CMAKE_VERBOSE_MAKEFILE ON)
+message("CFLAGS : ${CMAKE_C_FLAGS}")
+message("CXXFLAGS: ${CMAKE_CXX_FLAGS}")
 #################################
 ## update submodules
 set (UPDATE_SUBMODULES 1 CACHE BOOL "Update git submodules for dependency projects")
@@ -35,4 +38,25 @@ if(DEFINED ENV{NERSC_HOST})
     message(STATUS "NERSC build is enabled")
 endif()
 
+set(TAU_LIBRARIES "")
+if(DEFINED ENV{TAU_LIBS})
+    set(TAU_LIBRARIES "$ENV{TAU_LIBS}")
+    message("TAU libraries " ${TAU_LIBRARIES})
+    add_definitions(-DTAU_PERF)
+endif()
+
+if(BUILT_IN_PERF)
+    message("BUILT_IN_PERF is enabled")
+    add_definitions(-DBUILT_IN_PERF)
+endif()
+
+if(COUNT_LOST_FRAMES)
+    message("COUNT_LOST_FRAMES is enabled")
+    add_definitions(-DCOUNT_LOST_FRAMES)
+endif()
+
+if(DSPACES_DEBUG)
+    message("DSPACES_DEBUG is enabled")
+    add_definitions(-DDEBUG)
+endif()
 add_subdirectory(a4md)

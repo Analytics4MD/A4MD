@@ -30,3 +30,13 @@ void PlumedChunker::append(unsigned long int id,
                                  box_yz);
     m_chunkq.push(chunk);
 }
+
+std::vector<Chunk*> PlumedChunker::get_chunks(int num_chunks)
+{
+    return Chunker::get_chunks(num_chunks);
+}
+
+std::vector<Chunk*> PlumedChunker::get_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to)
+{
+    throw NotImplementedException("PlumedChunker::get_chunks is not yet Implemented.");
+}

@@ -69,7 +69,7 @@ endif (nersc)
 ExternalProject_Add(project_dataspaces
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/a4md/extern/dataspaces
   BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND ./autogen.sh COMMAND ./configure CC=${MPI_C_COMPILER} FC=${MPI_FORTRAN_COMPILER} CFLAGS=-fPIC ${DS_CONF_ENABLES} LIBS=-lm --prefix=${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces
+  CONFIGURE_COMMAND ./autogen.sh COMMAND ./configure CC=${MPI_C_COMPILER} CXX=${MPI_CXX_COMPILER} FC=${MPI_FORTRAN_COMPILER} ${DS_CONF_ENABLES} --prefix=${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces
   BUILD_COMMAND ${MAKE}
 )
 add_library(dataspaces STATIC IMPORTED)
@@ -130,21 +130,27 @@ set(_a4md_sources_
 add_executable(a4md ${_a4md_sources_})
 add_executable(ingester ingester.cxx)
 add_executable(retriever retriever.cxx)
-add_executable(mdgenerator mdgenerator.cxx)
+add_executable(analyzer analyzer.cxx)
+#add_executable(mdgenerator mdgenerator.cxx)
+add_executable(generator generator.cxx)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/a4md/extern/catch2)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/a4md/extern/catch2/contrib" ${CMAKE_MODULE_PATH})
 
 add_executable(tests-main tests-main.cpp test-ingest.cpp)
 target_link_libraries(tests-main Catch2::Catch2)
-target_link_libraries(ingester ingest a4md_cmn ${Boost_LIBRARIES})
-target_link_libraries(retriever retrieve a4md_cmn ${Boost_LIBRARIES})
-target_link_libraries(mdgenerator ingest a4md_cmn ${Boost_LIBRARIES})
+target_link_libraries(ingester ingest a4md_cmn ${Boost_LIBRARIES} ${TAU_LIBRARIES})
+target_link_libraries(retriever retrieve a4md_cmn ${Boost_LIBRARIES} ${TAU_LIBRARIES})
+target_link_libraries(analyzer retrieve a4md_cmn ${Boost_LIBRARIES} ${TAU_LIBRARIES})
+#target_link_libraries(mdgenerator ingest a4md_cmn ${Boost_LIBRARIES} ${TAU_LIBRARIES})
+target_link_libraries(generator ingest a4md_cmn ${Boost_LIBRARIES} ${TAU_LIBRARIES})
 
 enable_testing()
 install (TARGETS ingester DESTINATION bin)
 install (TARGETS retriever DESTINATION bin)
-install (TARGETS mdgenerator DESTINATION bin)
+install (TARGETS analyzer DESTINATION bin)
+#install (TARGETS mdgenerator DESTINATION bin)
+install (TARGETS generator DESTINATION bin)
 include(CTest)
 include(ParseAndAddCatchTests)
 ParseAndAddCatchTests(tests-main)

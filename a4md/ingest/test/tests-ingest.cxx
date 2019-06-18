@@ -53,10 +53,10 @@ TEST_CASE("PDBChunker Tests", "[ingest]")
                                        (char*)py_path.c_str());
     
     PDBChunker* pdb_chunker = new PDBChunker((*py_runner),
-                                             (char*)file_path.c_str());
+                                             (char*)file_path.c_str(), 0);
     //unsigned long int id = 0;
     int result = pdb_chunker->extract_chunk();
-    std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1);
+    std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1,1);
     Chunk* chunk = chunk_vector.front();
     MDChunk *plmdchunk = dynamic_cast<MDChunk *>(chunk);
     
@@ -67,7 +67,7 @@ TEST_CASE("PDBChunker Tests", "[ingest]")
     int timestep = plmdchunk->get_timestep();
 
     REQUIRE( result == 0 );
-    REQUIRE( pdb_chunker->get_position() == 4851 );
+    //REQUIRE( pdb_chunker->get_position() == 4851 );
     REQUIRE( chunk_vector.size() == 1 );
     REQUIRE( x_positions.size() == y_positions.size() );
     REQUIRE( y_positions.size() == z_positions.size() );
@@ -87,11 +87,10 @@ TEST_CASE("Knob nAtoms Tests", "[ingest]")
                                        (char*)func.c_str(),
                                        (char*)py_path.c_str());
     
-    PDBChunker* pdb_chunker = new PDBChunker((*py_runner),
-                                             (char*)file_path.c_str());
     int natoms = 100;
-    int result = pdb_chunker->extract_chunk(natoms);
-    std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1);
+    PDBChunker* pdb_chunker = new PDBChunker((*py_runner), (char*)file_path.c_str(), 0, natoms);
+    int result = pdb_chunker->extract_chunk();
+    std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1,1);
     Chunk* chunk = chunk_vector.front();
     MDChunk *plmdchunk = dynamic_cast<MDChunk *>(chunk);
     //plmdchunk->print();
@@ -109,7 +108,6 @@ TEST_CASE("Knob nAtoms Tests", "[ingest]")
     double box_xz = plmdchunk->get_box_xz();
     
     REQUIRE( result == 0 );
-    REQUIRE( pdb_chunker->get_position() == 4851 );
     REQUIRE( chunk_vector.size() == 1 );
     REQUIRE( x_positions.size() == natoms );
     REQUIRE( x_positions.size() == y_positions.size() );

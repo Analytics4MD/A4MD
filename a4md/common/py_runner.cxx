@@ -14,7 +14,7 @@ PyRunner::PyRunner(char* module_name, char* function_name, char* py_path)
   m_function_name(function_name)
 {
     initialize_python(py_path);
-    printf("Initialized Retrieve\n");
+    printf("---===== Initialized PyRunner\n");
 }
 
 PyRunner::~PyRunner()
@@ -22,6 +22,7 @@ PyRunner::~PyRunner()
     Py_DECREF(m_py_module);
     Py_DECREF(m_py_func); 
     Py_FinalizeEx(); 
+    printf("---===== Finalized PyRunner\n");
 }
 
 void print_py_error_and_rethrow()
@@ -200,7 +201,7 @@ std::vector<T> listToVector(PyObject* incoming)
         {
             for(Py_ssize_t i = 0; i < PyList_Size(incoming); i++) 
             {
-                data.push_back( PyLong_AsLong(PyList_GetItem(incoming, i)) );
+                data.push_back(PyLong_AsLong(PyList_GetItem(incoming, i)));
             }
         } 
         else 
@@ -214,7 +215,7 @@ std::vector<T> listToVector(PyObject* incoming)
         {
             for(Py_ssize_t i = 0; i < PyList_Size(incoming); i++) 
             {
-                data.push_back( PyFloat_AsDouble(PyList_GetItem(incoming, i)) );
+                data.push_back(PyFloat_AsDouble(PyList_GetItem(incoming, i)));
             }
         } 
         else 
@@ -283,10 +284,8 @@ int PyRunner::extract_frame(char* file_path,
                         PyObject* py_box = PyList_GetItem(py_return, 4);
                         if (PyList_Check(py_box))
                         {
-
                             if (PyList_Size(py_box) == 6)
-                            {
-                        
+                            {                        
                                 PyObject* py_box_lx = PyList_GetItem(py_box, 0);
                                 if (py_box_lx != Py_None) 
                                 {

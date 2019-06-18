@@ -18,6 +18,10 @@ class PlumedChunker : public Chunker
                     double box_xy,
                     double box_xz,
                     double box_yz);
+
+        std::vector<Chunk*> get_chunks(int num_chunks);
+
+        std::vector<Chunk*> get_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to) override;
 };
 
 #endif

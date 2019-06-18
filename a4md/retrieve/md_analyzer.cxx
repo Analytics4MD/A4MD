@@ -6,10 +6,17 @@ MDAnalyzer::MDAnalyzer(ChunkReader & chunk_reader,
 : ChunkAnalyzer(chunk_reader),
   m_py_runner(py_runner)
 {
+    printf("---===== Initialized MDAnalyzer with %s chunk_reader and %s py_runner\n", typeid(m_chunk_reader).name(), typeid(m_py_runner).name());
+}
+
+MDAnalyzer::~MDAnalyzer()
+{
+    printf("---===== Finalized MDAnalyzer\n");
 }
 
 void MDAnalyzer::analyze(Chunk* chunk)
 {
+    printf("MDAnalyzer::analyzer() --> Analyze chunk\n");
     MDChunk *plmdchunk = dynamic_cast<MDChunk *>(chunk);
     //printf("Printing typecasted chunk\n");
     //chunk->print();
@@ -44,5 +51,10 @@ void MDAnalyzer::analyze(Chunk* chunk)
                                 xz,
                                 yz,
                                 step);
+}
 
+void MDAnalyzer::free_chunk(Chunk* chunk)
+{
+    printf("MDAnalyzer::free() --> Free memory of MDChunk\n");
+    delete chunk;
 }

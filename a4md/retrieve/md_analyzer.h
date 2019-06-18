@@ -8,9 +8,10 @@ class MDAnalyzer : public ChunkAnalyzer
 {
     private:
         PyRunner & m_py_runner;
-
     public:
         MDAnalyzer(ChunkReader & chunk_reader, PyRunner & py_runner);
+        ~MDAnalyzer();
         void analyze(Chunk* chunk) override;
+        void free_chunk(Chunk* chunk) override;
 };
 #endif

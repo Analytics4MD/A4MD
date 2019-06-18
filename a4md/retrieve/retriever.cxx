@@ -4,9 +4,10 @@
 Retriever::Retriever(ChunkAnalyzer & chunk_analyzer)
 : m_chunk_analyzer(chunk_analyzer)
 {
+    printf("---===== Intialized Retriever\n");
 }
 
-void Retriever::run()
+Retriever::~Retriever()
 {
-    throw NotImplementedException("This should not be called. Override ths function in the concrete class");
+    printf("---===== Finalized Retriever\n");
 }
