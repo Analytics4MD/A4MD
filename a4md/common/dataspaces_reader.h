@@ -13,10 +13,12 @@ class DataSpacesReader : public IMSReader
         double m_total_data_read_time_ms;
         double m_total_chunk_read_time_ms;
         double m_total_reader_idle_time_ms;
+        double m_total_deser_time_ms;
         double *m_step_chunk_read_time_ms;
         double *m_step_reader_idle_time_ms;
         double *m_step_size_read_time_ms;
         double *m_step_between_read_time_ms;
+        double *m_step_deser_time_ms;
 #endif
 #ifdef COUNT_LOST_FRAMES
         unsigned long int m_wait_ms;
