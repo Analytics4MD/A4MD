@@ -1,18 +1,8 @@
 #include "dataspaces_reader.h"
 #include "dataspaces.h"
-#include <sstream>
-#include <boost/iostreams/device/back_inserter.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/device/array.hpp> 
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/map.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/string.hpp>
-#include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/serialization/export.hpp>
 #if defined(BUILT_IN_PERF) || defined(COUNT_LOST_FRAMES)
 #include "timer.h"
 #endif
@@ -22,7 +12,6 @@
 #ifdef COUNT_LOST_FRAMES
 #include <thread>
 #endif
-//BOOST_CLASS_EXPORT(MDChunk)
 
 DataSpacesReader::DataSpacesReader(char* var_name, unsigned long int total_chunks, MPI_Comm comm)
 : m_size_var_name("chunk_size"),
@@ -248,17 +237,6 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
 #endif
         dspaces_unlock_on_read("my_test_lock", &m_gcomm);
        
-        //printf("Read char array from dataspace:\n %s\n",input_data);
-        
-        //Boost Text Serialization
-        // SerializableChunk chunk;
-        // std::string instr(input_data);
-        // std::istringstream iss(instr);//oss.str());
-        // {
-        //    boost::archive::text_iarchive ia(iss);
-        //    ia >> chunk;
-        // }
-        
         // Boost Binary Serialization
 #ifdef BUILT_IN_PERF
         TimeVar t_deserstart = timeNow();
@@ -266,9 +244,6 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         boost::iostreams::basic_array_source<char> device(input_data, chunk_size);
         boost::iostreams::stream<boost::iostreams::basic_array_source<char> > sout(device);
         boost::archive::binary_iarchive ia(sout);
-        // ia.register_type<MDChunk>();
-        // Chunk *chunk;
-        // ia >> chunk;
         SerializableChunk serializable_chunk;
         ia >> serializable_chunk;
 
@@ -281,7 +256,6 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         //printf("----===== Read chunk array ");
         //chunks.print();
         chunks.push_back(serializable_chunk.get_chunk());
-        // chunks.push_back(chunk);
         delete[] input_data;
     }
     //MPI_Barrier(m_gcomm);

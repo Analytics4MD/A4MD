@@ -1,26 +1,14 @@
 #include "dataspaces_writer.h"
 #include "dataspaces.h"
-#include <sstream>
-#include <boost/align/align.hpp>
-#include <boost/align/is_aligned.hpp>
 #include <boost/iostreams/device/back_inserter.hpp>
 #include <boost/iostreams/stream.hpp>
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/map.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/string.hpp>
 #include <boost/archive/binary_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/serialization/export.hpp>
 #ifdef BUILT_IN_PERF
 #include "timer.h"
 #endif
 #ifdef TAU_PERF
 #include <TAU.h>
 #endif
-//BOOST_CLASS_EXPORT(MDChunk)
 
 DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunks, MPI_Comm comm)
 : m_size_var_name("chunk_size"),
@@ -71,26 +59,14 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
     {
         chunk_id = chunk->get_chunk_id();
 
-        // SerializableChunk serializable_chunk = SerializableChunk(chunk);
-        // std::ostringstream oss;
-        // {
-        //    boost::archive::text_oarchive oa(oss);
-        //    // write class instance to archive
-        //    oa << serializable_chunk;
-        // }
-        // std::string data = oss.str();
-
-
+        //Boost Binary Serialization
 #ifdef BUILT_IN_PERF
         TimeVar t_serstart = timeNow();
-#endif
-        
+#endif        
         std::string data;
         boost::iostreams::back_insert_device<std::string> inserter(data);
         boost::iostreams::stream<boost::iostreams::back_insert_device<std::string> > s(inserter);
         boost::archive::binary_oarchive oa(s);
-        // oa.register_type<MDChunk>();
-        // oa << chunk;
         SerializableChunk serializable_chunk = SerializableChunk(chunk);
         oa << serializable_chunk;
         s.flush();
@@ -103,14 +79,18 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         std::size_t size = data.size();
         //printf("MAX SIZE of string is %zu \n", data.max_size());
         // printf("Chunk size for chunk_id %i is %zu\n",chunk_id,size);
-       
+
+#ifdef NERSC
         // Padding to multiple of 8 byte
         std::size_t c_size = round_up_8(size);
         char *c_data = new char [c_size];
         //strncpy(c_data, data.c_str(), size);
-        //data.resize(c_size);
         std::memcpy(c_data, data.c_str(), size);
         // printf("Padded chunk size %zu\n", c_size);
+#else
+        std::size_t c_size = size;
+        char *c_data = (char*)data.data();
+#endif /* NERSC */
 
         m_total_size += c_size;
         int ndim = 1;
@@ -214,7 +194,10 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
 #endif
         //printf("Chunk %lu : step_write_chunk_time_ms : %f\n", m_step_chunk_write_time_ms[chunk_id]);
         dspaces_unlock_on_write("my_test_lock", &m_gcomm);
+#ifdef NERSC
         delete[] c_data;
+#endif
+
 #ifdef COUNT_LOST_FRAMES   
         dspaces_lock_on_write("last_write_lock", &m_gcomm);
         error = dspaces_put("last_written_chunk",

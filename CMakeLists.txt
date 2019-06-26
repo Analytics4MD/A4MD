@@ -86,6 +86,7 @@ set(nersc FALSE)
 if(DEFINED ENV{NERSC_HOST})
     message("The code is built at NERSC/" $ENV{NERSC_HOST})
     set(nersc TRUE)
+    add_definitions(-DNERSC)
     message(STATUS "NERSC build is enabled")
 endif()
 
