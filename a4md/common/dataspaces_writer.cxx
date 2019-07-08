@@ -1,8 +1,6 @@
 #include "dataspaces_writer.h"
 #include "dataspaces.h"
-#include <boost/iostreams/device/back_inserter.hpp>
-#include <boost/iostreams/stream.hpp>
-#include <boost/archive/binary_oarchive.hpp>
+#include "chunk_serializer.h"
 #ifdef BUILT_IN_PERF
 #include "timer.h"
 #endif
@@ -62,14 +60,16 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         //Boost Binary Serialization
 #ifdef BUILT_IN_PERF
         TimeVar t_serstart = timeNow();
-#endif        
+#endif       
+        SerializableChunk serializable_chunk = SerializableChunk(chunk); 
         std::string data;
-        boost::iostreams::back_insert_device<std::string> inserter(data);
-        boost::iostreams::stream<boost::iostreams::back_insert_device<std::string> > s(inserter);
-        boost::archive::binary_oarchive oa(s);
-        SerializableChunk serializable_chunk = SerializableChunk(chunk);
-        oa << serializable_chunk;
-        s.flush();
+        ChunkSerializer<SerializableChunk> chunk_serializer;
+        bool ret = chunk_serializer.serialize(serializable_chunk, data);
+        if (!ret)
+        {
+            printf("----====== ERROR: Failed to serialize chunk\n");
+        }
+
 
 #ifdef BUILT_IN_PERF
         DurationMilli ser_time_ms = timeNow() - t_serstart;

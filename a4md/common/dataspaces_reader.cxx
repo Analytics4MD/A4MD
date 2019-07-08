@@ -1,8 +1,6 @@
 #include "dataspaces_reader.h"
 #include "dataspaces.h"
-#include <boost/iostreams/stream.hpp>
-#include <boost/iostreams/device/array.hpp> 
-#include <boost/archive/binary_iarchive.hpp>
+#include "chunk_serializer.h"
 #if defined(BUILT_IN_PERF) || defined(COUNT_LOST_FRAMES)
 #include "timer.h"
 #endif
@@ -241,11 +239,13 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
 #ifdef BUILT_IN_PERF
         TimeVar t_deserstart = timeNow();
 #endif
-        boost::iostreams::basic_array_source<char> device(input_data, chunk_size);
-        boost::iostreams::stream<boost::iostreams::basic_array_source<char> > sout(device);
-        boost::archive::binary_iarchive ia(sout);
         SerializableChunk serializable_chunk;
-        ia >> serializable_chunk;
+        ChunkSerializer<SerializableChunk> chunk_serializer;
+        bool ret = chunk_serializer.deserialize(serializable_chunk, input_data, chunk_size);
+        if (!ret)
+        {
+            printf("----====== ERROR: Failed to deserialize chunk\n");
+        }
 
 #ifdef BUILT_IN_PERF
         DurationMilli deser_time_ms = timeNow() - t_deserstart;
