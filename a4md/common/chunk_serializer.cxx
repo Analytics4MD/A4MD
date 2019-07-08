@@ -13,13 +13,13 @@
 template<typename SerializableContainer>
 ChunkSerializer<SerializableContainer>::ChunkSerializer()
 {
-
+	printf("---===== Initialized ChunkSerializer on %s\n", typeid(SerializableContainer).name());
 }
 
 template<typename SerializableContainer>
 ChunkSerializer<SerializableContainer>::~ChunkSerializer()
 {
-
+	printf("---===== Finalized ChunkSerializer on %s\n", typeid(SerializableContainer).name());
 }
 
 template<typename SerializableContainer>
@@ -47,6 +47,21 @@ bool ChunkSerializer<SerializableContainer>::deserialize(SerializableContainer& 
 		return false;
 	}
 	boost::iostreams::basic_array_source<char> device(serialized_buffer.data(), serialized_buffer.size());
+    boost::iostreams::stream<boost::iostreams::basic_array_source<char> > sout(device);
+    boost::archive::binary_iarchive ia(sout);
+    ia >> serializable_container;
+    return true;
+}
+
+template<typename SerializableContainer>
+bool ChunkSerializer<SerializableContainer>::deserialize(SerializableContainer& serializable_container, const char* serialized_buffer, const size_t& buffer_size)
+{
+	if (serialized_buffer == nullptr)
+	{
+		printf("---===== ERROR: ChunkSerializer::deserialize() --> Serialized buffer is nullptr\n");
+		return false;
+	}
+	boost::iostreams::basic_array_source<char> device(serialized_buffer, buffer_size);
     boost::iostreams::stream<boost::iostreams::basic_array_source<char> > sout(device);
     boost::archive::binary_iarchive ia(sout);
     ia >> serializable_container;
