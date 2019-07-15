@@ -1,14 +1,6 @@
 #include "dataspaces_writer.h"
 #include "dataspaces.h"
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/iostreams/stream.hpp>
-#include <boost/iostreams/device/array.hpp> 
-#include <boost/serialization/vector.hpp>
-#include <boost/align/align.hpp>
-#include <boost/align/is_aligned.hpp>
-#include <sstream>
+#include "chunk_serializer.h"
 #ifdef BUILT_IN_PERF
 #include "timer.h"
 #endif
@@ -23,6 +15,7 @@ DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunk
   m_total_data_write_time_ms(0.0),
   m_total_chunk_write_time_ms(0.0),
   m_total_writer_idle_time_ms(0.0),
+  m_total_ser_time_ms(0.0),
 #endif
   m_total_chunks(total_chunks)
 {
@@ -31,6 +24,7 @@ DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunk
     m_step_writer_idle_time_ms = new double[m_total_chunks];
     m_step_size_write_time_ms = new double[m_total_chunks];
     m_step_between_write_time_ms = new double[m_total_chunks];
+    m_step_ser_time_ms = new double[m_total_chunks];
 #endif
     m_gcomm = comm;
     MPI_Barrier(m_gcomm);
@@ -61,30 +55,46 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
     MPI_Barrier(m_gcomm);
     for(Chunk* chunk:chunks)
     {
-        SerializableChunk serializable_chunk = SerializableChunk(chunk);
-        std::ostringstream oss;
-        {
-            boost::archive::text_oarchive oa(oss);
-            // write class instance to archive
-            oa << serializable_chunk;
-        }
-        int ndim = 1;
-        uint64_t lb[1] = {0}, ub[1] = {0};
         chunk_id = chunk->get_chunk_id();
-        std::string data = oss.str();
-        std::size_t size = data.length();
+
+        //Boost Binary Serialization
+#ifdef BUILT_IN_PERF
+        TimeVar t_serstart = timeNow();
+#endif       
+        SerializableChunk serializable_chunk = SerializableChunk(chunk); 
+        std::string data;
+        ChunkSerializer<SerializableChunk> chunk_serializer;
+        bool ret = chunk_serializer.serialize(serializable_chunk, data);
+        if (!ret)
+        {
+            printf("----====== ERROR: Failed to serialize chunk\n");
+        }
+
+
+#ifdef BUILT_IN_PERF
+        DurationMilli ser_time_ms = timeNow() - t_serstart;
+        m_step_ser_time_ms[chunk_id] = ser_time_ms.count();
+        m_total_ser_time_ms += m_step_ser_time_ms[chunk_id];
+#endif
+        std::size_t size = data.size();
         //printf("MAX SIZE of string is %zu \n", data.max_size());
-        //printf("chunk size for chunk_id %i is %zu\n",chunk_id,size);
-       
+        // printf("Chunk size for chunk_id %i is %zu\n",chunk_id,size);
+
+#ifdef NERSC
         // Padding to multiple of 8 byte
         std::size_t c_size = round_up_8(size);
         char *c_data = new char [c_size];
-        strncpy(c_data, data.c_str(), size);
-        //std::size_t r_size = data.copy(c_data, size, 0);
-        printf("Padded chunk size %zu\n", c_size);
-        //printf("Copied chunk size %zu\n", r_size);
+        //strncpy(c_data, data.c_str(), size);
+        std::memcpy(c_data, data.c_str(), size);
+        // printf("Padded chunk size %zu\n", c_size);
+#else
+        std::size_t c_size = size;
+        char *c_data = (char*)data.data();
+#endif /* NERSC */
 
         m_total_size += c_size;
+        int ndim = 1;
+        uint64_t lb[1] = {0}, ub[1] = {0};
 #ifdef BUILT_IN_PERF
         TimeVar t_istart = timeNow();
 #endif
@@ -184,7 +194,10 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
 #endif
         //printf("Chunk %lu : step_write_chunk_time_ms : %f\n", m_step_chunk_write_time_ms[chunk_id]);
         dspaces_unlock_on_write("my_test_lock", &m_gcomm);
+#ifdef NERSC
         delete[] c_data;
+#endif
+
 #ifdef COUNT_LOST_FRAMES   
         dspaces_lock_on_write("last_write_lock", &m_gcomm);
         error = dspaces_put("last_written_chunk",
@@ -208,6 +221,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         printf("total_data_write_time_ms : %f\n",m_total_data_write_time_ms);
         printf("total_chunk_write_time_ms : %f\n",m_total_chunk_write_time_ms);
         printf("total_writer_idle_time_ms : %f\n",m_total_writer_idle_time_ms);
+        printf("total_ser_time_ms : %f\n",m_total_ser_time_ms);
         printf("step_chunk_write_time_ms : ");
         for (auto step = 0; step < m_total_chunks; step++)
         {
@@ -232,12 +246,19 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
             printf(" %f ", m_step_between_write_time_ms[step]);
         }
         printf("\n");
+        printf("step_ser_time_ms : ");
+        for (auto step = 0; step < m_total_chunks; step++)
+        {
+            printf(" %f ", m_step_ser_time_ms[step]);
+        }
+        printf("\n");
 
         //Free Built-in Performance Variables
         delete[] m_step_chunk_write_time_ms;
         delete[] m_step_writer_idle_time_ms;
         delete[] m_step_size_write_time_ms;
         delete[] m_step_between_write_time_ms;
+        delete[] m_step_ser_time_ms;
     }
 #endif
 }

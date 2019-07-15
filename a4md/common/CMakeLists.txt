@@ -7,6 +7,7 @@ set(_a4md_cmn_sources_
         ims_writer.cxx
         chunker.cxx
         py_runner.cxx
+        chunk_serializer.cxx
         )
 set(_a4md_cmn_headers_
         dataspaces_writer.h
@@ -20,6 +21,7 @@ set(_a4md_cmn_headers_
         exceptions.h
         py_runner.h
         timer.h
+        chunk_serializer.h
         )
 
 add_library(a4md_cmn ${_a4md_cmn_sources_})
