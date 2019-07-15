@@ -1,8 +1,16 @@
-# find python interpreter
-find_package(PythonInterp 3.6 REQUIRED)
+# FindPythonInterp will search for an interpreter with 3.3 <= version <= 3.7
+set(Python_ADDITIONAL_VERSIONS 3.7 3.6 3.5 3.4 3.3)
 
-# find python libs
-find_package(PythonLibs 3.6 REQUIRED)
+# find python interpreter (minimum version 3.3)
+find_package(PythonInterp 3.3 REQUIRED)
+
+# Reset Python_ADDITIONAL_VERSIONS so that FindPythonLibs only searches for the
+# same version as the Interpreter.
+unset(Python_ADDITIONAL_VERSIONS)
+set(Python_ADDITIONAL_VERSIONS ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
+
+# find python libs (minimum version matches the interpreter's version)
+find_package(PythonLibs ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR} REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
 
 # find Numpy
