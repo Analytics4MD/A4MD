@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8.12)
+cmake_minimum_required (VERSION 3.5)
 add_compile_options(-std=c++11)
 project (a4md)
 set(CMAKE_VERBOSE_MAKEFILE ON)
