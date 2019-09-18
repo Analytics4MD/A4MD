@@ -47,7 +47,7 @@ target_include_directories(
     # Headers used from the installed location:
     "$<INSTALL_INTERFACE:${CMM_INSTALL_INCLUDE_DIRS}>"
 )
-if (nersc)I
+if (nersc)
     target_link_libraries(a4md_cmn dataspaces dataspaces_cmn dataspaces_dart m rt ${CRAY_LDFLAGS} -dynamic ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${TAU_LIBRARIES})
 else (nersc)
     target_link_libraries(a4md_cmn dataspaces dataspaces_cmn dataspaces_dart m rt ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${TAU_LIBRARIES})
