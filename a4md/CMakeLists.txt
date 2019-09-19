@@ -9,9 +9,6 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 find_package(NumPy REQUIRED)
 include_directories(${NUMPY_INCLUDE_DIR})
 
-# find CRAY
-find_package(CRAY REQUIRED)
-
 # adding Dataspaces library
 message(STATUS "Adding Dataspaces library to project")
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
