@@ -13,7 +13,7 @@ int main (int argc, const char** argv)
 {
     if (argc != 4) 
     {
-        fprintf(stderr, "ERROR: Expecting 4 command line arguments 1) python module name 2) function name 3) n_frames\n");
+        fprintf(stderr, "ERROR: Expecting 4 command line arguments 1) python script path 2) function name 3) n_frames\n");
     }
     MPI_Init(NULL,NULL);
     printf("---======== In Retriever::main()\n");
