@@ -50,7 +50,7 @@ int main(int argc, const char** argv)
     {
         py_runner = new PyRunner((char*)py_name.c_str(), 
                                            (char*)py_func.c_str(),
-                                           (char*)py_path.c_str());
+                                           (char*)py_dir.c_str());
         chunker = new PDBChunker((*py_runner), (char*)file_path.c_str(), 0, n_atoms);
     }
     else 
