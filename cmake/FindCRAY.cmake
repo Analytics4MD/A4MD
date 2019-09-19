@@ -1,9 +1,11 @@
 ######################################################
 # - Try to find drc
 # Once done this will define
-#  DRC_FOUND - System has DRC
-#  DRC_INCLUDE_DIRS - The DRC include directories
-#  DRC_LIBRARIES - The libraries needed to use DRC
+#  CRAY_FOUND - System has CRAY modules
+#  CRAY_INCLUDE_DIRS - The CRAY module include directories
+#  CRAY_LIBRARIES - The libraries needed to use CRAY modules
+#  CRAY_CFLAGS - The compiler flags in compiling
+#  CRAY_LDFLAGS - The library flags in linking
 
 ######################################################
 
