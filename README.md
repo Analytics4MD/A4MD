@@ -16,7 +16,7 @@ A framework that enables in situ molecular dynamic analytics via using in-memory
 
 ## Dependencies
 - [Boost](https://www.boost.org)
-- [mdtraj](http://mdtraj.org)
+- [mdtraj](http://mdtraj.org), [freud](https://freud.readthedocs.io)
 - [Dataspaces](http://www.dataspaces.org)
 - [Catch2](https://github.com/catchorg/Catch2)
 - (Optional) [Plumed2](https://github.com/plumed/plumed2)
@@ -90,6 +90,7 @@ export LD_LIBRARY_PATH="$HOME/.conda/envs/${A4MD_ENV}/lib:$LD_LIBRARY_PATH"
 4. Install Python dependencies
 ```
 conda install -c conda-forge mdtraj
+conda install -c conda-forge freud
 ```
 5. Build A4MD package 
 ```
