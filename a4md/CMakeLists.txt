@@ -29,12 +29,16 @@ else (nersc)
     set(MPI_FORTRAN_COMPILER "mpif90")
 endif (nersc)
 
+# External project to build Dataspaces
+message(STATUS "Buiding Dataspaces")
 ExternalProject_Add(project_dataspaces
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/a4md/extern/dataspaces
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ./autogen.sh COMMAND ./configure CC=${MPI_C_COMPILER} CXX=${MPI_CXX_COMPILER} FC=${MPI_FORTRAN_COMPILER} ${DS_CONF_ENABLES} --prefix=${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces
   BUILD_COMMAND ${MAKE}
 )
+
+# Add Dataspaces libraries to 
 add_library(dataspaces STATIC IMPORTED)
 add_dependencies(dataspaces project_dataspaces)
 set_property(TARGET dataspaces PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/lib/libdspaces.a)
@@ -45,29 +49,35 @@ set_target_properties(dataspaces PROPERTIES
     POSITION_INDEPENDENT_CODE ON
 )
 
-
 add_library(dataspaces_cmn STATIC IMPORTED)
 add_dependencies(dataspaces_cmn project_dataspaces)
 set_property(TARGET dataspaces_cmn PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/lib/libdscommon.a)
+set_target_properties(dataspaces_cmn PROPERTIES
+    CXX_STANDARD 11
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF
+    POSITION_INDEPENDENT_CODE ON
+)
 
 add_library(dataspaces_dart STATIC IMPORTED)
 add_dependencies(dataspaces_dart project_dataspaces)
 set_property(TARGET dataspaces_dart PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/lib/libdart.a)
-
-
+set_target_properties(dataspaces_dart PROPERTIES
+    CXX_STANDARD 11
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF
+    POSITION_INDEPENDENT_CODE ON
+)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
-#set_property(TARGET dataspaces PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/include)
-
-#message("dataspaces include directory " ${CMAKE_CURRENT_BINARY_DIR}/dataspaces/include)
-#include_directories(${PROJECT_SOURCE_DIR}/extern/dataspaces/include)
-
-# add libraries
+# Add include directories
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/include")
 include_directories("${PROJECT_SOURCE_DIR}/a4md/common")
 include_directories("${PROJECT_SOURCE_DIR}/a4md/ingest")
 include_directories("${PROJECT_SOURCE_DIR}/a4md/retrieve")
-include_directories("${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/include")
+
+# Copy to installation directory
 install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/bin/" 
         DESTINATION "${CMAKE_INSTALL_PREFIX}/bin"
         USE_SOURCE_PERMISSIONS

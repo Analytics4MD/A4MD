@@ -13,7 +13,7 @@ int main (int argc, const char** argv)
 {
     if (argc != 4) 
     {
-        fprintf(stderr, "ERROR: Expecting 4 command line arguments 1) python module name 2) function name 3) n_frames\n");
+        fprintf(stderr, "ERROR: Expecting 4 command line arguments 1) python script path 2) function name 3) n_frames\n");
     }
     MPI_Init(NULL,NULL);
     printf("---======== In Retriever::main()\n");
@@ -37,9 +37,24 @@ int main (int argc, const char** argv)
     Retriever *retriever;
     if(analyzer_name == "md_analyzer")
     {
-        std::string py_name((char*)argv[1]);
+        std::string py_path((char*)argv[1]);
         std::string py_func((char*)argv[2]);
-        py_runner = new PyRunner((char*)py_name.c_str(),(char*)py_func.c_str());
+        std::size_t module_start = py_path.find_last_of("/");
+        std::size_t module_end = py_path.rfind(".py");
+        if (module_end == std::string::npos)
+        {
+        fprintf(stderr, "ERROR: Expecting a python module in the py_path argument.\n");
+            return -1;
+        }
+        // get directory
+        std::string py_dir = (std::string::npos==module_start)? std::string(".") : py_path.substr(0,module_start);
+        // get file
+        std::string py_name = py_path.substr(module_start+1, module_end-module_start-1);
+        printf("Python directory : %s\n", py_dir.c_str());
+        printf("Python script name : %s\n", py_name.c_str());
+        printf("Python function: %s\n", py_func.c_str());
+
+        py_runner = new PyRunner((char*)py_name.c_str(), (char*)py_func.c_str(), (char*)py_dir.c_str());
         chunk_analyzer = new MDAnalyzer(*chunk_reader, *py_runner);
         int n_frames = atoi(argv[3]);
         int n_window_width = 1;

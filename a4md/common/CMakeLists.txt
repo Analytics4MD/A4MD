@@ -33,16 +33,22 @@ set_target_properties(a4md_cmn PROPERTIES
     POSITION_INDEPENDENT_CODE ON
 )
 
+# find Cray-specific modules
+if (nersc)
+    find_package(CRAY REQUIRED)
+endif (nersc)
+
+set(CMN_BUILD_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${CRAY_INCLUDE_DIRS})
+set(CMN_INSTALL_INCLUDE_DIRS "include" ${CRAY_INCLUDE_DIRS})
 target_include_directories(
     a4md_cmn PUBLIC
     # Headers used from source/build location:
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+    "$<BUILD_INTERFACE:${CMN_BUILD_INCLUDE_DIRS}>"
     # Headers used from the installed location:
-    "$<INSTALL_INTERFACE:include>"
+    "$<INSTALL_INTERFACE:${CMM_INSTALL_INCLUDE_DIRS}>"
 )
 if (nersc)
-    # ToDo: Unhardcode library paths of DRC, UGNI and PMI
-    target_link_libraries(a4md_cmn dataspaces dataspaces_cmn dataspaces_dart m rt -L/opt/cray/rdma-credentials/1.2.21-6.0.7.1_5.14__g841ac46.ari/lib64 drc -L/opt/cray/pe/pmi/5.0.14/lib64 pmi -L/opt/cray/ugni/6.0.14.0-6.0.7.1_3.13__gea11d3d.ari/lib64 ugni -dynamic ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${TAU_LIBRARIES})
+    target_link_libraries(a4md_cmn dataspaces dataspaces_cmn dataspaces_dart m rt ${CRAY_LDFLAGS} -dynamic ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${TAU_LIBRARIES})
 else (nersc)
     target_link_libraries(a4md_cmn dataspaces dataspaces_cmn dataspaces_dart m rt ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${TAU_LIBRARIES})
 endif (nersc)
