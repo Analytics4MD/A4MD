@@ -38,9 +38,6 @@ To use tau profiling in the code the cmake command can include the following fla
 ### Cori
 <details><summary><b>Show instructions</b></summary>
 
-
-</details>
-
 1. Load module prerequisites
 
 Note: boost/1.70.0 is currently not able to be found by find_package in cmake. It is recommended to use boost/1.69.0 until the issue is resolved.
@@ -101,6 +98,5 @@ export CXXFLAGS="-g -DPROFILING_ON -DTAU_STDCXXLIB -I${TAU_ROOT}/include"
 ```
 -DBUILT_IN_PERF=ON
 ```
-
 </details>
 
