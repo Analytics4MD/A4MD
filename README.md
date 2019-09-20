@@ -1,13 +1,17 @@
 [![Run Status](https://api.shippable.com/projects/5bcf364bec335d0700dbc0ec/badge?branch=master)]()
-# A4MD
-A framework that enables in situ molecular dynamic analytics via using in-memory staging areas
+<h1 align="center">
+  <br>
+  A4MD
+</h1>
+
+<h4 align="center">A framework that enables in situ molecular dynamic analytics via using in-memory staging areas</h4>
 
 ## Getting Started
 ```
 git clone --recursive git@github.com:Analytics4MD/A4MD-project-a4md.git a4md
 ```
 
-## Compiling
+## Installation
 ### Caliburn
 ```
 
@@ -32,24 +36,35 @@ To use tau profiling in the code the cmake command can include the following fla
 -DCMAKE_C_COMPILER=tau_cc.sh -DCMAKE_CXX_COMPILER=tau_cxx.sh
 ```
 ### Cori
-Load module prerequisites
+<details><summary><b>Show instructions</b></summary>
+
+
+</details>
+
+1. Load module prerequisites
+
 Note: boost/1.70.0 is currently not able to be found by find_package in cmake. It is recommended to use boost/1.69.0 until the issue is resolved.
 ```
 module swap PrgEnv-intel PrgEnv-gnu
 module load python/3.7-anaconda-2019.07
-module load cmake/3.11.4
+module load cmake
 module load boost/1.69.0
+module load rdma-credentials
 ```
-Create Anaconda environement (i.e test_env), if not.
+2. Create Anaconda environement (i.e test_env), if not.
 ```
 conda create -n ${A4MD_ENV}
 ```
-Load created Python environment and then install Python dependencies
+3. Load created Python environment 
 ```
 source activate ${A4MD_ENV}
 export LD_LIBRARY_PATH="$HOME/.conda/envs/${A4MD_ENV}/lib:$LD_LIBRARY_PATH"
 ```
-Build A4MD package 
+4. Install Python dependencies
+```
+conda install -c conda-forge mdtraj
+```
+5. Build A4MD package 
 ```
 cd a4md
 mkdir build
@@ -67,12 +82,12 @@ cmake .. \
 make
 make install
 ```
-Build A4MD Python package
+6. Build A4MD Python package
 ```
 cd a4md
 pip install -e .
 ```
-To use TAU manual instrumentation, install TAU at ${TAU_ROOT}
+7. (Optional) To use TAU manual instrumentation, install TAU at ${TAU_ROOT}
 ```
 module unload darshan
 module load papi
@@ -82,7 +97,10 @@ export TAU_METRICS=TIME,PAPI_TOT_CYC,PAPI_TOT_INS,ENERGY
 export TAU_LIBS=$(tau_cxx.sh -tau:showlibs)
 export CXXFLAGS="-g -DPROFILING_ON -DTAU_STDCXXLIB -I${TAU_ROOT}/include"
 ```
-To use build-in performance scheme, run cmake command with the following flag
+8. (Optional) To use build-in performance scheme, run cmake command with the following flag
 ```
 -DBUILT_IN_PERF=ON
 ```
+
+</details>
+
