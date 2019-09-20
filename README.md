@@ -1,14 +1,14 @@
-<h1 align="center">
-  <br>
+<h1 align="center">  
   A4MD
-</h1>
-<h4 align="center">
+  <h4 align="center">
   <a href="https://app.shippable.com/github/Analytics4MD/A4MD-project-a4md"><img src="https://api.shippable.com/projects/5bcf364bec335d0700dbc0ec/badge?branch=master"/></a>
-</h4>
+  </h4>
+</h1>
+
 <p align="center">
   <a href="#about">About</a> •
   <a href="#installation">Installation</a> •
-  <a href="#dependencies">Dependencies</a> •
+  <a href="#dependencies">Dependencies</a>
 </p>
 
 ## About
@@ -23,15 +23,22 @@ A framework that enables in situ molecular dynamic analytics via using in-memory
 
 ## Installation
 
+Here is the extensive installation instructions on several HPC computer systems.
+
 ### Getting Started
+
 <details><summary><b>Show instructions</b></summary>
+  
 Clone the source code from this repository
+
 ```
 git clone --recursive git@github.com:Analytics4MD/A4MD-project-a4md.git a4md
 ```
+
 </details>
 
 ### Caliburn
+
 <details><summary><b>Show instructions</b></summary>
 
 1. Build A4MD package 
@@ -58,6 +65,7 @@ cmake .. \
 </details>
 
 ### Cori
+
 <details><summary><b>Show instructions</b></summary>
 
 1. Load module prerequisites
