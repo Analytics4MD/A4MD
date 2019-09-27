@@ -132,7 +132,9 @@ export CXXFLAGS="-g -DPROFILING_ON -DTAU_STDCXXLIB -I${TAU_ROOT}/include"
 </details>
 
 ### Summit
+
 <details><summary><b>Show instructions</b></summary>
+  
 1. Load module prerequisites
 ```
 module purge
