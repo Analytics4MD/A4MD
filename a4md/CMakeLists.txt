@@ -22,12 +22,18 @@ message(STATUS "Adding Dataspaces library to project")
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
 set(DS_CONF_ENABLES "--enable-dart-tcp")
+if(DEFINED ENV{OLCF_LMOD_ROOT})
+    message(STATUS "HOSTTYPE env defined")
+    set(DS_CONF_ENABLES "--enable-dimes;--enable-shmem")
+endif()
+
 if (nersc)
-    set(DS_CONF_ENABLES "--enable-drc;--enable-dimes;--enable-shmem")
+    set(DS_CONF_ENABLES "--enable-drc;${DS_CONF_ENABLES}")
 else (nersc)
     # ToDo: Fix MPI_FORTRAN not found to unhardcode this
     set(MPI_FORTRAN_COMPILER "mpif90")
 endif (nersc)
+message(STATUS "DS_CONF_ENABLES ${DS_CONF_ENABLES}")
 
 # External project to build Dataspaces
 message(STATUS "Buiding Dataspaces")
