@@ -131,3 +131,34 @@ export CXXFLAGS="-g -DPROFILING_ON -DTAU_STDCXXLIB -I${TAU_ROOT}/include"
 ```
 </details>
 
+### Summit
+<details><summary><b>Show instructions</b></summary>
+1. Load module prerequisites
+```
+module purge
+module load gcc/8.1.1
+module load python/3.7.0-anaconda3-5.3.0
+module load cmake/3.15.2
+module load papi/5.7.0
+module load spectrum-mpi/10.3.0.1-20190611
+module load boost/1.66.0
+```
+2. Build A4MD package 
+```
+cd a4md
+mkdir build
+cd build
+CC=$(which gcc) CXX=$(which g++) cmake .. \
+-DCMAKE_INSTALL_PREFIX=../_install \
+-DBOOST_ROOT=${OLCF_BOOST_ROOT} \
+-DPYTHON_EXECUTABLE=$(which python) \
+-DPYTHON_INCLUDE_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
+-DPYTHON_LIBRARY=$(python -c "import distutils.sysconfig as sysconfig; import os; print(os.path.join(sysconfig.get_config_var('LIBDIR'), sysconfig.get_config_var('LDLIBRARY')))") \
+-DMPI_C_COMPILER=$(which mpicc) \
+-DMPI_CXX_COMPILER=$(which mpicxx) \
+-DMPI_FORTRAN_COMPILER=$(which mpifort)
+
+make
+make install
+```
+</details>
