@@ -23,15 +23,17 @@ include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
 set(DS_CONF_ENABLES "--enable-dart-tcp")
 if(DEFINED ENV{OLCF_LMOD_ROOT})
-    message(STATUS "HOSTTYPE env defined")
-    set(DS_CONF_ENABLES "--enable-dimes;--enable-shmem")
+    message(STATUS "Dataspaces on Summit is having issue with Infiniband, temporarily use only --enable-shmem in the meantime.")
+    set(DS_CONF_ENABLES "--enable-shmem")
 endif()
 
 if (nersc)
-    set(DS_CONF_ENABLES "--enable-drc;${DS_CONF_ENABLES}")
+    set(DS_CONF_ENABLES "--enable-drc;--enable-dimes;--enable-shmem")
 else (nersc)
     # ToDo: Fix MPI_FORTRAN not found to unhardcode this
-    set(MPI_FORTRAN_COMPILER "mpif90")
+    if (NOT DEFINED ENV{OLCF_LMOD_ROOT})
+        set(MPI_FORTRAN_COMPILER "mpif90")
+    endif()
 endif (nersc)
 message(STATUS "DS_CONF_ENABLES ${DS_CONF_ENABLES}")
 
