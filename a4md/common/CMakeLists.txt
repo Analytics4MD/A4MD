@@ -34,9 +34,9 @@ set_target_properties(a4md_cmn PROPERTIES
 )
 
 # find Cray-specific modules
-if (nersc)
+if (TARGET_ARCH STREQUAL "cori")
     find_package(CRAY REQUIRED)
-endif (nersc)
+endif()
 
 set(CMN_BUILD_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${CRAY_INCLUDE_DIRS})
 set(CMN_INSTALL_INCLUDE_DIRS "include" ${CRAY_INCLUDE_DIRS})
@@ -49,13 +49,14 @@ target_include_directories(
 )
 
 target_link_libraries(a4md_cmn dataspaces dataspaces_cmn dataspaces_dart m rt)
-if (nersc)
+if (TARGET_ARCH STREQUAL "cori")
     target_link_libraries(a4md_cmn ${CRAY_LDFLAGS} -dynamic)
-else (nersc)
-    if (DEFINED ENV{OLCF_LMOD_ROOT})
-        target_link_libraries(a4md_cmn ibverbs rdmacm -dynamic)
-    endif()
-endif (nersc)
+elseif (TARGET_ARCH STREQUAL "tellico")
+    target_link_libraries(a4md_cmn ibverbs rdmacm -dynamic)
+elseif (TARGET_ARCH STREQUAL "summit")
+    target_link_libraries(a4md_cmn ibverbs rdmacm -dynamic)
+endif ()
+
 target_link_libraries(a4md_cmn ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${TAU_LIBRARIES})
 get_target_property(A4MD_CMN_LIBRARIES a4md_cmn LINK_LIBRARIES)
 message(STATUS "A4MD_CMN_LIBRARIES = ${A4MD_CMN_LIBRARIES}")
