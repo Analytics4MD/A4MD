@@ -1,0 +1,10 @@
+Force Target Architecture:
+
+cmake -DTARGET_ARCH=${TARGET_ARCH}
+Without specifying target architecture results in using default -DTARGET_ARCH=local
+
+Supported List:
+local(default)
+cori
+summit
+tellico
