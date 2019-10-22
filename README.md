@@ -22,7 +22,7 @@ In order to use this package, your system should have the following installed:
 - git
 - cmake
 - boost
-- python
+- python3
 
 (Optional) To use the built-in analysis library, it is required to install:
 - mdtraj
@@ -69,9 +69,9 @@ make
 make install
 ```
 
-*Note that* on Cori at NERSC, it is required to replace pure MPI compilers (mpicc, mpicxx, mpifort) with compiler wrappers (cc, CC, ftn), respectively.
+> *Note that* on Cori at NERSC, it is required to replace pure MPI compilers (mpicc, mpicxx, mpifort) with compiler wrappers (cc, CC, ftn), respectively.
 
-3. Build A4MD Python package
+3. Build A4MD built-in analysis package
 
 ```
 cd a4md
@@ -83,7 +83,8 @@ pip install -e .
 ```
 -DCMAKE_C_COMPILER=$(which tau_cc.sh) -DCMAKE_CXX_COMPILER=$(which tau_cxx.sh)
 ```
-Please remember to unload darshan before installing TAU on Cori at NERSC as this package prevents TAU to work properly.
+
+> Please remember to unload darshan before installing TAU on Cori at NERSC as this package prevents TAU to work properly.
 
 To use TAU manual instrumentation:
 
@@ -96,6 +97,7 @@ export CXXFLAGS="-g -DPROFILING_ON -DTAU_STDCXXLIB -I${TAU_ROOT}/include"
 ```
 
 5. (Optional) To use build-in performance scheme, run cmake command with the following flag:
+
 ```
 -DBUILT_IN_PERF=ON
 ```
