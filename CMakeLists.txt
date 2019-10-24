@@ -82,15 +82,15 @@ endif (NOT Boost_FOUND)
 # Custom CMake scripts
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-# Check TARGET_ARCH predefined macros
-if(TARGET_ARCH)
-    set (TARGET_ARCH "${TARGET_ARCH}")
+# Check TARGET_SYSTEM predefined macros
+if(TARGET_SYSTEM)
+    set (TARGET_SYSTEM "${TARGET_SYSTEM}")
 else()
-    set(TARGET_ARCH "local")
+    set(TARGET_SYSTEM "local")
 endif()
-message(STATUS "TARGET_ARCH is set to ${TARGET_ARCH}")
+message(STATUS "TARGET_SYSTEM is set to ${TARGET_SYSTEM}")
 
-if(TARGET_ARCH STREQUAL "cori")
+if(TARGET_SYSTEM STREQUAL "cori")
     message("The code is built at NERSC/" $ENV{NERSC_HOST})
     # Enable rounding up 8-byte allignment
     add_definitions(-DNERSC)

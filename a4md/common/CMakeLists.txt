@@ -34,7 +34,7 @@ set_target_properties(a4md_cmn PROPERTIES
 )
 
 # find Cray-specific modules
-if (TARGET_ARCH STREQUAL "cori")
+if (TARGET_SYSTEM STREQUAL "cori")
     find_package(CRAY REQUIRED)
 endif()
 
@@ -49,11 +49,9 @@ target_include_directories(
 )
 
 target_link_libraries(a4md_cmn dataspaces dataspaces_cmn dataspaces_dart m rt)
-if (TARGET_ARCH STREQUAL "cori")
+if (TARGET_SYSTEM STREQUAL "cori")
     target_link_libraries(a4md_cmn ${CRAY_LDFLAGS} -dynamic)
-elseif (TARGET_ARCH STREQUAL "tellico")
-    target_link_libraries(a4md_cmn ibverbs rdmacm -dynamic)
-elseif (TARGET_ARCH STREQUAL "summit")
+elseif ((TARGET_SYSTEM STREQUAL "tellico") OR (TARGET_SYSTEM STREQUAL "summit"))
     target_link_libraries(a4md_cmn ibverbs rdmacm -dynamic)
 endif ()
 

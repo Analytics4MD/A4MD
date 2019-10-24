@@ -63,7 +63,7 @@ CC=$(which gcc) CXX=$(which g++) cmake .. \
 -DMPI_C_COMPILER=$(which mpicc) \
 -DMPI_CXX_COMPILER=$(which mpicxx) \
 -DMPI_FORTRAN_COMPILER=$(which mpifort) \
--DTARGET_ARCH=${ARCH}
+-DTARGET_SYSTEM=${SYSTEM}
 
 make
 make install
