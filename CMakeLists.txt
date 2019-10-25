@@ -82,14 +82,22 @@ endif (NOT Boost_FOUND)
 # Custom CMake scripts
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-set(nersc FALSE)
-if(DEFINED ENV{NERSC_HOST})
+# Check TARGET_SYSTEM predefined macros
+if(TARGET_SYSTEM)
+    set (TARGET_SYSTEM "${TARGET_SYSTEM}")
+else()
+    set(TARGET_SYSTEM "local")
+endif()
+message(STATUS "TARGET_SYSTEM is set to ${TARGET_SYSTEM}")
+
+if(TARGET_SYSTEM STREQUAL "cori")
     message("The code is built at NERSC/" $ENV{NERSC_HOST})
-    set(nersc TRUE)
+    # Enable rounding up 8-byte allignment
     add_definitions(-DNERSC)
     message(STATUS "NERSC build is enabled")
 endif()
 
+# Check TAU enabled
 set(TAU_LIBRARIES "")
 if(DEFINED ENV{TAU_LIBS})
     set(TAU_LIBRARIES "$ENV{TAU_LIBS}")
@@ -97,16 +105,19 @@ if(DEFINED ENV{TAU_LIBS})
     add_definitions(-DTAU_PERF)
 endif()
 
+# Check BUILT_IN_PERF
 if(BUILT_IN_PERF)
     message("BUILT_IN_PERF is enabled")
     add_definitions(-DBUILT_IN_PERF)
 endif()
 
+# Check COUNT_LOST_FRAMES feature
 if(COUNT_LOST_FRAMES)
     message("COUNT_LOST_FRAMES is enabled")
     add_definitions(-DCOUNT_LOST_FRAMES)
 endif()
 
+# Check DSPACES_DEBUG
 if(DSPACES_DEBUG)
     message("DSPACES_DEBUG is enabled")
     add_definitions(-DDEBUG)

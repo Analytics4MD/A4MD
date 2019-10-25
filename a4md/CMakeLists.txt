@@ -21,13 +21,18 @@ include_directories(${NUMPY_INCLUDE_DIR})
 message(STATUS "Adding Dataspaces library to project")
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
-set(DS_CONF_ENABLES "--enable-dart-tcp")
-if (nersc)
+if((TARGET_SYSTEM STREQUAL "summit") OR (TARGET_SYSTEM STREQUAL "tellico"))
+    message(STATUS "Dataspaces on Summit/Tellico is having issue with Infiniband, temporarily use only --enable-shmem in the meantime.")
+    set(DS_CONF_ENABLES "--enable-shmem")
+elseif(TARGET_SYSTEM STREQUAL "cori")
+    message(STATUS "Dataspaces requires --enable-drc on Cori")
     set(DS_CONF_ENABLES "--enable-drc;--enable-dimes;--enable-shmem")
-else (nersc)
+else()
+    set(DS_CONF_ENABLES "--enable-dart-tcp")
     # ToDo: Fix MPI_FORTRAN not found to unhardcode this
     set(MPI_FORTRAN_COMPILER "mpif90")
-endif (nersc)
+endif()
+message(STATUS "DS_CONF_ENABLES ${DS_CONF_ENABLES}")
 
 # External project to build Dataspaces
 message(STATUS "Buiding Dataspaces")
