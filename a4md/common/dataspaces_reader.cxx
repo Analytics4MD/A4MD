@@ -117,12 +117,15 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         TimeVar t_istart = timeNow();
 #endif
 #ifdef TAU_PERF
+        TAU_STATIC_TIMER_START("total_read_stall_time");
+        TAU_DYNAMIC_TIMER_START("step_read_stall_time");
+
         TAU_STATIC_TIMER_START("total_read_idle_time");
-        TAU_DYNAMIC_TIMER_START("read_idle_time");
+        TAU_DYNAMIC_TIMER_START("step_read_idle_time");
 #endif
         dspaces_lock_on_read("size_lock", &m_gcomm);
 #ifdef TAU_PERF
-        TAU_DYNAMIC_TIMER_STOP("read_idle_time");
+        TAU_DYNAMIC_TIMER_STOP("step_read_idle_time");
         TAU_STATIC_TIMER_STOP("total_read_idle_time");
 #endif
 #ifdef BUILT_IN_PERF
@@ -134,7 +137,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
 #endif
 #ifdef TAU_PERF
         TAU_STATIC_TIMER_START("total_read_size_time");
-        TAU_DYNAMIC_TIMER_START("read_size_time");
+        TAU_DYNAMIC_TIMER_START("step_read_size_time");
 #endif
         int error = dspaces_get(m_size_var_name.c_str(),
                                 chunk_id,
@@ -164,7 +167,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         // printf("chunk_size =  %i for chunk id %i\n",chunk_size, chunk_id);
 
 #ifdef TAU_PERF
-        TAU_DYNAMIC_TIMER_STOP("read_size_time");
+        TAU_DYNAMIC_TIMER_STOP("step_read_size_time");
         TAU_STATIC_TIMER_STOP("total_read_size_time");
 #endif
 #ifdef BUILT_IN_PERF
@@ -175,8 +178,8 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         //printf("chunk size read from ds for chunkid %i : %u\n", chunk_id, chunk_size);
         char *input_data = new char [chunk_size];
 #ifdef TAU_PERF
-        TAU_STATIC_TIMER_START("total_between_read_time");
-        TAU_DYNAMIC_TIMER_START("between_read_time");
+        TAU_STATIC_TIMER_START("total_read_between_time");
+        TAU_DYNAMIC_TIMER_START("step_read_between_time");
 #endif
 #ifdef BUILT_IN_PERF
         TimeVar t_rbstart = timeNow();
@@ -188,13 +191,19 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         TimeVar t_rcstart = timeNow();
 #endif
 #ifdef TAU_PERF
-        TAU_DYNAMIC_TIMER_STOP("between_read_time");
-        TAU_STATIC_TIMER_STOP("total_between_read_time");
+        TAU_DYNAMIC_TIMER_STOP("step_read_between_time");
+        TAU_STATIC_TIMER_STOP("total_read_between_time");
+        
+        TAU_DYNAMIC_TIMER_STOP("step_read_stall_time");
+        TAU_STATIC_TIMER_STOP("total_read_stall_time");
+        
+        TAU_STATIC_TIMER_START("total_read_time");
+        TAU_DYNAMIC_TIMER_START("step_read_time");
         
         TAU_STATIC_TIMER_START("total_read_chunk_time");
-        TAU_DYNAMIC_TIMER_START("read_chunk_time");
-        TAU_TRACK_MEMORY_FOOTPRINT();
-        TAU_TRACK_MEMORY_FOOTPRINT_HERE();
+        TAU_DYNAMIC_TIMER_START("step_read_chunk_time");
+        //TAU_TRACK_MEMORY_FOOTPRINT();
+        //TAU_TRACK_MEMORY_FOOTPRINT_HERE();
 #endif
         error = dspaces_get(m_var_name.c_str(),
                             chunk_id,
@@ -230,7 +239,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         m_total_chunk_read_time_ms += m_step_chunk_read_time_ms[chunk_id];
 #endif
 #ifdef TAU_PERF
-        TAU_DYNAMIC_TIMER_STOP("read_chunk_time");
+        TAU_DYNAMIC_TIMER_STOP("step_read_chunk_time");
         TAU_STATIC_TIMER_STOP("total_read_chunk_time");
 #endif
         dspaces_unlock_on_read("my_test_lock", &m_gcomm);
@@ -239,6 +248,10 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
 #ifdef BUILT_IN_PERF
         TimeVar t_deserstart = timeNow();
 #endif
+#ifdef TAU_PERF
+        TAU_STATIC_TIMER_START("total_read_deser_time");
+        TAU_DYNAMIC_TIMER_START("step_read_deser_time");
+#endif
         SerializableChunk serializable_chunk;
         ChunkSerializer<SerializableChunk> chunk_serializer;
         bool ret = chunk_serializer.deserialize(serializable_chunk, input_data, chunk_size);
@@ -246,6 +259,13 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         {
             printf("----====== ERROR: Failed to deserialize chunk\n");
         }
+#ifdef TAU_PERF
+        TAU_DYNAMIC_TIMER_STOP("step_read_deser_time");
+        TAU_STATIC_TIMER_STOP("total_read_deser_time");
+        
+        TAU_DYNAMIC_TIMER_STOP("step_read_time");
+        TAU_STATIC_TIMER_STOP("total_read_time");
+#endif
 
 #ifdef BUILT_IN_PERF
         DurationMilli deser_time_ms = timeNow() - t_deserstart;
