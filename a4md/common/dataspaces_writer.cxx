@@ -105,7 +105,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         m_step_ser_time_ms[chunk_id] = ser_time_ms.count();
         m_total_ser_time_ms += m_step_ser_time_ms[chunk_id];
 #endif
-
+        printf("Chunk size %zu\n", c_size);
         m_total_size += c_size;
         int ndim = 1;
         uint64_t lb[1] = {0}, ub[1] = {0};
