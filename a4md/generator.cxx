@@ -51,7 +51,7 @@ int main(int argc, const char** argv)
         py_runner = new PyRunner((char*)py_name.c_str(), 
                                            (char*)py_func.c_str(),
                                            (char*)py_dir.c_str());
-        chunker = new PDBChunker((*py_runner), (char*)file_path.c_str(), 0, n_atoms);
+        chunker = new PDBChunker((*py_runner), (char*)file_path.c_str(), 0, n_delay_ms, n_atoms);
     }
     else 
     {
@@ -71,7 +71,7 @@ int main(int argc, const char** argv)
     ChunkWriter *chunk_writer = new ChunkWriter(*ims_writer);
 
     ChunkStager *chunk_stager = new MDStager(*chunk_reader, *chunk_writer);
-    Ingester *ingester = new MDGenerator(*chunk_stager, total_chunks, n_delay_ms);
+    Ingester *ingester = new MDGenerator(*chunk_stager, total_chunks);
 
     TimeVar t_start = timeNow();
     ingester->run();

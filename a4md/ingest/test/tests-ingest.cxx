@@ -53,7 +53,7 @@ TEST_CASE("PDBChunker Tests", "[ingest]")
                                        (char*)py_path.c_str());
     
     PDBChunker* pdb_chunker = new PDBChunker((*py_runner),
-                                             (char*)file_path.c_str(), 0);
+                                             (char*)file_path.c_str(), 0 , 0);
     //unsigned long int id = 0;
     int result = pdb_chunker->extract_chunk();
     std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1,1);
@@ -88,7 +88,7 @@ TEST_CASE("Knob nAtoms Tests", "[ingest]")
                                        (char*)py_path.c_str());
     
     int natoms = 100;
-    PDBChunker* pdb_chunker = new PDBChunker((*py_runner), (char*)file_path.c_str(), 0, natoms);
+    PDBChunker* pdb_chunker = new PDBChunker((*py_runner), (char*)file_path.c_str(), 0, 0, natoms);
     int result = pdb_chunker->extract_chunk();
     std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1,1);
     Chunk* chunk = chunk_vector.front();

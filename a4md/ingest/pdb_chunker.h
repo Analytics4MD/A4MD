@@ -10,8 +10,9 @@ class PDBChunker : public Chunker
         char* m_file_path;
         int m_position;
         int m_natoms;
+        int m_delay_ms;
     public:
-        PDBChunker(PyRunner & py_runner, char* file_path, int position, int natoms = 0);
+        PDBChunker(PyRunner & py_runner, char* file_path, int position, int delay_ms, int natoms = 0);
         ~PDBChunker();
         int extract_chunk();
         int get_position();
