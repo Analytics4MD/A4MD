@@ -32,6 +32,8 @@ void ChunkStager::stage_chunks(unsigned long int chunk_id_from, unsigned long in
 #ifdef TAU_PERF
     TAU_STATIC_TIMER_START("total_extract_chunks_time");
     TAU_DYNAMIC_TIMER_START("step_extract_chunks_time");
+    //TAU_TRACK_MEMORY_FOOTPRINT();
+    //TAU_TRACK_MEMORY_FOOTPRINT_HERE();
 #endif
     std::vector<Chunk*> chunks = m_chunk_reader.read_chunks(chunk_id_from, chunk_id_to);
 #ifdef TAU_PERF
