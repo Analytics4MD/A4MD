@@ -1,19 +1,15 @@
 #include "pdb_chunker.h"
-#include <chrono>
-#include <thread>
 
 PDBChunker::PDBChunker(PyRunner & py_runner,
                        char* file_path,
                        int position,
-                       int delay_ms,
                        int natoms)
 : m_py_runner(py_runner),
     m_file_path(file_path),
     m_position(position),
-    m_delay_ms(delay_ms),
     m_natoms(natoms)
 {
-    printf("---===== Created PDBChunker with file_path = %s, position = %d, delay_ms = %d and natoms = %d\n", m_file_path, m_position, m_delay_ms, m_natoms);
+    printf("---===== Created PDBChunker with file_path = %s, position = %d and natoms = %d\n", m_file_path, m_position, m_natoms);
     m_next_id = 0;
 }
 
@@ -61,6 +57,5 @@ std::vector<Chunk*> PDBChunker::get_chunks(unsigned long int chunk_id_from, unsi
             std::exit(EXIT_FAILURE);
         }
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds(m_delay_ms));
     return chunks;
 }

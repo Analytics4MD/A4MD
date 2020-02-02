@@ -32,7 +32,7 @@ void ds_write_and_read()
                                        (char*)func.c_str(),
                                        (char*)py_path.c_str());
     PDBChunker* pdb_chunker = new PDBChunker((*py_runner),
-                                             (char*)file_path.c_str(), 0, 0);
+                                             (char*)file_path.c_str(), 0);
     //unsigned long int id = 0;
     int result = pdb_chunker->extract_chunk();
     std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1, 1);

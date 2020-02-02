@@ -7,8 +7,9 @@ class MDGenerator : public Ingester
 {
     private:
         unsigned long int m_total_chunks;
+        int m_delay_ms;
     public:
-        MDGenerator(ChunkStager & chunk_stager, unsigned long int total_chunks);
+        MDGenerator(ChunkStager & chunk_stager, unsigned long int total_chunks, int delay_ms);
         ~MDGenerator();
         void run() override;
 };
