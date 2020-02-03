@@ -8,8 +8,9 @@
 #include <TAU.h>
 #endif
 
-DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunks, MPI_Comm comm)
-: m_size_var_name("chunk_size"),
+DataSpacesWriter::DataSpacesWriter(int client_id, char* var_name, unsigned long int total_chunks, MPI_Comm comm)
+: m_client_id(client_id),
+  m_size_var_name("chunk_size"),
   m_var_name(var_name),
 #ifdef BUILT_IN_PERF
   m_total_data_write_time_ms(0.0),
@@ -37,8 +38,8 @@ DataSpacesWriter::DataSpacesWriter(char* var_name, unsigned long int total_chunk
     // Pointer to the MPI Communicator, allows DS Layer to use MPI barrier func
     // Addt'l parameters: Placeholder for future argumenchunk_id, currently NULL.
     printf("Initializing dpsaces\n");
-    dspaces_init(nprocs, 1, &m_gcomm, NULL);
-    printf("---===== Initialized dspaces client in DataSpacesWriter, var_name: %s, total_chunks: %u\n",m_var_name.c_str(), m_total_chunks);
+    dspaces_init(nprocs, m_client_id, &m_gcomm, NULL);
+    printf("---===== Initialized dspaces client id #%d in DataSpacesWriter, var_name: %s, total_chunks: %u\n",m_client_id, m_var_name.c_str(), m_total_chunks);
 }
 
 static inline std::size_t round_up_8(std::size_t n)

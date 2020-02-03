@@ -24,7 +24,7 @@ int main (int argc, const char** argv)
         int n_frames = atoi(argv[3]);
         int n_analysis_stride = 1;
         unsigned long int total_chunks = n_frames;// +1 for the call before simulation starts
-        chunker = new DataSpacesReader((char*)var_name.c_str(), total_chunks, MPI_COMM_WORLD);
+        chunker = new DataSpacesReader(2, (char*)var_name.c_str(), total_chunks, MPI_COMM_WORLD);
     }
     else
     {

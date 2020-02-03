@@ -6,6 +6,7 @@
 class DataSpacesWriter : public IMSWriter
 {
     private:
+        int m_client_id;
         std::string m_var_name;
         std::string m_size_var_name;
         unsigned int m_total_chunks;
@@ -23,7 +24,7 @@ class DataSpacesWriter : public IMSWriter
 #endif
         MPI_Comm m_gcomm;
     public:
-        DataSpacesWriter(char* var_name, unsigned long int total_chunks, MPI_Comm comm);
+        DataSpacesWriter(int client_id, char* var_name, unsigned long int total_chunks, MPI_Comm comm);
         ~DataSpacesWriter();
         void write_chunks(std::vector<Chunk*> chunks) override;
 };

@@ -10,7 +10,7 @@ int main (int argc, const char** argv)
   if (argc != 2)
     printf("ERROR: Expecting number of simulation steps as command line argument\n");
   unsigned long int n_chunks = atoi(argv[1]);
-  DataSpacesWriter dataspaces_writer_ptr = DataSpacesWriter((char*)var_name.c_str(), n_chunks, MPI_COMM_WORLD);
+  DataSpacesWriter dataspaces_writer_ptr = DataSpacesWriter(1,(char*)var_name.c_str(), n_chunks, MPI_COMM_WORLD);
 
    for (int chunkid=0;chunkid<n_chunks;chunkid++)
   {

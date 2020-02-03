@@ -62,7 +62,7 @@ int main(int argc, const char** argv)
     IMSWriter *ims_writer;
     if (writer_type == "dataspaces") 
     {
-        ims_writer = new DataSpacesWriter((char*)var_name.c_str(), total_chunks, MPI_COMM_WORLD);
+        ims_writer = new DataSpacesWriter(1, (char*)var_name.c_str(), total_chunks, MPI_COMM_WORLD);
     }
     else 
     {
