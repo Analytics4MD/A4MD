@@ -345,7 +345,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
 DataSpacesReader::~DataSpacesReader()
 {
     MPI_Barrier(m_gcomm);
-    dspaces_kill();
+    //dspaces_kill(); //This would kill dataspaces_server before other dspaces clients finalize
     dspaces_finalize();
     printf("---===== Finalized dspaces client in DataSpacesReader\n");
 }
