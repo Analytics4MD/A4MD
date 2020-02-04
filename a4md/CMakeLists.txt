@@ -39,7 +39,7 @@ message(STATUS "Buiding Dataspaces")
 ExternalProject_Add(project_dataspaces
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/a4md/extern/dataspaces
   BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND ./autogen.sh COMMAND ./configure CC=${MPI_C_COMPILER} CXX=${MPI_CXX_COMPILER} FC=${MPI_FORTRAN_COMPILER} ${DS_CONF_ENABLES} --prefix=${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces
+  CONFIGURE_COMMAND ./autogen.sh COMMAND ./configure CC=${MPI_C_COMPILER} CXX=${MPI_CXX_COMPILER} FC=${MPI_FORTRAN_COMPILER} CFLAGS=-fPIC ${DS_CONF_ENABLES} --prefix=${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces
   BUILD_COMMAND ${MAKE}
 )
 
