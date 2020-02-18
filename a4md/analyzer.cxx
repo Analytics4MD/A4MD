@@ -11,9 +11,9 @@ std::string var_name = "test_var";
 
 int main (int argc, const char** argv)
 {
-    if (argc != 4) 
+    if (argc != 5) 
     {
-        fprintf(stderr, "ERROR: Expecting 4 command line arguments 1) python script path 2) function name 3) n_frames\n");
+        fprintf(stderr, "ERROR: Expecting 4 command line arguments 1) dataspaces client id 2) python script path 3) function name 4) Number of frames\n");
     }
     MPI_Init(NULL,NULL);
     printf("---======== In Retriever::main()\n");
@@ -21,10 +21,11 @@ int main (int argc, const char** argv)
     Chunker *chunker;
     if (reader_type == "dataspaces")
     {
-        int n_frames = atoi(argv[3]);
+        int ds_client_id = atoi(argv[1]);
+        int n_frames = atoi(argv[4]);
         int n_analysis_stride = 1;
         unsigned long int total_chunks = n_frames;// +1 for the call before simulation starts
-        chunker = new DataSpacesReader(2, (char*)var_name.c_str(), total_chunks, MPI_COMM_WORLD);
+        chunker = new DataSpacesReader(ds_client_id, (char*)var_name.c_str(), total_chunks, MPI_COMM_WORLD);
     }
     else
     {
@@ -37,8 +38,8 @@ int main (int argc, const char** argv)
     Retriever *retriever;
     if(analyzer_name == "md_analyzer")
     {
-        std::string py_path((char*)argv[1]);
-        std::string py_func((char*)argv[2]);
+        std::string py_path((char*)argv[2]);
+        std::string py_func((char*)argv[3]);
         std::size_t module_start = py_path.find_last_of("/");
         std::size_t module_end = py_path.rfind(".py");
         if (module_end == std::string::npos)
@@ -56,7 +57,7 @@ int main (int argc, const char** argv)
 
         py_runner = new PyRunner((char*)py_name.c_str(), (char*)py_func.c_str(), (char*)py_dir.c_str());
         chunk_analyzer = new MDAnalyzer(*chunk_reader, *py_runner);
-        int n_frames = atoi(argv[3]);
+        int n_frames = atoi(argv[4]);
         int n_window_width = 1;
         printf("Received n_frames = %i from user in Retriever\n",n_frames);
         retriever = new MDRetriever(*chunk_analyzer, n_frames, n_window_width);
