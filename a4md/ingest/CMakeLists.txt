@@ -1,7 +1,6 @@
 set(_ingest_sources_
         ingester.cxx
         md_generator.cxx
-        plumed_chunker.cxx
         chunk_stager.cxx
         md_stager.cxx
 		pdb_chunker.cxx
@@ -9,7 +8,6 @@ set(_ingest_sources_
 set(_ingest_headers_
         ingester.h
         md_generator.h
-        plumed_chunker.h
         chunk_stager.h
         md_stager.h
 		pdb_chunker.h

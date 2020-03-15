@@ -34,7 +34,7 @@ void ds_write_and_read()
     PDBChunker* pdb_chunker = new PDBChunker((*py_runner),
                                              (char*)file_path.c_str(), 0);
     //unsigned long int id = 0;
-    int result = pdb_chunker->extract_chunk();
+    // int result = pdb_chunker->extract_chunk();
     std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1, 1);
     Chunk* chunk = chunk_vector.front(); 
     MDChunk *md_chunk = dynamic_cast<MDChunk *>(chunk);
