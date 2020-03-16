@@ -20,7 +20,7 @@ git:
   submodule: true
 build:
   pre_ci_boot:
-    image_name: globalcomputinglab/a4md_base
+    image_name: tudo/a4md_base
     image_tag: latest
     pull: true
   ci:
