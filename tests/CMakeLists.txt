@@ -21,7 +21,9 @@ ExternalProject_Add(
 )
 include_directories(${yas_PREFIX}/include)
 
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+
 add_executable(test_serialization test_serialization.cxx)
 add_dependencies(test_serialization a4md_cmn cereal yas)
-target_link_libraries(test_serialization a4md_cmn pthread ${MPI_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(test_serialization a4md_cmn ${MPI_LIBRARIES} ${Boost_LIBRARIES} pthread)
 
