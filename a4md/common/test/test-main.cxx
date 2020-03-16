@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
 
 #include <catch2/catch.hpp>
-#include "chunk.h"
+#include "md_chunk.h"
 #include <vector>
 
 TEST_CASE( "Chunk Tests", "[common]" ) 

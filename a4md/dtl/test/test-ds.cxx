@@ -3,6 +3,7 @@
 #include <catch2/catch.hpp>
 #include "dataspaces_writer.h"
 #include "dataspaces_reader.h"
+#include "md_chunk.h"
 #include <vector>
 #include <spawn.h>
 #include <sys/wait.h>

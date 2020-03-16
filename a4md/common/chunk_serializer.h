@@ -1,7 +1,7 @@
 #ifndef __CHUNK_SERIALIZER_H__
 #define __CHUNK_SERIALIZER_H__
 #include <string>
-
+#include "serializable_chunk.h"
 
 template<typename SerializableContainer>
 class ChunkSerializer

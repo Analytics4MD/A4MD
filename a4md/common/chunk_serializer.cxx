@@ -1,5 +1,4 @@
 #include "chunk_serializer.h"
-#include "chunk.h"
 
 /* Boost headers */
 #include <boost/iostreams/device/back_inserter.hpp>
