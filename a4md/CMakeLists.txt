@@ -17,84 +17,17 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 find_package(NumPy REQUIRED)
 include_directories(${NUMPY_INCLUDE_DIR})
 
-# adding Dataspaces library
-message(STATUS "Adding Dataspaces library to project")
-include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
-
-if((TARGET_SYSTEM STREQUAL "summit") OR (TARGET_SYSTEM STREQUAL "tellico"))
-    message(STATUS "Dataspaces on Summit/Tellico is having issue with Infiniband, temporarily use only --enable-shmem in the meantime.")
-    set(DS_CONF_ENABLES "--enable-shmem")
-elseif(TARGET_SYSTEM STREQUAL "cori")
-    message(STATUS "Dataspaces requires --enable-drc on Cori")
-    set(DS_CONF_ENABLES "--enable-drc;--enable-dimes;--enable-shmem")
-else()
-    set(DS_CONF_ENABLES "--enable-dart-tcp")
-    # ToDo: Fix MPI_FORTRAN not found to unhardcode this
-    set(MPI_FORTRAN_COMPILER "mpif90")
-endif()
-message(STATUS "DS_CONF_ENABLES ${DS_CONF_ENABLES}")
-
-# External project to build Dataspaces
-message(STATUS "Buiding Dataspaces")
-ExternalProject_Add(project_dataspaces
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/a4md/extern/dataspaces
-  BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND ./autogen.sh COMMAND ./configure CC=${MPI_C_COMPILER} CXX=${MPI_CXX_COMPILER} FC=${MPI_FORTRAN_COMPILER} CFLAGS=-fPIC ${DS_CONF_ENABLES} --prefix=${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces
-  BUILD_COMMAND ${MAKE}
-)
-
-# Add Dataspaces libraries to 
-add_library(dataspaces STATIC IMPORTED)
-add_dependencies(dataspaces project_dataspaces)
-set_property(TARGET dataspaces PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/lib/libdspaces.a)
-set_target_properties(dataspaces PROPERTIES
-    CXX_STANDARD 11
-    CXX_STANDARD_REQUIRED ON
-    CXX_EXTENSIONS OFF
-    POSITION_INDEPENDENT_CODE ON
-)
-
-add_library(dataspaces_cmn STATIC IMPORTED)
-add_dependencies(dataspaces_cmn project_dataspaces)
-set_property(TARGET dataspaces_cmn PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/lib/libdscommon.a)
-set_target_properties(dataspaces_cmn PROPERTIES
-    CXX_STANDARD 11
-    CXX_STANDARD_REQUIRED ON
-    CXX_EXTENSIONS OFF
-    POSITION_INDEPENDENT_CODE ON
-)
-
-add_library(dataspaces_dart STATIC IMPORTED)
-add_dependencies(dataspaces_dart project_dataspaces)
-set_property(TARGET dataspaces_dart PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/lib/libdart.a)
-set_target_properties(dataspaces_dart PROPERTIES
-    CXX_STANDARD 11
-    CXX_STANDARD_REQUIRED ON
-    CXX_EXTENSIONS OFF
-    POSITION_INDEPENDENT_CODE ON
-)
-
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 # Add include directories
-include_directories("${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/include")
 include_directories("${PROJECT_SOURCE_DIR}/a4md/common")
+include_directories("${PROJECT_SOURCE_DIR}/a4md/dtl")
 include_directories("${PROJECT_SOURCE_DIR}/a4md/ingest")
 include_directories("${PROJECT_SOURCE_DIR}/a4md/retrieve")
 
-# Copy to installation directory
-install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/bin/" 
-        DESTINATION "${CMAKE_INSTALL_PREFIX}/bin"
-        USE_SOURCE_PERMISSIONS
-        FILES_MATCHING PATTERN "dataspaces_server")
-install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/lib/" 
-        DESTINATION "${CMAKE_INSTALL_PREFIX}/lib"
-        USE_SOURCE_PERMISSIONS)
-install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/include/" 
-        DESTINATION "${CMAKE_INSTALL_PREFIX}/include"
-        USE_SOURCE_PERMISSIONS)
-
+# Add subdirectories
 add_subdirectory(common)
+add_subdirectory(dtl)
 add_subdirectory(ingest)
 add_subdirectory(retrieve)
 add_subdirectory(extern)
@@ -114,8 +47,8 @@ target_link_libraries(tests-main Catch2::Catch2)
 # target_link_libraries(ingester ingest a4md_cmn ${Boost_LIBRARIES} ${TAU_LIBRARIES})
 # target_link_libraries(retriever retrieve a4md_cmn ${Boost_LIBRARIES} ${TAU_LIBRARIES})
 #target_link_libraries(mdgenerator ingest a4md_cmn ${Boost_LIBRARIES} ${TAU_LIBRARIES})
-target_link_libraries(generator ingest a4md_cmn ${Boost_LIBRARIES} ${TAU_LIBRARIES})
-target_link_libraries(analyzer retrieve a4md_cmn ${Boost_LIBRARIES} ${TAU_LIBRARIES})
+target_link_libraries(generator a4md_cmn a4md_dtl a4md_ingest ${Boost_LIBRARIES} ${TAU_LIBRARIES})
+target_link_libraries(analyzer a4md_cmn a4md_dtl a4md_retrieve ${Boost_LIBRARIES} ${TAU_LIBRARIES})
 
 enable_testing()
 

@@ -1,3 +1,5 @@
+#define CATCH_CONFIG_MAIN
+
 #include <catch2/catch.hpp>
 #include "dataspaces_writer.h"
 #include "dataspaces_reader.h"
@@ -78,7 +80,7 @@ void ds_write_and_read()
     printf("Completed dataspaces write and read successfully\n");
 }
 
-TEST_CASE( "DS Write-Read Test", "[common]" ) 
+TEST_CASE( "DS Write-Read Test", "[dtl]" ) 
 {
     pid_t child_pid;
     extern char **environ;
