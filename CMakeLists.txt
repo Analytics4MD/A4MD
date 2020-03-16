@@ -1,9 +1,13 @@
+# project name
+project (a4md)
+
 cmake_minimum_required (VERSION 3.5)
 add_compile_options(-std=c++11)
-project (a4md)
-set(CMAKE_VERBOSE_MAKEFILE ON)
 message(STATUS "CFLAGS : ${CMAKE_C_FLAGS}")
 message(STATUS "CXXFLAGS: ${CMAKE_CXX_FLAGS}")
+
+# Set Cmake verbose
+set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 #################################
 
