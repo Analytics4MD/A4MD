@@ -69,9 +69,23 @@ install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/include/"
         DESTINATION "${CMAKE_INSTALL_PREFIX}/include"
         USE_SOURCE_PERMISSIONS)
 
+# Find Decaf
+find_package(Decaf REQUIRED)
+message(STATUS "DECAF_CXX_INCLUDE_DIR: ${DECAF_CXX_INCLUDE_DIR}")
+message(STATUS "DECAF_CXX_DATA_MODEL_LIBRARY: ${DECAF_CXX_DATA_MODEL_LIBRARY}")
+message(STATUS "DECAF_CXX_TRANSPORT_LIBRARY: ${DECAF_CXX_TRANSPORT_LIBRARY}")
+message(STATUS "DECAF_CXX_RUNTIME_LIBRARY: ${DECAF_CXX_RUNTIME_LIBRARY}")
+
+add_definitions(-DTRANSPORT_MPI)
+
+include_directories(${DECAF_CXX_INCLUDE_DIR})
+set(DECAF_LIBRARIES ${DECAF_CXX_TRANSPORT_LIBRARY} ${DECAF_CXX_DATA_MODEL_LIBRARY} ${DECAF_CXX_RUNTIME_LIBRARY})
+
 set(_a4md_dtl_sources_
     dataspaces_writer.cxx
     dataspaces_reader.cxx
+    decaf_writer.cxx
+    decaf_reader.cxx
     chunk_writer.cxx
     chunk_reader.cxx
     ims_reader.cxx
@@ -80,6 +94,8 @@ set(_a4md_dtl_sources_
 set(_a4md_dtl_headers_
     dataspaces_writer.h
     dataspaces_reader.h
+    decaf_writer.h
+    decaf_reader.h
     chunk_writer.h
     chunk_reader.h
     ims_writer.h
@@ -117,7 +133,7 @@ elseif ((TARGET_SYSTEM STREQUAL "tellico") OR (TARGET_SYSTEM STREQUAL "summit"))
     target_link_libraries(a4md_dtl ibverbs rdmacm -dynamic)
 endif ()
 
-target_link_libraries(a4md_dtl ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${TAU_LIBRARIES})
+target_link_libraries(a4md_dtl ${DECAF_LIBRARIES} ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${TAU_LIBRARIES})
 get_target_property(A4MD_DTL_LIBRARIES a4md_dtl LINK_LIBRARIES)
 message(STATUS "A4MD_DTL_LIBRARIES = ${A4MD_DTL_LIBRARIES}")
 
