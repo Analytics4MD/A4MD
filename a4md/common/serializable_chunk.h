@@ -1,5 +1,5 @@
-#ifndef __COMMON_H__
-#define __COMMON_H__
+#ifndef __SERIALIZABLE_CHUNK_H__
+#define __SERIALIZABLE_CHUNK_H__
 #include <vector>
 #include <string>
 #include <iostream>
