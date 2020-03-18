@@ -75,9 +75,10 @@ std::vector<Chunk*> DecafReader::get_chunks(unsigned long int chunks_from, unsig
             // SimpleFieldi field_timestep = in_data[i]->getFieldData<SimpleFieldi>("timestep");
             decaf::ArrayFieldc field_data = in_data[chunk_id]->getFieldData<decaf::ArrayFieldc>("chunk");
             if (field_data) {
-                std::size_t chunk_size = field_data.getNbItems();
+                printf("---=== Successfully get chunk: %lu \n",chunks_from + chunk_id);
+                std::size_t chunk_size = field_data.getArraySize();
                 char* data = field_data.getArray();
-
+                printf("Chunk size %zu\n", chunk_size);
                 SerializableChunk serializable_chunk;
                 ChunkSerializer<SerializableChunk> chunk_serializer;
                 bool ret = chunk_serializer.deserialize(serializable_chunk, data, chunk_size);
@@ -91,6 +92,7 @@ std::vector<Chunk*> DecafReader::get_chunks(unsigned long int chunks_from, unsig
                 printf("---=== Something went wrong while trying to get chunk: %lu \n",chunks_from + chunk_id);
             }
         }
+    }
 
 #ifdef BUILT_IN_PERF
         TimeVar t_istart = timeNow();
@@ -190,7 +192,7 @@ std::vector<Chunk*> DecafReader::get_chunks(unsigned long int chunks_from, unsig
         m_total_deser_time_ms += m_step_deser_time_ms[chunk_id];
 #endif
 
-    }
+
     //MPI_Barrier(m_gcomm);
 #ifdef BUILT_IN_PERF
     DurationMilli read_time_ms = timeNow()-t_start;

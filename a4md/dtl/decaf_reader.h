@@ -1,5 +1,5 @@
-#ifndef __DATASPACES_READER_H__
-#define __DATASPACES_READER_H__
+#ifndef __DECAF_READER_H__
+#define __DECAF_READER_H__
 #include "ims_reader.h"
 #include "mpi.h"
 #include <decaf/decaf.hpp>
@@ -10,7 +10,6 @@ class DecafReader : public IMSReader
         decaf::Decaf* m_decaf;
         std::string m_json_file;
         unsigned int m_total_chunks;
-        MPI_Comm m_gcomm;
 #ifdef BUILT_IN_PERF
         double m_total_data_read_time_ms;
         double m_total_chunk_read_time_ms;
@@ -29,7 +28,7 @@ class DecafReader : public IMSReader
         unsigned int m_lost_frames_count; 	
         std::vector<unsigned int> m_lost_frames_id;
 #endif
-        
+        MPI_Comm m_gcomm;
     public:
         DecafReader(std::string json_file, unsigned long int total_chunks, MPI_Comm comm);
         ~DecafReader();

@@ -140,12 +140,14 @@ void DecafWriter::write_chunks(std::vector<Chunk*> chunks)
         // container->appendData("box_xz", field_box_xz, DECAF_NOFLAG, DECAF_SHARED, DECAF_SPLIT_KEEP_VALUE, DECAF_MERGE_DEFAULT);
         // container->appendData("box_yz", field_box_yz, DECAF_NOFLAG, DECAF_SHARED, DECAF_SPLIT_KEEP_VALUE, DECAF_MERGE_DEFAULT);
 
-        decaf::ArrayFieldc field_data(c_data, c_size, 1);
-        decaf::pConstructData container;
-        container->appendData("chunk", field_data, decaf::DECAF_NOFLAG, decaf::DECAF_PRIVATE, decaf::DECAF_SPLIT_DEFAULT, decaf::DECAF_MERGE_DEFAULT);
-
         printf("Chunk size %zu\n", c_size);
         m_total_size += c_size;
+
+        decaf::ArrayFieldc field_data(c_data, c_size, c_size);
+        decaf::pConstructData container;
+        container->appendData("chunk", field_data, decaf::DECAF_NOFLAG, decaf::DECAF_PRIVATE, decaf::DECAF_SPLIT_DEFAULT, decaf::DECAF_MERGE_DEFAULT);
+        m_decaf->put(container);
+        
 
 #ifdef BUILT_IN_PERF
         TimeVar t_istart = timeNow();
@@ -215,7 +217,7 @@ void DecafWriter::write_chunks(std::vector<Chunk*> chunks)
         //TAU_TRACK_MEMORY_FOOTPRINT();
         //TAU_TRACK_MEMORY_FOOTPRINT_HERE();
 #endif
-        m_decaf->put(container);
+        
 #ifdef TAU_PERF
         TAU_DYNAMIC_TIMER_STOP("step_write_chunk_time");
         TAU_STATIC_TIMER_STOP("total_write_chunk_time");

@@ -1,5 +1,5 @@
-#ifndef __DATASPACES_WRITER_H__
-#define __DATASPACES_WRITER_H__
+#ifndef __DECAF_WRITER_H__
+#define __DECAF_WRITER_H__
 #include "ims_writer.h"
 #include "mpi.h"
 #include <decaf/decaf.hpp>
@@ -11,7 +11,6 @@ class DecafWriter : public IMSWriter
         std::string m_json_file;
         unsigned int m_total_chunks;
         unsigned long int m_total_size = 0;
-        MPI_Comm m_gcomm;
 #ifdef BUILT_IN_PERF
         double m_total_data_write_time_ms;
         double m_total_chunk_write_time_ms;
@@ -23,6 +22,7 @@ class DecafWriter : public IMSWriter
         double *m_step_between_write_time_ms;
         double *m_step_ser_time_ms;
 #endif
+        MPI_Comm m_gcomm;
     public:
         DecafWriter(std::string json_file, unsigned long int total_chunks, MPI_Comm comm);
         ~DecafWriter();
