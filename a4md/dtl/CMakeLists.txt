@@ -133,7 +133,7 @@ elseif ((TARGET_SYSTEM STREQUAL "tellico") OR (TARGET_SYSTEM STREQUAL "summit"))
     target_link_libraries(a4md_dtl ibverbs rdmacm -dynamic)
 endif ()
 
-target_link_libraries(a4md_dtl ${DECAF_LIBRARIES} ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${TAU_LIBRARIES})
+target_link_libraries(a4md_dtl ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${TAU_LIBRARIES} ${DECAF_LIBRARIES} )
 get_target_property(A4MD_DTL_LIBRARIES a4md_dtl LINK_LIBRARIES)
 message(STATUS "A4MD_DTL_LIBRARIES = ${A4MD_DTL_LIBRARIES}")
 
