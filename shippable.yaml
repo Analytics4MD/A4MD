@@ -28,7 +28,7 @@ build:
     - mkdir -p shippable/codecoverage
     - mkdir build
     - cd build
-    - cmake .. -DCMAKE_INSTALL_PREFIX=../_install 
+    - cmake .. -DCMAKE_INSTALL_PREFIX=../_install
     - make install
     - cd ..
     - export PYTHONPATH=a4md/retrieve/test/

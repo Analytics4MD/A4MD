@@ -69,23 +69,11 @@ install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/include/"
         DESTINATION "${CMAKE_INSTALL_PREFIX}/include"
         USE_SOURCE_PERMISSIONS)
 
-# Find Decaf
-find_package(Decaf REQUIRED)
-message(STATUS "DECAF_CXX_INCLUDE_DIR: ${DECAF_CXX_INCLUDE_DIR}")
-message(STATUS "DECAF_CXX_DATA_MODEL_LIBRARY: ${DECAF_CXX_DATA_MODEL_LIBRARY}")
-message(STATUS "DECAF_CXX_TRANSPORT_LIBRARY: ${DECAF_CXX_TRANSPORT_LIBRARY}")
-message(STATUS "DECAF_CXX_RUNTIME_LIBRARY: ${DECAF_CXX_RUNTIME_LIBRARY}")
-
-add_definitions(-DTRANSPORT_MPI)
-
-include_directories(${DECAF_CXX_INCLUDE_DIR})
-set(DECAF_LIBRARIES ${DECAF_CXX_TRANSPORT_LIBRARY} ${DECAF_CXX_DATA_MODEL_LIBRARY} ${DECAF_CXX_RUNTIME_LIBRARY})
-
 set(_a4md_dtl_sources_
     dataspaces_writer.cxx
     dataspaces_reader.cxx
-    decaf_writer.cxx
-    decaf_reader.cxx
+    # decaf_writer.cxx
+    # decaf_reader.cxx
     chunk_writer.cxx
     chunk_reader.cxx
     ims_reader.cxx
@@ -94,13 +82,28 @@ set(_a4md_dtl_sources_
 set(_a4md_dtl_headers_
     dataspaces_writer.h
     dataspaces_reader.h
-    decaf_writer.h
-    decaf_reader.h
+    # decaf_writer.h
+    # decaf_reader.h
     chunk_writer.h
     chunk_reader.h
     ims_writer.h
     ims_reader.h
     )
+
+option(transport_decaf "Build A4MD with Decaf data transport layer" OFF)
+if (transport_decaf)
+# Find Decaf
+    find_package(Decaf REQUIRED)
+    message(STATUS "DECAF_CXX_INCLUDE_DIR: ${DECAF_CXX_INCLUDE_DIR}")
+    message(STATUS "DECAF_CXX_DATA_MODEL_LIBRARY: ${DECAF_CXX_DATA_MODEL_LIBRARY}")
+    message(STATUS "DECAF_CXX_TRANSPORT_LIBRARY: ${DECAF_CXX_TRANSPORT_LIBRARY}")
+    message(STATUS "DECAF_CXX_RUNTIME_LIBRARY: ${DECAF_CXX_RUNTIME_LIBRARY}")
+    add_definitions(-DTRANSPORT_MPI)
+    include_directories(${DECAF_CXX_INCLUDE_DIR})
+    set(DECAF_LIBRARIES ${DECAF_CXX_TRANSPORT_LIBRARY} ${DECAF_CXX_DATA_MODEL_LIBRARY} ${DECAF_CXX_RUNTIME_LIBRARY})
+    set(_a4md_dtl_sources_ ${_a4md_dtl_sources_} decaf_writer.cxx decaf_reader.cxx)
+    set(_a4md_dtl_headers_ ${_a4md_dtl_headers_} decaf_writer.h decaf_reader.h)
+endif (transport_decaf)
 
 add_library(a4md_dtl ${_a4md_dtl_sources_})
 add_dependencies(a4md_dtl a4md_cmn dataspaces dataspaces_cmn dataspaces_dart)
