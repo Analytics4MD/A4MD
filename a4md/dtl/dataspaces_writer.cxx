@@ -21,6 +21,7 @@ DataSpacesWriter::DataSpacesWriter(int client_id, char* var_name, unsigned long 
   m_total_chunks(total_chunks)
 {
 #ifdef BUILT_IN_PERF
+    m_step_data_write_time_ms = new double[m_total_chunks];
     m_step_chunk_write_time_ms = new double[m_total_chunks];
     m_step_writer_idle_time_ms = new double[m_total_chunks];
     m_step_size_write_time_ms = new double[m_total_chunks];
@@ -49,15 +50,14 @@ static inline std::size_t round_up_8(std::size_t n)
 
 void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
 {
-#ifdef BUILT_IN_PERF
-    TimeVar t_start = timeNow();
-#endif
     unsigned long int chunk_id; 
     MPI_Barrier(m_gcomm);
     for(Chunk* chunk:chunks)
     {
         chunk_id = chunk->get_chunk_id();
-
+#ifdef BUILT_IN_PERF
+        TimeVar t_start = timeNow();
+#endif
         //Boost Binary Serialization
 #ifdef BUILT_IN_PERF
         TimeVar t_serstart = timeNow();
@@ -236,11 +236,14 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
                             &chunk_id);
         dspaces_unlock_on_write("last_write_lock", &m_gcomm);
 #endif    
+#ifdef BUILT_IN_PERF
+        DurationMilli write_time_ms = timeNow()-t_start;
+        m_step_data_write_time_ms[chunk_id] = write_time_ms.count();
+        m_total_data_write_time_ms += m_step_data_write_time_ms[chunk_id];
+#endif
     }
     //MPI_Barrier(m_gcomm);
 #ifdef BUILT_IN_PERF
-    DurationMilli write_time_ms = timeNow()-t_start;
-    m_total_data_write_time_ms += write_time_ms.count();
     if (chunk_id == m_total_chunks-1)
     {
         printf("total_chunks written : %u\n",m_total_chunks);
@@ -249,6 +252,12 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         printf("total_chunk_write_time_ms : %f\n",m_total_chunk_write_time_ms);
         printf("total_writer_idle_time_ms : %f\n",m_total_writer_idle_time_ms);
         printf("total_ser_time_ms : %f\n",m_total_ser_time_ms);
+        printf("step_data_write_time_ms : ");
+        for (auto step = 0; step < m_total_chunks; step++)
+        {
+            printf(" %f ", m_step_data_write_time_ms[step]);
+        }
+        printf("\n");
         printf("step_chunk_write_time_ms : ");
         for (auto step = 0; step < m_total_chunks; step++)
         {
@@ -281,6 +290,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         printf("\n");
 
         //Free Built-in Performance Variables
+        delete[] m_step_data_write_time_ms;
         delete[] m_step_chunk_write_time_ms;
         delete[] m_step_writer_idle_time_ms;
         delete[] m_step_size_write_time_ms;

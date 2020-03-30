@@ -30,6 +30,7 @@ DataSpacesReader::DataSpacesReader(int client_id, char* var_name, unsigned long 
   m_total_chunks(total_chunks)
 {
 #ifdef BUILT_IN_PERF
+    m_step_data_read_time_ms = new double [m_total_chunks];
     m_step_chunk_read_time_ms = new double [m_total_chunks];
     m_step_reader_idle_time_ms = new double [m_total_chunks];
     m_step_size_read_time_ms = new double [m_total_chunks];
@@ -52,9 +53,6 @@ DataSpacesReader::DataSpacesReader(int client_id, char* var_name, unsigned long 
 
 std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, unsigned long int chunks_to)
 {
-#ifdef BUILT_IN_PERF
-    TimeVar t_start = timeNow();
-#endif
     unsigned long int chunk_id;
     printf("---===== DataSpacesReader::get_chunks with chunk_from %lu, chunk_to %lu\n",chunks_from, chunks_to);
     std::vector<Chunk*> chunks; 
@@ -63,6 +61,9 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
     uint64_t lb[1] = {0}, ub[1] = {0};
     for (chunk_id = chunks_from; chunk_id<=chunks_to; chunk_id++)
     {
+#ifdef BUILT_IN_PERF
+        TimeVar t_start = timeNow();
+#endif
 #ifdef COUNT_LOST_FRAMES
         unsigned long int last_chunk_id = 0;
         bool try_next_chunk = false;
@@ -278,11 +279,14 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         //chunks.print();
         chunks.push_back(serializable_chunk.get_chunk());
         delete[] input_data;
+#ifdef BUILT_IN_PERF
+        DurationMilli read_time_ms = timeNow()-t_start;
+        m_step_data_read_time_ms[chunk_id] = read_time_ms.count();
+        m_total_data_read_time_ms += m_step_data_read_time_ms[chunk_id];
+#endif
     }
     //MPI_Barrier(m_gcomm);
 #ifdef BUILT_IN_PERF
-    DurationMilli read_time_ms = timeNow()-t_start;
-    m_total_data_read_time_ms += read_time_ms.count();
     if (chunk_id-1 == m_total_chunks-1)
     {
         printf("total_chunks read : %u\n",m_total_chunks);
@@ -290,6 +294,12 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         printf("total_chunk_read_time_ms : %f\n",m_total_chunk_read_time_ms);
         printf("total_reader_idle_time_ms : %f\n",m_total_reader_idle_time_ms);
         printf("total_deser_time_ms : %f\n",m_total_deser_time_ms);
+        printf("step_data_read_time_ms : ");
+        for (auto step = 0; step < m_total_chunks; step++)
+        {
+            printf(" %f ", m_step_data_read_time_ms[step]);
+        }
+        printf("\n");
         printf("step_chunk_read_time_ms : ");
         for (auto step = 0; step < m_total_chunks; step++)
         {
@@ -322,6 +332,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         printf("\n");
 
         //ToDo: delete in destructor
+        delete[] m_step_data_read_time_ms;
         delete[] m_step_chunk_read_time_ms;
         delete[] m_step_reader_idle_time_ms;
         delete[] m_step_size_read_time_ms;
