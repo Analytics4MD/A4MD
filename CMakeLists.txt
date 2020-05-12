@@ -78,28 +78,13 @@ if (NOT Boost_FOUND)
 else()
   message(STATUS "Setting up BOOST")
   message(STATUS " Boost Include Directories : ${Boost_INCLUDE_DIRS}")
-  message(STATUS " Boost Libraries : ${Boost_LIBRARIES}")
+  message(STATUS " Boost Libraries : ${Boost_LIBRARY_DIRS}")
   include_directories(${Boost_INCLUDE_DIRS})
   link_directories(${Boost_LIBRARY_DIRS})
 endif (NOT Boost_FOUND)
 
 # Custom CMake scripts
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
-# Check TARGET_SYSTEM predefined macros
-if(TARGET_SYSTEM)
-    set (TARGET_SYSTEM "${TARGET_SYSTEM}")
-else()
-    set(TARGET_SYSTEM "local")
-endif()
-message(STATUS "TARGET_SYSTEM is set to ${TARGET_SYSTEM}")
-
-if(TARGET_SYSTEM STREQUAL "cori")
-    message("The code is built at NERSC/" $ENV{NERSC_HOST})
-    # Enable rounding up 8-byte allignment
-    add_definitions(-DNERSC)
-    message(STATUS "NERSC build is enabled")
-endif()
 
 # Check TAU enabled
 set(TAU_LIBRARIES "")
