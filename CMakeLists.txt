@@ -1,9 +1,13 @@
+# project name
+project (a4md)
+
 cmake_minimum_required (VERSION 3.5)
 add_compile_options(-std=c++11)
-project (a4md)
-set(CMAKE_VERBOSE_MAKEFILE ON)
 message(STATUS "CFLAGS : ${CMAKE_C_FLAGS}")
 message(STATUS "CXXFLAGS: ${CMAKE_CXX_FLAGS}")
+
+# Set Cmake verbose
+set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 #################################
 
@@ -81,21 +85,6 @@ endif (NOT Boost_FOUND)
 
 # Custom CMake scripts
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
-# Check TARGET_SYSTEM predefined macros
-if(TARGET_SYSTEM)
-    set (TARGET_SYSTEM "${TARGET_SYSTEM}")
-else()
-    set(TARGET_SYSTEM "local")
-endif()
-message(STATUS "TARGET_SYSTEM is set to ${TARGET_SYSTEM}")
-
-if(TARGET_SYSTEM STREQUAL "cori")
-    message("The code is built at NERSC/" $ENV{NERSC_HOST})
-    # Enable rounding up 8-byte allignment
-    add_definitions(-DNERSC)
-    message(STATUS "NERSC build is enabled")
-endif()
 
 # Check TAU enabled
 set(TAU_LIBRARIES "")

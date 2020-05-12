@@ -1,23 +1,11 @@
 set(_a4md_cmn_sources_
-        dataspaces_writer.cxx
-        dataspaces_reader.cxx
-        chunk_writer.cxx
-        chunk_reader.cxx
-        ims_reader.cxx
-        ims_writer.cxx
-        chunker.cxx
         py_runner.cxx
         chunk_serializer.cxx
         )
 set(_a4md_cmn_headers_
-        dataspaces_writer.h
-        dataspaces_reader.h
-        chunk_writer.h
-        chunk_reader.h
-        ims_writer.h
-        ims_reader.h
-        chunker.h
         chunk.h
+        md_chunk.h
+        serializable_chunk.h
         exceptions.h
         py_runner.h
         timer.h
@@ -25,35 +13,12 @@ set(_a4md_cmn_headers_
         )
 
 add_library(a4md_cmn ${_a4md_cmn_sources_})
-add_dependencies(a4md_cmn dataspaces)
 set_target_properties(a4md_cmn PROPERTIES
     CXX_STANDARD 11
     CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS OFF
     POSITION_INDEPENDENT_CODE ON
 )
-
-# find Cray-specific modules
-if (TARGET_SYSTEM STREQUAL "cori")
-    find_package(CRAY REQUIRED)
-endif()
-
-set(CMN_BUILD_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${CRAY_INCLUDE_DIRS})
-set(CMN_INSTALL_INCLUDE_DIRS "include" ${CRAY_INCLUDE_DIRS})
-target_include_directories(
-    a4md_cmn PUBLIC
-    # Headers used from source/build location:
-    "$<BUILD_INTERFACE:${CMN_BUILD_INCLUDE_DIRS}>"
-    # Headers used from the installed location:
-    "$<INSTALL_INTERFACE:${CMM_INSTALL_INCLUDE_DIRS}>"
-)
-
-target_link_libraries(a4md_cmn dataspaces dataspaces_cmn dataspaces_dart m rt)
-if (TARGET_SYSTEM STREQUAL "cori")
-    target_link_libraries(a4md_cmn ${CRAY_LDFLAGS} -dynamic)
-elseif ((TARGET_SYSTEM STREQUAL "tellico") OR (TARGET_SYSTEM STREQUAL "summit"))
-    target_link_libraries(a4md_cmn ibverbs rdmacm -dynamic)
-endif ()
 
 target_link_libraries(a4md_cmn ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${TAU_LIBRARIES})
 get_target_property(A4MD_CMN_LIBRARIES a4md_cmn LINK_LIBRARIES)

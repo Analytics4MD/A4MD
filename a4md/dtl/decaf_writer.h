@@ -1,13 +1,14 @@
-#ifndef __DATASPACES_WRITER_H__
-#define __DATASPACES_WRITER_H__
+#ifndef __DECAF_WRITER_H__
+#define __DECAF_WRITER_H__
 #include "ims_writer.h"
 #include "mpi.h"
+#include <decaf/decaf.hpp>
 
-class DataSpacesWriter : public IMSWriter
+class DecafWriter : public IMSWriter
 {
     private:
-        std::string m_var_name;
-        std::string m_size_var_name;
+        decaf::Decaf* m_decaf;
+        std::string m_json_file;
         unsigned int m_total_chunks;
         unsigned long int m_total_size = 0;
 #ifdef BUILT_IN_PERF
@@ -23,8 +24,8 @@ class DataSpacesWriter : public IMSWriter
 #endif
         MPI_Comm m_gcomm;
     public:
-        DataSpacesWriter(char* var_name, unsigned long int total_chunks, MPI_Comm comm);
-        ~DataSpacesWriter();
+        DecafWriter(std::string json_file, unsigned long int total_chunks, MPI_Comm comm);
+        ~DecafWriter();
         void write_chunks(std::vector<Chunk*> chunks) override;
 };
 #endif

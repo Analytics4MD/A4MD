@@ -1,7 +1,6 @@
 #include <string>
 
 #include "mpi.h"
-#include "ingester.h"
 #include "py_runner.h"
 #include "pdb_chunker.h"
 #include "dataspaces_writer.h"
@@ -44,25 +43,25 @@ int main(int argc, const char** argv)
     printf("Python script name : %s\n", py_name.c_str());
     printf("Python function: %s\n", py_func.c_str());
 
-    Chunker *chunker;
+    IMSReader *ims_reader;
     PyRunner *py_runner;
     if (reader_type == "pdb")
     {
         py_runner = new PyRunner((char*)py_name.c_str(), 
                                            (char*)py_func.c_str(),
                                            (char*)py_dir.c_str());
-        chunker = new PDBChunker((*py_runner), (char*)file_path.c_str(), 0, n_atoms);
+        ims_reader = new PDBChunker((*py_runner), (char*)file_path.c_str(), 0, n_atoms);
     }
     else 
     {
         throw NotImplementedException("Reader type is not implemented\n");
     }
-    ChunkReader *chunk_reader = new ChunkReader(*chunker);
+    ChunkReader *chunk_reader = new ChunkReader(*ims_reader);
 
     IMSWriter *ims_writer;
     if (writer_type == "dataspaces") 
     {
-        ims_writer = new DataSpacesWriter((char*)var_name.c_str(), total_chunks, MPI_COMM_WORLD);
+        ims_writer = new DataSpacesWriter(1, (char*)var_name.c_str(), total_chunks, MPI_COMM_WORLD);
     }
     else 
     {
@@ -85,7 +84,7 @@ int main(int argc, const char** argv)
     delete chunk_writer;
     delete chunk_reader;
     delete ims_writer;
-    delete chunker;
+    delete ims_reader;
     delete py_runner;
 
     MPI_Finalize();

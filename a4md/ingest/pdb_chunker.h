@@ -1,9 +1,9 @@
 #ifndef __PDB_CHUNKER_H__
 #define __PDB_CHUNKER_H__
-#include "chunker.h"
+#include "ims_reader.h"
 #include "py_runner.h"
 
-class PDBChunker : public Chunker
+class PDBChunker : public IMSReader
 {
     private:
         PyRunner & m_py_runner;
@@ -13,7 +13,7 @@ class PDBChunker : public Chunker
     public:
         PDBChunker(PyRunner & py_runner, char* file_path, int position, int natoms = 0);
         ~PDBChunker();
-        int extract_chunk();
+        // int extract_chunk();
         int get_position();
         std::vector<Chunk*> get_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to) override;
 };

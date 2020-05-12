@@ -7,21 +7,20 @@ integrations:
   hub:
     - integrationName: docker_hub
       type: dockerRegistryLogin
-
-  notifications:
-    - integrationName: A4MDSlackNotifications
-      type: slack
-      recipients:
-        - "#lichens"
-      on_success: always
-      on_failure: always
-      on_start: never
-      on_pull_request: always
+  # notifications:
+  #   - integrationName: A4MDSlackNotifications
+  #     type: slack
+  #     recipients:
+  #       - "#lichens"
+  #     on_success: always
+  #     on_failure: always
+  #     on_start: never
+  #     on_pull_request: always
 git:
   submodule: true
 build:
   pre_ci_boot:
-    image_name: globalcomputinglab/a4md_base
+    image_name: tudo/a4md_base
     image_tag: latest
     pull: true
   ci:
@@ -29,7 +28,7 @@ build:
     - mkdir -p shippable/codecoverage
     - mkdir build
     - cd build
-    - cmake .. -DCMAKE_INSTALL_PREFIX=../_install 
+    - cmake .. -DCMAKE_INSTALL_PREFIX=../_install
     - make install
     - cd ..
     - export PYTHONPATH=a4md/retrieve/test/

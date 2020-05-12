@@ -13,24 +13,25 @@ int main (int argc, const char** argv)
 {
     if (argc != 4) 
     {
-        fprintf(stderr, "ERROR: Expecting 4 command line arguments 1) python script path 2) function name 3) n_frames\n");
+        fprintf(stderr, "ERROR: Expecting 3 command line arguments 1) python script path 2) function name 3) Number of frames\n");
     }
     MPI_Init(NULL,NULL);
     printf("---======== In Retriever::main()\n");
     
-    Chunker *chunker;
+    IMSReader *ims_reader;
     if (reader_type == "dataspaces")
     {
+        // int ds_client_id = atoi(argv[1]);
         int n_frames = atoi(argv[3]);
         int n_analysis_stride = 1;
         unsigned long int total_chunks = n_frames;// +1 for the call before simulation starts
-        chunker = new DataSpacesReader((char*)var_name.c_str(), total_chunks, MPI_COMM_WORLD);
+        ims_reader = new DataSpacesReader(2, (char*)var_name.c_str(), total_chunks, MPI_COMM_WORLD);
     }
     else
     {
         throw NotImplementedException("Reader type is not implemented");
     }
-    ChunkReader *chunk_reader = new ChunkReader(* chunker);
+    ChunkReader *chunk_reader = new ChunkReader(*ims_reader);
 
     PyRunner *py_runner;
     ChunkAnalyzer *chunk_analyzer;
@@ -77,7 +78,7 @@ int main (int argc, const char** argv)
     delete chunk_analyzer;
     delete py_runner;
     delete chunk_reader;
-    delete chunker;
+    delete ims_reader;
 
     MPI_Finalize();
     return 0;

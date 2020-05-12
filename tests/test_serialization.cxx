@@ -6,8 +6,12 @@
 #include <string>
 #include <type_traits>
 #include "mpi.h"
-#include "chunk.h"
-#include "timer.h"
+// #include "chunk.h"
+// #include "timer.h"
+#include <chrono>
+#define timeNow() std::chrono::high_resolution_clock::now()
+typedef std::chrono::high_resolution_clock::time_point TimeVar;
+typedef std::chrono::duration<double, std::milli> DurationMilli;
 // Boost headers
 #include <boost/iostreams/device/back_inserter.hpp>
 #include <boost/iostreams/stream.hpp>

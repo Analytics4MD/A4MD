@@ -1,6 +1,8 @@
 #include "chunk_analyzer.h"
 #include <typeinfo>
-//#include <TAU.h>
+#ifdef TAU_PERF
+#include <TAU.h>
+#endif
 
 ChunkAnalyzer::ChunkAnalyzer(ChunkReader & chunk_reader)
 : m_chunk_reader(chunk_reader)
@@ -15,22 +17,29 @@ ChunkAnalyzer::~ChunkAnalyzer()
 void ChunkAnalyzer::analyze_chunks(int chunk_id_from, int chunk_id_to)
 {
     printf("ChunkAnalyzer::analyze_chunks() --> Analyze chunks from chunk_id_from = %lu to chunk_id_to = %lu\n");
-    //TAU_DYNAMIC_TIMER_START("read_chunks");
+#ifdef TAU_PERF
+    TAU_STATIC_TIMER_START("total_read_chunks_time");
+    TAU_DYNAMIC_TIMER_START("step_read_chunks_time");
     //TAU_TRACK_MEMORY_FOOTPRINT();
     //TAU_TRACK_MEMORY_FOOTPRINT_HERE();
+#endif
     auto chunks = m_chunk_reader.read_chunks(chunk_id_from, chunk_id_to);
-    //TAU_DYNAMIC_TIMER_STOP("read_chunks");
-    //TAU_DYNAMIC_TIMER_START("analyze_chunks");
+#ifdef TAU_PERF
+    TAU_DYNAMIC_TIMER_STOP("step_read_chunks_time");
+    TAU_STATIC_TIMER_STOP("total_read_chunks_time");
     //TAU_TRACK_MEMORY_FOOTPRINT();
     //TAU_TRACK_MEMORY_FOOTPRINT_HERE();
+
+    TAU_STATIC_TIMER_START("total_analyze_chunks_time");
+    TAU_DYNAMIC_TIMER_START("step_analyze_chunks_time");
+#endif
     for (Chunk* chunk : chunks)
     {
         analyze(chunk);
-        //TAU_DYNAMIC_TIMER_STOP("analyze_chunks");
-        //TAU_DYNAMIC_TIMER_START("delete_chunks");
-        //TAU_TRACK_MEMORY_FOOTPRINT();
-        //TAU_TRACK_MEMORY_FOOTPRINT_HERE();
         free_chunk(chunk);
     }
-    //TAU_DYNAMIC_TIMER_STOP("delete_chunks");
+#ifdef TAU_PERF
+    TAU_DYNAMIC_TIMER_STOP("step_analyze_chunks_time");
+    TAU_STATIC_TIMER_STOP("total_analyze_chunks_time");
+#endif
 }

@@ -3,7 +3,7 @@
 #include <vector>
 #include <Python.h>
 #include "exceptions.h"
-#include "chunk.h"
+#include "md_chunk.h"
 
 class PyRunner
 {

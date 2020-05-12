@@ -1,5 +1,7 @@
 #include "md_analyzer.h"
-
+#ifdef TAU_PERF
+#include <TAU.h>
+#endif
 
 MDAnalyzer::MDAnalyzer(ChunkReader & chunk_reader,
                                  PyRunner & py_runner)
@@ -39,7 +41,9 @@ void MDAnalyzer::analyze(Chunk* chunk)
     xz = plmdchunk->get_box_xz(); // 0 for orthorhombic
     yz = plmdchunk->get_box_yz(); // 0 for orthorhombic
     int step = plmdchunk->get_timestep();
-    
+#ifdef TAU_PERF
+    TAU_TRACK_MEMORY_FOOTPRINT_HERE();
+#endif
     m_py_runner.analyze_frame(types,
                                 x_positions,
                                 y_positions,

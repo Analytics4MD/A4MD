@@ -1,27 +1,27 @@
-set(_retrieve_sources_
+set(_a4md_retrieve_sources_
         md_analyzer.cxx
         chunk_analyzer.cxx
         md_retriever.cxx
         retriever.cxx
 		)
-set(_retrieve_headers_
+set(_a4md_retrieve_headers_
         md_analyzer.h
         chunk_analyzer.h
         md_retriever.h
         retriever.h
 		)
 
-add_library(retrieve ${_retrieve_sources_})
-set_target_properties(retrieve PROPERTIES
+add_library(a4md_retrieve ${_a4md_retrieve_sources_})
+set_target_properties(a4md_retrieve PROPERTIES
     CXX_STANDARD 11
     CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS OFF
     POSITION_INDEPENDENT_CODE ON
 )
 
-add_dependencies(retrieve a4md_cmn)
-target_link_libraries(retrieve a4md_cmn ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${PYTHON_LIBRARIES} ${TAU_LIBRARIES})
+add_dependencies(a4md_retrieve a4md_cmn a4md_dtl)
+target_link_libraries(a4md_retrieve a4md_cmn a4md_dtl ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${PYTHON_LIBRARIES} ${TAU_LIBRARIES})
 
 add_subdirectory(test)
-install (TARGETS retrieve DESTINATION lib)
-install (FILES ${_retrieve_headers_} DESTINATION include)
+install (TARGETS a4md_retrieve DESTINATION lib)
+install (FILES ${_a4md_retrieve_headers_} DESTINATION include)
