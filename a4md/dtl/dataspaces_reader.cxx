@@ -11,10 +11,13 @@
 #include <thread>
 #endif
 
-DataSpacesReader::DataSpacesReader(int client_id, char* var_name, unsigned long int total_chunks, MPI_Comm comm)
+DataSpacesReader::DataSpacesReader(int client_id, int group_id, unsigned long int total_chunks, MPI_Comm comm)
 : m_client_id(client_id),
-  m_size_var_name("chunk_size"),
-  m_var_name(var_name),
+  m_group_id(group_id),
+  m_size_lock_name("lock_size"),
+  m_chunk_lock_name("lock_chunk"),
+  m_size_var_name("var_size"),
+  m_chunk_var_name("var_chunk"),
 #ifdef BUILT_IN_PERF
   m_total_data_read_time_ms(0.0),
   m_total_chunk_read_time_ms(0.0),
@@ -41,6 +44,14 @@ DataSpacesReader::DataSpacesReader(int client_id, char* var_name, unsigned long 
     MPI_Barrier(m_gcomm);
     int nprocs;
     MPI_Comm_size(m_gcomm, &nprocs);
+
+    // Append group id to lock names, var names
+    std::string group_str = std::to_string(group_id); 
+    m_size_lock_name.append(group_str);
+    m_chunk_lock_name.append(group_str);
+    m_size_var_name.append(group_str);
+    m_chunk_var_name.append(group_str);
+
     // Initalize DataSpaces
     // # of Peers, Application ID, ptr MPI comm, additional parameters
     // # Peers: Number of connecting clients to the DS server
@@ -48,7 +59,7 @@ DataSpacesReader::DataSpacesReader(int client_id, char* var_name, unsigned long 
     // Pointer to the MPI Communicator, allows DS Layer to use MPI barrier func
     // Addt'l parameters: Placeholder for future arguments, currently NULL.
     dspaces_init(nprocs, m_client_id, &m_gcomm, NULL);
-    printf("---===== Initialized dspaces client id #%d in DataSpacesReader, var_name : %s, total_chunks: %u \n", m_client_id, m_var_name.c_str(), m_total_chunks);
+    printf("---===== Initialized dspaces client id #%d in DataSpacesReader, total_chunks: %u \n", m_client_id, m_total_chunks);
 }
 
 std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, unsigned long int chunks_to)
@@ -125,7 +136,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         TAU_STATIC_TIMER_START("total_read_idle_time");
         TAU_DYNAMIC_TIMER_START("step_read_idle_time");
 #endif
-        dspaces_lock_on_read("size_lock", &m_gcomm);
+        dspaces_lock_on_read(m_size_lock_name.c_str(), &m_gcomm);
 #ifdef TAU_PERF
         TAU_DYNAMIC_TIMER_STOP("step_read_idle_time");
         TAU_STATIC_TIMER_STOP("total_read_idle_time");
@@ -176,7 +187,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         DurationMilli size_read_time_ms = timeNow() - t_rsstart;
         m_step_size_read_time_ms[chunk_id] = size_read_time_ms.count();
 #endif 
-        dspaces_unlock_on_read("size_lock", &m_gcomm);
+        dspaces_unlock_on_read(m_size_lock_name.c_str(), &m_gcomm);
         //printf("chunk size read from ds for chunkid %i : %u\n", chunk_id, chunk_size);
         char *input_data = new char [chunk_size];
 #ifdef TAU_PERF
@@ -186,7 +197,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
 #ifdef BUILT_IN_PERF
         TimeVar t_rbstart = timeNow();
 #endif
-        dspaces_lock_on_read("my_test_lock", &m_gcomm);
+        dspaces_lock_on_read(m_chunk_lock_name.c_str(), &m_gcomm);
 #ifdef BUILT_IN_PERF
         DurationMilli between_read_time_ms = timeNow() - t_rbstart;
         m_step_between_read_time_ms[chunk_id] = between_read_time_ms.count();
@@ -207,7 +218,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         //TAU_TRACK_MEMORY_FOOTPRINT();
         //TAU_TRACK_MEMORY_FOOTPRINT_HERE();
 #endif
-        error = dspaces_get(m_var_name.c_str(),
+        error = dspaces_get(m_chunk_var_name.c_str(),
                             chunk_id,
                             chunk_size,
                             ndim,
@@ -244,7 +255,7 @@ std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, 
         TAU_DYNAMIC_TIMER_STOP("step_read_chunk_time");
         TAU_STATIC_TIMER_STOP("total_read_chunk_time");
 #endif
-        dspaces_unlock_on_read("my_test_lock", &m_gcomm);
+        dspaces_unlock_on_read(m_chunk_lock_name.c_str(), &m_gcomm);
        
         // Boost Binary Serialization
 #ifdef BUILT_IN_PERF
@@ -357,7 +368,7 @@ DataSpacesReader::~DataSpacesReader()
 {
     MPI_Barrier(m_gcomm);
     printf("dspaces_peers : %d\n", dspaces_peers());
-    dspaces_kill(); //This would kill dataspaces_server before other dspaces clients finalize
+    // dspaces_kill(); //This would kill dataspaces_server before other dspaces clients finalize
     dspaces_finalize();
     printf("---===== Finalized dspaces client in DataSpacesReader\n");
 }
