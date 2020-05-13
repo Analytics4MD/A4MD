@@ -34,7 +34,7 @@ class DataSpacesReader : public IMSReader
 #endif
         MPI_Comm m_gcomm;
     public:
-        DataSpacesReader(int client_id, int group_id, char* var_name, unsigned long int total_chunks, MPI_Comm comm);
+        DataSpacesReader(int client_id, int group_id, unsigned long int total_chunks, MPI_Comm comm);
         ~DataSpacesReader();
         std::vector<Chunk*> get_chunks(unsigned long int chunks_from, unsigned long int chunks_to) override;
 

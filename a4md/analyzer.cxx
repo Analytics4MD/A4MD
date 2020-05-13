@@ -7,7 +7,6 @@
 
 std::string analyzer_name = "md_analyzer";
 std::string reader_type = "dataspaces";
-std::string var_name = "test_var";
 
 int main (int argc, const char** argv)
 {
@@ -25,7 +24,7 @@ int main (int argc, const char** argv)
         int n_frames = atoi(argv[3]);
         int n_analysis_stride = 1;
         unsigned long int total_chunks = n_frames;// +1 for the call before simulation starts
-        ims_reader = new DataSpacesReader(2, 1, (char*)var_name.c_str(), total_chunks, MPI_COMM_WORLD);
+        ims_reader = new DataSpacesReader(2, 1, total_chunks, MPI_COMM_WORLD);
     }
     else
     {

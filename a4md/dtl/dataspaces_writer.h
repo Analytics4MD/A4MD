@@ -28,7 +28,7 @@ class DataSpacesWriter : public IMSWriter
 #endif
         MPI_Comm m_gcomm;
     public:
-        DataSpacesWriter(int client_id, int group_id, char* var_name, unsigned long int total_chunks, MPI_Comm comm);
+        DataSpacesWriter(int client_id, int group_id, unsigned long int total_chunks, MPI_Comm comm);
         ~DataSpacesWriter();
         void write_chunks(std::vector<Chunk*> chunks) override;
 };

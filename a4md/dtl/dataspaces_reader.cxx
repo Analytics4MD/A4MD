@@ -11,13 +11,13 @@
 #include <thread>
 #endif
 
-DataSpacesReader::DataSpacesReader(int client_id, int group_id, char* var_name, unsigned long int total_chunks, MPI_Comm comm)
+DataSpacesReader::DataSpacesReader(int client_id, int group_id, unsigned long int total_chunks, MPI_Comm comm)
 : m_client_id(client_id),
   m_group_id(group_id),
   m_size_lock_name("lock_size"),
   m_chunk_lock_name("lock_chunk"),
-  m_size_var_name("chunk_size"),
-  m_chunk_var_name(var_name),
+  m_size_var_name("var_size"),
+  m_chunk_var_name("var_chunk"),
 #ifdef BUILT_IN_PERF
   m_total_data_read_time_ms(0.0),
   m_total_chunk_read_time_ms(0.0),
@@ -59,7 +59,7 @@ DataSpacesReader::DataSpacesReader(int client_id, int group_id, char* var_name, 
     // Pointer to the MPI Communicator, allows DS Layer to use MPI barrier func
     // Addt'l parameters: Placeholder for future arguments, currently NULL.
     dspaces_init(nprocs, m_client_id, &m_gcomm, NULL);
-    printf("---===== Initialized dspaces client id #%d in DataSpacesReader, var_name : %s, total_chunks: %u \n", m_client_id, m_chunk_var_name.c_str(), m_total_chunks);
+    printf("---===== Initialized dspaces client id #%d in DataSpacesReader, total_chunks: %u \n", m_client_id, m_total_chunks);
 }
 
 std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, unsigned long int chunks_to)
