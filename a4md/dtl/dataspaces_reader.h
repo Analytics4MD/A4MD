@@ -7,7 +7,10 @@ class DataSpacesReader : public IMSReader
 {
     private:
         int m_client_id;
-        std::string m_var_name;
+        int m_group_id;
+        std::string m_chunk_lock_name;
+        std::string m_size_lock_name;
+        std::string m_chunk_var_name;
         std::string m_size_var_name;
         unsigned int m_total_chunks;
 #ifdef BUILT_IN_PERF
@@ -31,7 +34,7 @@ class DataSpacesReader : public IMSReader
 #endif
         MPI_Comm m_gcomm;
     public:
-        DataSpacesReader(int client_id, char* var_name, unsigned long int total_chunks, MPI_Comm comm);
+        DataSpacesReader(int client_id, int group_id, char* var_name, unsigned long int total_chunks, MPI_Comm comm);
         ~DataSpacesReader();
         std::vector<Chunk*> get_chunks(unsigned long int chunks_from, unsigned long int chunks_to) override;
 

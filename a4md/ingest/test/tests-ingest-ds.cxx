@@ -42,8 +42,8 @@ void ds_write_and_read()
     
     char* temp_var_name = "test_var";
     unsigned long int total_chunks = 1;
-    dataspaces_writer_ptr = new DataSpacesWriter(1, temp_var_name, total_chunks, MPI_COMM_WORLD);
-    dataspaces_reader_ptr = new DataSpacesReader(2, temp_var_name, total_chunks, MPI_COMM_WORLD);
+    dataspaces_writer_ptr = new DataSpacesWriter(1, 1, temp_var_name, total_chunks, MPI_COMM_WORLD);
+    dataspaces_reader_ptr = new DataSpacesReader(2, 1, temp_var_name, total_chunks, MPI_COMM_WORLD);
     std::vector<Chunk*> chunks = {chunk};
     dataspaces_writer_ptr->write_chunks(chunks);
     

@@ -8,10 +8,13 @@
 #include <TAU.h>
 #endif
 
-DataSpacesWriter::DataSpacesWriter(int client_id, char* var_name, unsigned long int total_chunks, MPI_Comm comm)
+DataSpacesWriter::DataSpacesWriter(int client_id, int group_id, char* var_name, unsigned long int total_chunks, MPI_Comm comm)
 : m_client_id(client_id),
+  m_group_id(group_id),
+  m_size_lock_name("lock_size"),
+  m_chunk_lock_name("lock_chunk"),
   m_size_var_name("chunk_size"),
-  m_var_name(var_name),
+  m_chunk_var_name(var_name),
 #ifdef BUILT_IN_PERF
   m_total_data_write_time_ms(0.0),
   m_total_chunk_write_time_ms(0.0),
@@ -32,6 +35,14 @@ DataSpacesWriter::DataSpacesWriter(int client_id, char* var_name, unsigned long 
     MPI_Barrier(m_gcomm);
     int nprocs;
     MPI_Comm_size(m_gcomm, &nprocs);
+
+    // Append group id to lock names, var names
+    std::string group_str = std::to_string(group_id); 
+    m_size_lock_name.append(group_str);
+    m_chunk_lock_name.append(group_str);
+    m_size_var_name.append(group_str);
+    m_chunk_var_name.append(group_str);
+
     // Initalize DataSpaces
     // # of Peers, Application ID, ptr MPI comm, additional parameters
     // # Peers: Number of connecting clienchunk_id to the DS server
@@ -40,7 +51,7 @@ DataSpacesWriter::DataSpacesWriter(int client_id, char* var_name, unsigned long 
     // Addt'l parameters: Placeholder for future argumenchunk_id, currently NULL.
     printf("Initializing dpsaces\n");
     dspaces_init(nprocs, m_client_id, &m_gcomm, NULL);
-    printf("---===== Initialized dspaces client id #%d in DataSpacesWriter, var_name: %s, total_chunks: %u\n",m_client_id, m_var_name.c_str(), m_total_chunks);
+    printf("---===== Initialized dspaces client id #%d and group id #%d in DataSpacesWriter, var_name: %s, total_chunks: %u\n",m_client_id, m_group_id, m_chunk_var_name.c_str(), m_total_chunks);
 }
 
 static inline std::size_t round_up_8(std::size_t n)
@@ -120,7 +131,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         TAU_STATIC_TIMER_START("total_write_idle_time");
         TAU_DYNAMIC_TIMER_START("step_write_idle_time");
 #endif
-        dspaces_lock_on_write("size_lock", &m_gcomm);
+        dspaces_lock_on_write(m_size_lock_name.c_str(), &m_gcomm);
 #ifdef TAU_PERF
         TAU_DYNAMIC_TIMER_STOP("step_write_idle_time");
         TAU_STATIC_TIMER_STOP("total_write_idle_time");
@@ -162,7 +173,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         TAU_STATIC_TIMER_STOP("total_write_size_time");
 #endif
         
-        dspaces_unlock_on_write("size_lock", &m_gcomm);
+        dspaces_unlock_on_write(m_size_lock_name.c_str(), &m_gcomm);
         //printf("writing char array to dataspace:\n %s\n",data.c_str());
 #ifdef TAU_PERF
         TAU_STATIC_TIMER_START("total_write_between_time");
@@ -172,7 +183,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
 #ifdef BUILT_IN_PERF
         TimeVar t_wbstart = timeNow();
 #endif
-        dspaces_lock_on_write("my_test_lock", &m_gcomm);
+        dspaces_lock_on_write(m_chunk_lock_name.c_str(), &m_gcomm);
 #ifdef BUILT_IN_PERF
         DurationMilli between_write_time_ms = timeNow() - t_wbstart; 
         m_step_between_write_time_ms[chunk_id] = between_write_time_ms.count();
@@ -193,7 +204,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         //TAU_TRACK_MEMORY_FOOTPRINT();
         //TAU_TRACK_MEMORY_FOOTPRINT_HERE();
 #endif
-        error = dspaces_put(m_var_name.c_str(),
+        error = dspaces_put(m_chunk_var_name.c_str(),
                             chunk_id,
                             c_size,
                             ndim,
@@ -206,7 +217,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
         error = dspaces_put_sync();
         if (error != 0)
-            printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_var_name.c_str());
+            printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_chunk_var_name.c_str());
 #ifdef TAU_PERF
         TAU_DYNAMIC_TIMER_STOP("step_write_chunk_time");
         TAU_STATIC_TIMER_STOP("total_write_chunk_time");
@@ -220,7 +231,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         m_total_chunk_write_time_ms += m_step_chunk_write_time_ms[chunk_id];
 #endif
         //printf("Chunk %lu : step_write_chunk_time_ms : %f\n", m_step_chunk_write_time_ms[chunk_id]);
-        dspaces_unlock_on_write("my_test_lock", &m_gcomm);
+        dspaces_unlock_on_write(m_chunk_lock_name.c_str(), &m_gcomm);
 #ifdef NERSC
         delete[] c_data;
 #endif
