@@ -16,7 +16,7 @@ ChunkAnalyzer::~ChunkAnalyzer()
 }
 void ChunkAnalyzer::analyze_chunks(int chunk_id_from, int chunk_id_to)
 {
-    printf("ChunkAnalyzer::analyze_chunks() --> Analyze chunks from chunk_id_from = %lu to chunk_id_to = %lu\n");
+    printf("---===== ChunkAnalyzer::analyze_chunks() --> Analyze chunks from chunk_id_from = %lu to chunk_id_to = %lu\n");
 #ifdef TAU_PERF
     TAU_STATIC_TIMER_START("total_read_chunks_time");
     TAU_DYNAMIC_TIMER_START("step_read_chunks_time");
