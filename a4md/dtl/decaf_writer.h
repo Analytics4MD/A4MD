@@ -16,10 +16,9 @@ class DecafWriter : public IMSWriter
         double m_total_chunk_write_time_ms;
         double m_total_writer_idle_time_ms;
         double m_total_ser_time_ms;
+        double *m_step_data_write_time_ms;
         double *m_step_chunk_write_time_ms;
         double *m_step_writer_idle_time_ms;
-        double *m_step_size_write_time_ms;
-        double *m_step_between_write_time_ms;
         double *m_step_ser_time_ms;
 #endif
         MPI_Comm m_gcomm;
