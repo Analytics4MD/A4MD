@@ -1,10 +1,6 @@
 #include "decaf_reader.h"
-#include <bredala/data_model/pconstructtype.h>
-#include <bredala/data_model/arrayfield.hpp>
-#include <bredala/data_model/boost_macros.h>
-#ifdef TRANSPORT_CCI
-#include <cci.h>
-#endif
+
+// #include <bredala/data_model/boost_macros.h>
 #include "chunk_serializer.h"
 #if defined(BUILT_IN_PERF) || defined(COUNT_LOST_FRAMES)
 #include "timer.h"
@@ -41,9 +37,35 @@ DecafReader::DecafReader(std::string json_file, unsigned long int total_chunks, 
     m_gcomm = comm;
     Workflow workflow;
     Workflow::make_wflow_from_json(workflow, m_json_file.c_str());
-    printf("Initializing decaf\n");
     m_decaf = new decaf::Decaf(m_gcomm, workflow);
     printf("---===== Initialized DecafReader with json_file: %s, total_chunks: %u\n", m_json_file.c_str(), m_total_chunks);
+}
+
+DecafReader::DecafReader(decaf::Decaf* decaf, unsigned long int total_chunks, MPI_Comm comm)
+: m_decaf(decaf),
+#ifdef BUILT_IN_PERF
+  m_total_data_read_time_ms(0.0),
+  m_total_chunk_read_time_ms(0.0),
+  m_total_reader_idle_time_ms(0.0),
+  m_total_deser_time_ms(0.0),
+#endif
+#ifdef COUNT_LOST_FRAMES
+  m_wait_ms(1000),// default wait time of 1 second
+  m_min_wait_ms(100),// default min wait time of 100 ms
+  m_max_wait_ms(30000),//defailt max wait time of 30 seconds
+  m_lost_frames_count(0),
+#endif
+  m_total_chunks(total_chunks)
+{
+#ifdef BUILT_IN_PERF
+    m_step_data_read_time_ms = new double [m_total_chunks];
+    m_step_chunk_read_time_ms = new double [m_total_chunks];
+    m_step_reader_idle_time_ms = new double [m_total_chunks];
+    m_step_deser_time_ms = new double[m_total_chunks];
+#endif
+    m_gcomm = comm;
+    initialized = true; 
+    printf("---===== Initialized DecafReader with initialized Decaf node, total_chunks: %u\n", m_total_chunks);
 }
 
 std::vector<Chunk*> DecafReader::get_chunks(unsigned long int chunks_from, unsigned long int chunks_to)
@@ -56,52 +78,43 @@ std::vector<Chunk*> DecafReader::get_chunks(unsigned long int chunks_from, unsig
     
     // MPI_Barrier(m_gcomm);
     std::vector<Chunk*> chunks; 
-    std::vector<decaf::pConstructData> in_data;
 
-#ifdef BUILT_IN_PERF
-    TimeVar t_istart = timeNow();
-#endif
-#ifdef TAU_PERF
-    TAU_STATIC_TIMER_START("total_read_time");
-    TAU_DYNAMIC_TIMER_START("step_read_time");
-
-    TAU_STATIC_TIMER_START("total_read_idle_time");
-    TAU_DYNAMIC_TIMER_START("step_read_idle_time");
-#endif
-    chunk_id = chunks_from;
-    while (!m_decaf->get(in_data)) {
-    }
-#ifdef TAU_PERF
-    TAU_DYNAMIC_TIMER_STOP("step_read_idle_time");
-    TAU_STATIC_TIMER_STOP("total_read_idle_time");
-
-    TAU_STATIC_TIMER_START("total_read_chunk_time");
-    TAU_DYNAMIC_TIMER_START("step_read_chunk_time");
-#endif
-#ifdef BUILT_IN_PERF
-    DurationMilli reader_idle_time_ms = timeNow()-t_istart;
-    m_step_reader_idle_time_ms[chunk_id] = reader_idle_time_ms.count();
-    m_total_reader_idle_time_ms += m_step_reader_idle_time_ms[chunk_id];
-    TimeVar t_rcstart = timeNow();
-#endif
 
     // if (m_decaf->get(in_data))
     // {
 
     for (auto i = 0; i <= chunks_to - chunks_from; i++)
     {
-        // VectorFieldi field_types = in_data[i]->getFieldData<VectorFieldi>("types");
-        // VectorFliedd field_x_positions = in_data[i]->getFieldData<VectorFliedd>("x_positions");
-        // VectorFliedd field_y_positions = in_data[i]->getFieldData<VectorFliedd>("y_positions");
-        // VectorFliedd field_z_positions = in_data[i]->getFieldData<VectorFliedd>("z_positions");
-        // SimpleFieldd field_box_lx = in_data[i]->getFieldData<SimpleFieldd>("box_lx");
-        // SimpleFieldd field_box_ly = in_data[i]->getFieldData<SimpleFieldd>("box_ly");
-        // SimpleFieldd field_box_lz = in_data[i]->getFieldData<SimpleFieldd>("box_lz");
-        // SimpleFieldd field_box_xy = in_data[i]->getFieldData<SimpleFieldd>("box_xy");
-        // SimpleFieldd field_box_xz = in_data[i]->getFieldData<SimpleFieldd>("box_xz");
-        // SimpleFieldd field_box_yz = in_data[i]->getFieldData<SimpleFieldd>("box_yz");
-        // SimpleFieldi field_timestep = in_data[i]->getFieldData<SimpleFieldi>("timestep");
-        decaf::ArrayFieldc field_data = in_data[i]->getFieldData<decaf::ArrayFieldc>("chunk");
+        map<std::string, decaf::pConstructData> in_data;
+
+#ifdef BUILT_IN_PERF
+        TimeVar t_istart = timeNow();
+#endif
+#ifdef TAU_PERF
+        TAU_STATIC_TIMER_START("total_read_time");
+        TAU_DYNAMIC_TIMER_START("step_read_time");
+
+        TAU_STATIC_TIMER_START("total_read_idle_time");
+        TAU_DYNAMIC_TIMER_START("step_read_idle_time");
+#endif
+        chunk_id = chunks_from;
+        while (!m_decaf->get(in_data)) {
+        }
+#ifdef TAU_PERF
+        TAU_DYNAMIC_TIMER_STOP("step_read_idle_time");
+        TAU_STATIC_TIMER_STOP("total_read_idle_time");
+
+        TAU_STATIC_TIMER_START("total_read_chunk_time");
+        TAU_DYNAMIC_TIMER_START("step_read_chunk_time");
+#endif
+#ifdef BUILT_IN_PERF
+        DurationMilli reader_idle_time_ms = timeNow()-t_istart;
+        m_step_reader_idle_time_ms[chunk_id] = reader_idle_time_ms.count();
+        m_total_reader_idle_time_ms += m_step_reader_idle_time_ms[chunk_id];
+        TimeVar t_rcstart = timeNow();
+#endif
+
+        decaf::ArrayFieldc field_data = in_data.at("in")->getFieldData<decaf::ArrayFieldc>("chunk");
         if (field_data) {
             printf("---===== DecafReader::get_chunks Successfully get chunk: %lu \n", chunks_from + i);
             std::size_t chunk_size = field_data.getArraySize();
@@ -203,8 +216,10 @@ std::vector<Chunk*> DecafReader::get_chunks(unsigned long int chunks_from, unsig
 DecafReader::~DecafReader()
 {
     // MPI_Barrier(m_gcomm);
-    printf("Terminating decaf\n");
-    m_decaf->terminate();
-    delete m_decaf;
+    if (!initialized) {
+        printf("Terminating decaf\n");
+        m_decaf->terminate();
+        delete m_decaf;
+    }
     printf("---===== Finalized DecafReader\n");
 }
