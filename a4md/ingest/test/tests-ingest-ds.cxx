@@ -35,7 +35,7 @@ void ds_write_and_read()
                                              (char*)file_path.c_str(), 0);
     //unsigned long int id = 0;
     // int result = pdb_chunker->extract_chunk();
-    std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1, 1);
+    std::vector<Chunk*> chunk_vector = pdb_chunker->read_chunks(1, 1);
     Chunk* chunk = chunk_vector.front(); 
     MDChunk *md_chunk = dynamic_cast<MDChunk *>(chunk);
     //md_chunk->print();
@@ -46,7 +46,7 @@ void ds_write_and_read()
     std::vector<Chunk*> chunks = {chunk};
     dataspaces_writer_ptr->write_chunks(chunks);
     
-    std::vector<Chunk*> recieved_chunks = dataspaces_reader_ptr->get_chunks(current_chunk_id, current_chunk_id);
+    std::vector<Chunk*> recieved_chunks = dataspaces_reader_ptr->read_chunks(current_chunk_id, current_chunk_id);
     
     for (Chunk* chunk: recieved_chunks)
     {

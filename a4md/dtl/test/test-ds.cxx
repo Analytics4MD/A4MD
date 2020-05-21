@@ -51,7 +51,7 @@ void ds_write_and_read()
     dataspaces_reader_ptr = new DataSpacesReader(2, 1, total_chunks, MPI_COMM_WORLD);
     std::vector<Chunk*> chunks = {chunk};
     dataspaces_writer_ptr->write_chunks(chunks);
-    std::vector<Chunk*> recieved_chunks = dataspaces_reader_ptr->get_chunks(current_chunk_id, current_chunk_id);
+    std::vector<Chunk*> recieved_chunks = dataspaces_reader_ptr->read_chunks(current_chunk_id, current_chunk_id);
     for (Chunk* chunk: recieved_chunks)
     {
       MDChunk *recieved_chunk = dynamic_cast<MDChunk *>(chunk);

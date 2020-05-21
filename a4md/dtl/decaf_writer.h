@@ -1,12 +1,12 @@
 #ifndef __DECAF_WRITER_H__
 #define __DECAF_WRITER_H__
-#include "ims_writer.h"
+#include "chunk_writer.h"
 #include "mpi.h"
 #include <decaf/decaf.hpp>
 #include <bredala/data_model/pconstructtype.h>
 #include <bredala/data_model/arrayfield.hpp>
 
-class DecafWriter : public IMSWriter
+class DecafWriter : public ChunkWriter
 {
     private:
         decaf::Decaf* m_decaf;

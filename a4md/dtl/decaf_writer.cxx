@@ -1,6 +1,5 @@
 #include "decaf_writer.h"
 
-// #include <bredala/data_model/boost_macros.h>
 #include "chunk_serializer.h"
 #ifdef BUILT_IN_PERF
 #include "timer.h"

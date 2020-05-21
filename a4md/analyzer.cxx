@@ -17,20 +17,19 @@ int main (int argc, const char** argv)
     MPI_Init(NULL,NULL);
     printf("---======== In Retriever::main()\n");
     
-    IMSReader *ims_reader;
+    ChunkReader *chunk_reader;
     if (reader_type == "dataspaces")
     {
         // int ds_client_id = atoi(argv[1]);
         int n_frames = atoi(argv[3]);
         int n_analysis_stride = 1;
         unsigned long int total_chunks = n_frames;// +1 for the call before simulation starts
-        ims_reader = new DataSpacesReader(2, 1, total_chunks, MPI_COMM_WORLD);
+        chunk_reader = new DataSpacesReader(2, 1, total_chunks, MPI_COMM_WORLD);
     }
     else
     {
         throw NotImplementedException("Reader type is not implemented");
     }
-    ChunkReader *chunk_reader = new ChunkReader(*ims_reader);
 
     PyRunner *py_runner;
     ChunkAnalyzer *chunk_analyzer;
@@ -77,7 +76,6 @@ int main (int argc, const char** argv)
     delete chunk_analyzer;
     delete py_runner;
     delete chunk_reader;
-    delete ims_reader;
 
     MPI_Finalize();
     return 0;

@@ -62,7 +62,7 @@ DataSpacesReader::DataSpacesReader(int client_id, int group_id, unsigned long in
     printf("---===== Initialized dspaces client id #%d in DataSpacesReader, total_chunks: %u \n", m_client_id, m_total_chunks);
 }
 
-std::vector<Chunk*> DataSpacesReader::get_chunks(unsigned long int chunks_from, unsigned long int chunks_to)
+std::vector<Chunk*> DataSpacesReader::read_chunks(unsigned long int chunks_from, unsigned long int chunks_to)
 {
     unsigned long int chunk_id;
     printf("---===== DataSpacesReader::get_chunks with chunk_from %lu, chunk_to %lu\n",chunks_from, chunks_to);

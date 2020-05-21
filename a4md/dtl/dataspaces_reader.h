@@ -1,9 +1,9 @@
 #ifndef __DATASPACES_READER_H__
 #define __DATASPACES_READER_H__
-#include "ims_reader.h"
+#include "chunk_reader.h"
 #include "mpi.h"
 
-class DataSpacesReader : public IMSReader
+class DataSpacesReader : public ChunkReader
 {
     private:
         int m_client_id;
@@ -36,7 +36,7 @@ class DataSpacesReader : public IMSReader
     public:
         DataSpacesReader(int client_id, int group_id, unsigned long int total_chunks, MPI_Comm comm);
         ~DataSpacesReader();
-        std::vector<Chunk*> get_chunks(unsigned long int chunks_from, unsigned long int chunks_to) override;
+        std::vector<Chunk*> read_chunks(unsigned long int chunks_from, unsigned long int chunks_to) override;
 
 };
 #endif

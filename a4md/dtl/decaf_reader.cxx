@@ -68,7 +68,7 @@ DecafReader::DecafReader(decaf::Decaf* decaf, unsigned long int total_chunks, MP
     printf("---===== Initialized DecafReader with initialized Decaf node, total_chunks: %u\n", m_total_chunks);
 }
 
-std::vector<Chunk*> DecafReader::get_chunks(unsigned long int chunks_from, unsigned long int chunks_to)
+std::vector<Chunk*> DecafReader::read_chunks(unsigned long int chunks_from, unsigned long int chunks_to)
 {
 #ifdef BUILT_IN_PERF
     TimeVar t_start = timeNow();

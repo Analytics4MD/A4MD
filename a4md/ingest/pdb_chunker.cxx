@@ -38,7 +38,7 @@ int PDBChunker::get_position()
 //     return result;
 // }
 
-std::vector<Chunk*> PDBChunker::get_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to)
+std::vector<Chunk*> PDBChunker::read_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to)
 {
     printf("---===== PDBChunker::get_chunks --> Get chunks from chunk_id_from = %lu to chunk_id_to = %lu\n", chunk_id_from, chunk_id_to);
     std::vector<Chunk*> chunks;
