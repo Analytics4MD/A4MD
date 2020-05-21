@@ -74,7 +74,7 @@ int PyRunner::initialize_python(char* py_path)
   if (!module)
   {
     PyErr_Print();
-    fprintf(stderr,"numpy import failed. See for an error message above");
+    fprintf(stderr,"---===== ERROR : PyRunner::initialize_python Numpy import failed. See for an error message above");
   } 
   Py_DECREF(module);
 
@@ -87,25 +87,25 @@ int PyRunner::initialize_python(char* py_path)
   PyObject* sysPath = PySys_GetObject((char*)"path");
   PyList_Append(sysPath, PyUnicode_FromString("."));
   PyList_Append(sysPath, PyUnicode_FromString(py_path));
-  printf("--------========== User defined python path %s =========----------\n", py_path);
-  printf("--------========== import module %s ===========--------\n",m_module_name);
+  printf("---===== User defined python path: %s\n", py_path);
+  printf("---===== Import module : %s\n",m_module_name);
   m_py_module = PyImport_ImportModule(m_module_name);
   if (m_py_module ==NULL)
   {
-    printf("--------========== import module %s failed ===========--------\n",m_module_name);
+    printf("---===== ERROR: PyRunner::initialize_python Import module %s failed\n",m_module_name);
     print_py_error_and_rethrow();
   }
 
-  printf("--------========== import module %s done ===========--------\n",m_module_name);
+  printf("---===== Import module %s done\n",m_module_name);
   m_py_func = PyObject_GetAttrString(m_py_module, m_function_name);
 
   if (m_py_func && PyCallable_Check(m_py_func))
   {
-    printf("-----===== Initialized python and the module ====-----\n");
+    printf("---===== Initialized python and the module\n");
   }
   else
   {
-    printf("--------========= ERROR : Could not load %s in %s. Please check if the function signature matches specification\n",m_module_name,m_function_name); 
+    printf("---===== ERROR : PyRunner::initialize_python Could not load %s in %s. Please check if the function signature matches specification\n",m_module_name,m_function_name); 
     print_py_error_and_rethrow();
   }
   return 0;
@@ -135,7 +135,7 @@ int PyRunner::analyze_frame(std::vector<int> types,
     if (!m_py_module)
     {
         PyErr_Print();
-        fprintf(stderr,"import %s failed. See for an error message above\n",m_module_name);
+        fprintf(stderr,"---===== ERROR: PyRunner::analyze_frame Import %s failed. See for an error message above\n",m_module_name);
         result = -1;
     }
     else
@@ -182,7 +182,7 @@ int PyRunner::analyze_frame(std::vector<int> types,
         }
         else
         {
-            fprintf(stderr,"Python function %s is not found in %s\n",m_function_name, m_module_name);
+            fprintf(stderr,"---===== ERROR: PyRunner::analyze_frame Python function %s is not found in %s\n",m_function_name, m_module_name);
             result = -2;
             print_py_error_and_rethrow();
         }
@@ -239,7 +239,7 @@ int PyRunner::extract_frame(char* file_path,
     if (!m_py_module)
     {
         PyErr_Print();
-        fprintf(stderr,"import %s failed. See for an error message above\n",m_module_name);
+        fprintf(stderr,"---===== ERROR: PyRunner::extract_frame Import %s failed. See for an error message above\n",m_module_name);
         result = -1;
     }
     else
@@ -261,7 +261,7 @@ int PyRunner::extract_frame(char* file_path,
             if (py_return != NULL)
             {
                 int num = PyList_Size(py_return);
-                printf("Result of call: %d\n", num);
+                printf("---===== Pyrunner::extract_frame Result of call: %d\n", num);
                 if (PyList_Check(py_return))
                 {
                     if (PyList_Size(py_return) == 7)
@@ -272,7 +272,7 @@ int PyRunner::extract_frame(char* file_path,
                         PyObject *py_y_cords = PyList_GetItem(py_return, 2);
                         PyObject *py_z_cords = PyList_GetItem(py_return, 3);
                         int ret_natoms = PyList_Size(py_types);
-                        printf("PyRunner::extract_frame Number of returned atoms : %d\n", ret_natoms);
+                        printf("---===== PyRunner::extract_frame Number of returned atoms : %d\n", ret_natoms);
                         std::vector<int> types = listToVector<int>(py_types);
                         std::vector<double> x_cords = listToVector<double>(py_x_cords);
                         std::vector<double> y_cords = listToVector<double>(py_y_cords);
@@ -321,7 +321,7 @@ int PyRunner::extract_frame(char* file_path,
                         else 
                         {
                             result = -2;
-                            fprintf(stderr, "ERROR: PyRunner::extract_frame box tupple returned is wrong format\n");
+                            fprintf(stderr, "---===== ERROR: PyRunner::extract_frame box tupple returned is wrong format\n");
                         }
 
                         int timestep = 0;
@@ -350,12 +350,12 @@ int PyRunner::extract_frame(char* file_path,
                     else 
                     {
                         result = -2;
-                        fprintf(stderr,"Python function %s return a list under wrong format in %s\n",m_function_name, m_module_name);
+                        fprintf(stderr,"---===== ERROR: PyRunner::extract_frame Python function %s return a list under wrong format in %s\n",m_function_name, m_module_name);
                     }
                 }
                 else
                 {
-                    fprintf(stderr,"Python function %s return not a list in %s\n",m_function_name, m_module_name);
+                    fprintf(stderr,"---===== ERROR: PyRunner::extract_frame Python function %s return not a list in %s\n",m_function_name, m_module_name);
                     result = -2;
                 }
                 Py_DECREF(py_return);
@@ -363,12 +363,12 @@ int PyRunner::extract_frame(char* file_path,
             else
             {
                 result = -2;
-                fprintf(stderr,"Python function %s return NULL in %s\n",m_function_name, m_module_name);
+                fprintf(stderr,"---===== ERROR: PyRunner::extract_frame Python function %s return NULL in %s\n",m_function_name, m_module_name);
             }
         }
         else
         {
-            fprintf(stderr,"Python function %s is not found in %s\n",m_function_name, m_module_name);
+            fprintf(stderr,"---===== ERROR: PyRunner::extract_frame Python function %s is not found in %s\n",m_function_name, m_module_name);
             result = -2;
         }  
     }

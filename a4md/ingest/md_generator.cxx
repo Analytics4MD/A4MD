@@ -19,7 +19,7 @@ void MDGenerator::run()
 {
     for (auto step = 0; step < m_total_chunks; step++)
     {
-        printf("MDGenerator::run() --> Step = %d\n", step);
+        printf("---===== MDGenerator::run() --> Step = %d\n", step);
         m_chunk_stager.stage_chunks(step, step);
         std::this_thread::sleep_for(std::chrono::milliseconds(m_delay_ms));
     }

@@ -3,6 +3,8 @@
 #include "ims_reader.h"
 #include "mpi.h"
 #include <decaf/decaf.hpp>
+#include <bredala/data_model/pconstructtype.h>
+#include <bredala/data_model/arrayfield.hpp>
 
 class DecafReader : public IMSReader
 {
@@ -10,15 +12,15 @@ class DecafReader : public IMSReader
         decaf::Decaf* m_decaf;
         std::string m_json_file;
         unsigned int m_total_chunks;
+        bool initialized = false;
 #ifdef BUILT_IN_PERF
         double m_total_data_read_time_ms;
         double m_total_chunk_read_time_ms;
         double m_total_reader_idle_time_ms;
         double m_total_deser_time_ms;
+        double *m_step_data_read_time_ms;
         double *m_step_chunk_read_time_ms;
         double *m_step_reader_idle_time_ms;
-        double *m_step_size_read_time_ms;
-        double *m_step_between_read_time_ms;
         double *m_step_deser_time_ms;
 #endif
 #ifdef COUNT_LOST_FRAMES
@@ -31,6 +33,7 @@ class DecafReader : public IMSReader
         MPI_Comm m_gcomm;
     public:
         DecafReader(std::string json_file, unsigned long int total_chunks, MPI_Comm comm);
+        DecafReader(decaf::Decaf* decaf, unsigned long int total_chunks, MPI_Comm comm);
         ~DecafReader();
         std::vector<Chunk*> get_chunks(unsigned long int chunks_from, unsigned long int chunks_to) override;
 

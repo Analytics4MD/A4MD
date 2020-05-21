@@ -18,7 +18,7 @@ MDAnalyzer::~MDAnalyzer()
 
 void MDAnalyzer::analyze(Chunk* chunk)
 {
-    printf("MDAnalyzer::analyzer() --> Analyze chunk\n");
+    printf("---===== MDAnalyzer::analyzer() --> Analyze chunk\n");
     MDChunk *plmdchunk = dynamic_cast<MDChunk *>(chunk);
     //printf("Printing typecasted chunk\n");
     //chunk->print();
@@ -59,6 +59,6 @@ void MDAnalyzer::analyze(Chunk* chunk)
 
 void MDAnalyzer::free_chunk(Chunk* chunk)
 {
-    printf("MDAnalyzer::free() --> Free memory of MDChunk\n");
+    printf("---===== MDAnalyzer::free() --> Free memory of MDChunk\n");
     delete chunk;
 }

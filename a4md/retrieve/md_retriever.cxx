@@ -18,7 +18,7 @@ MDRetriever::~MDRetriever()
 
 void MDRetriever::run()
 {
-    printf("---==== Entering MDRetriever::run() n_frames : %d window width : %d\n",m_n_frames, m_n_window_width);
+    printf("---===== MDRetriever::run() n_frames : %d window width : %d\n",m_n_frames, m_n_window_width);
     for(int chunk_id=m_n_window_width; chunk_id<m_n_frames+m_n_window_width; chunk_id+=m_n_window_width)
     {
         //TAU_DYNAMIC_TIMER_START("retriever_step");
