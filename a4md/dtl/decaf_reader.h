@@ -1,12 +1,12 @@
 #ifndef __DECAF_READER_H__
 #define __DECAF_READER_H__
-#include "ims_reader.h"
+#include "chunk_reader.h"
 #include "mpi.h"
 #include <decaf/decaf.hpp>
 #include <bredala/data_model/pconstructtype.h>
 #include <bredala/data_model/arrayfield.hpp>
 
-class DecafReader : public IMSReader
+class DecafReader : public ChunkReader
 {
     private:
         decaf::Decaf* m_decaf;
@@ -35,7 +35,7 @@ class DecafReader : public IMSReader
         DecafReader(std::string json_file, unsigned long int total_chunks, MPI_Comm comm);
         DecafReader(decaf::Decaf* decaf, unsigned long int total_chunks, MPI_Comm comm);
         ~DecafReader();
-        std::vector<Chunk*> get_chunks(unsigned long int chunks_from, unsigned long int chunks_to) override;
+        std::vector<Chunk*> read_chunks(unsigned long int chunks_from, unsigned long int chunks_to) override;
 
 };
 #endif

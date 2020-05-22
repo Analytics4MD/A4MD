@@ -15,17 +15,19 @@ int main(int argc, const char** argv)
 {
     MPI_Init(NULL,NULL);
     printf("---======== In Generator::main()\n");
-    if (argc != 7)
+    if (argc != 9)
     {
-        fprintf(stderr, "ERROR: ./generator py_path py_func file_path n_frames n_atoms delay_ms\n"); 
+        fprintf(stderr, "ERROR: ./generator client_id group_id py_path py_func file_path n_frames n_atoms delay_ms\n"); 
         return -1;
     }
-    std::string py_path((char*)argv[1]);
-    std::string py_func((char*)argv[2]);
-    std::string file_path((char*)argv[3]);
-    int n_frames = std::stoi(argv[4]);
-    int n_atoms = std::stoi(argv[5]);
-    int n_delay_ms = std::stoi(argv[6]);
+    int client_id = atoi(argv[1]);
+    int group_id = atoi(argv[2]);
+    std::string py_path((char*)argv[3]);
+    std::string py_func((char*)argv[4]);
+    std::string file_path((char*)argv[5]);
+    int n_frames = std::stoi(argv[6]);
+    int n_atoms = std::stoi(argv[7]);
+    int n_delay_ms = std::stoi(argv[8]);
     unsigned long int total_chunks = n_frames;
     std::size_t module_start = py_path.find_last_of("/");
     std::size_t module_end = py_path.rfind(".py");
@@ -42,31 +44,29 @@ int main(int argc, const char** argv)
     printf("Python script name : %s\n", py_name.c_str());
     printf("Python function: %s\n", py_func.c_str());
 
-    IMSReader *ims_reader;
+    ChunkReader *chunk_reader;
     PyRunner *py_runner;
     if (reader_type == "pdb")
     {
         py_runner = new PyRunner((char*)py_name.c_str(), 
                                            (char*)py_func.c_str(),
                                            (char*)py_dir.c_str());
-        ims_reader = new PDBChunker((*py_runner), (char*)file_path.c_str(), 0, n_atoms);
+        chunk_reader = new PDBChunker((*py_runner), (char*)file_path.c_str(), 0, n_atoms);
     }
     else 
     {
         throw NotImplementedException("Reader type is not implemented\n");
     }
-    ChunkReader *chunk_reader = new ChunkReader(*ims_reader);
 
-    IMSWriter *ims_writer;
+    ChunkWriter *chunk_writer;
     if (writer_type == "dataspaces") 
     {
-        ims_writer = new DataSpacesWriter(1, 1, total_chunks, MPI_COMM_WORLD);
+        chunk_writer = new DataSpacesWriter(client_id, group_id, total_chunks, MPI_COMM_WORLD);
     }
     else 
     {
         throw NotImplementedException("Writer type is not implemented\n");
     }
-    ChunkWriter *chunk_writer = new ChunkWriter(*ims_writer);
 
     ChunkStager *chunk_stager = new MDStager(*chunk_reader, *chunk_writer);
     Ingester *ingester = new MDGenerator(*chunk_stager, total_chunks, n_delay_ms);
@@ -82,8 +82,6 @@ int main(int argc, const char** argv)
     delete chunk_stager;
     delete chunk_writer;
     delete chunk_reader;
-    delete ims_writer;
-    delete ims_reader;
     delete py_runner;
 
     MPI_Finalize();
