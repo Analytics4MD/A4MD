@@ -84,8 +84,8 @@ TEST_CASE( "DS Write-Read Test", "[dtl]" )
 {
     pid_t child_pid;
     extern char **environ;
-    char *cmd = "dataspaces_server -s 1 -c 1";
-    char *argv[] = {"sh", "-c", cmd, NULL};
+    char *cmd = (char*)"dataspaces_server -s 1 -c 1";
+    char *argv[] = {(char*)"sh", (char*)"-c", cmd, NULL};
     int status;
 
     ofstream file_("dataspaces.conf");

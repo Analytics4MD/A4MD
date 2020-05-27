@@ -16,7 +16,7 @@ class PyRunner
     public:
         PyRunner(char* module_name,
 				 char* function_name,
-				 char* py_path = "");
+				 char* py_path = (char*)"");
         ~PyRunner();
         
         int analyze_frame(std::vector<int> types,
