@@ -6,12 +6,14 @@
 class PDBChunker : public ChunkReader
 {
     private:
-        PyRunner & m_py_runner;
-        char* m_file_path;
+        PyRunner *m_py_runner;
+        std::string m_trajectory_path;
+        int m_num_atoms;
         int m_position;
-        int m_natoms;
+        bool external = false;
     public:
-        PDBChunker(PyRunner & py_runner, char* file_path, int position, int natoms = 0);
+        PDBChunker(char* module_name, char* function_name, char* py_path, char* trajectory_path, int num_atoms, int position = 0);
+        PDBChunker(PyRunner *py_runner);
         ~PDBChunker();
         // int extract_chunk();
         int get_position();
