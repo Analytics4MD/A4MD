@@ -30,7 +30,7 @@ set_target_properties(a4md_cmn PROPERTIES
     POSITION_INDEPENDENT_CODE ON
 )
 
-target_link_libraries(a4md_cmn ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${TAU_LIBRARIES})
+target_link_libraries(a4md_cmn ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${PYTHON_LIBRARIES} ${TAU_LIBRARIES})
 get_target_property(A4MD_CMN_LIBRARIES a4md_cmn LINK_LIBRARIES)
 message(STATUS "A4MD_CMN_LIBRARIES = ${A4MD_CMN_LIBRARIES}")
 
