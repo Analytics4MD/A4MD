@@ -1,20 +1,28 @@
 #include "pdb_chunker.h"
+#include "md_runner.h"
 
-PDBChunker::PDBChunker(PyRunner & py_runner,
-                       char* file_path,
-                       int position,
-                       int natoms)
-: m_py_runner(py_runner),
-    m_file_path(file_path),
-    m_position(position),
-    m_natoms(natoms)
+PDBChunker::PDBChunker(char* module_name, char* function_name, char* py_path, char* trajectory_path, int num_atoms, int position)
+: m_trajectory_path(trajectory_path),
+  m_num_atoms(num_atoms),
+  m_position(position)
 {
-    printf("---===== Created PDBChunker with file_path = %s, position = %d and natoms = %d\n", m_file_path, m_position, m_natoms);
-    // m_next_id = 0;
+    m_py_runner = new MDRunner(module_name, function_name, py_path, trajectory_path, num_atoms, position);
+    printf("---===== Initialized PDBChunker with trajectory_path = %s, num_atoms = %d and position = %d\n", m_trajectory_path.c_str(), m_num_atoms, m_position);
+}
+
+PDBChunker::PDBChunker(PyRunner *py_runner)
+: m_py_runner(py_runner)
+{
+    external = true;
+    printf("---===== Initialized PDBChunker with external PyRunner\n");
 }
 
 PDBChunker::~PDBChunker()
 {
+    if (!external)
+    {
+        delete m_py_runner;
+    }
     printf("---===== Finalized PDBChunker\n");
 }
 
@@ -40,21 +48,21 @@ int PDBChunker::get_position()
 
 std::vector<Chunk*> PDBChunker::read_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to)
 {
-    printf("---===== PDBChunker::get_chunks --> Get chunks from chunk_id_from = %lu to chunk_id_to = %lu\n", chunk_id_from, chunk_id_to);
+    printf("---===== PDBChunker::read_chunks --> Get chunks from chunk_id_from = %lu to chunk_id_to = %lu\n", chunk_id_from, chunk_id_to);
     std::vector<Chunk*> chunks;
     for (unsigned long int chunk_id = chunk_id_from; chunk_id <= chunk_id_from; chunk_id++)
     {
         Chunk* chunk = nullptr;
-        int error = m_py_runner.extract_frame(m_file_path, chunk_id, m_position, &chunk, m_natoms);
-        if (error == 0 && chunk != nullptr)
+        chunk = m_py_runner->output_chunk(chunk_id);
+        if (chunk != nullptr)
         {
-            printf("---===== PDBChunker::get_chunks --> Successfully extract frame with chunk_id = %lu\n", chunk_id);
+            printf("---===== PDBChunker::read_chunks --> Successfully extract frame with chunk_id = %lu\n", chunk_id);
             chunks.push_back(chunk);
         }
         else
         {
-            fprintf(stderr, "---===== ERROR: PDBChunker::get_chunks --> Failed to extract frame");
-            std::exit(EXIT_FAILURE);
+            fprintf(stderr, "---===== ERROR: PDBChunker::read_chunks --> Failed to extract frame");
+            return chunks;
         }
     }
     return chunks;

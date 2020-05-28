@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include "mpi.h"
 #include "dataspaces_reader.h"
+#include "md_runner.h"
 #include "md_analyzer.h"
 #include "md_retriever.h"
 #include "timer.h"
@@ -54,7 +55,7 @@ int main (int argc, const char** argv)
         printf("Python script name : %s\n", py_name.c_str());
         printf("Python function: %s\n", py_func.c_str());
 
-        py_runner = new PyRunner((char*)py_name.c_str(), (char*)py_func.c_str(), (char*)py_dir.c_str());
+        py_runner = new MDRunner((char*)py_name.c_str(), (char*)py_func.c_str(), (char*)py_dir.c_str());
         chunk_analyzer = new MDAnalyzer(*chunk_reader, *py_runner);
         int n_frames = atoi(argv[5]);
         int n_window_width = 1;

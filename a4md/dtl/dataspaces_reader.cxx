@@ -1,6 +1,7 @@
 #include "dataspaces_reader.h"
 #include "dataspaces.h"
 #include "chunk_serializer.h"
+#include <sstream>
 #if defined(BUILT_IN_PERF) || defined(COUNT_LOST_FRAMES)
 #include "timer.h"
 #endif
@@ -14,10 +15,6 @@
 DataSpacesReader::DataSpacesReader(int client_id, int group_id, unsigned long int total_chunks, MPI_Comm comm)
 : m_client_id(client_id),
   m_group_id(group_id),
-  m_size_lock_name("lock_size"),
-  m_chunk_lock_name("lock_chunk"),
-  m_size_var_name("var_size"),
-  m_chunk_var_name("var_chunk"),
 #ifdef BUILT_IN_PERF
   m_total_data_read_time_ms(0.0),
   m_total_chunk_read_time_ms(0.0),
@@ -38,7 +35,7 @@ DataSpacesReader::DataSpacesReader(int client_id, int group_id, unsigned long in
     m_step_reader_idle_time_ms = new double [m_total_chunks];
     m_step_size_read_time_ms = new double [m_total_chunks];
     m_step_between_read_time_ms = new double [m_total_chunks];
-    m_step_deser_time_ms = new double[m_total_chunks];
+    m_step_deser_time_ms = new double [m_total_chunks];
 #endif
     m_gcomm = comm;
     MPI_Barrier(m_gcomm);
@@ -47,9 +44,13 @@ DataSpacesReader::DataSpacesReader(int client_id, int group_id, unsigned long in
 
     // Append group id to lock names, var names
     std::string group_str = std::to_string(group_id); 
+    m_size_lock_name = "lock_size";
     m_size_lock_name.append(group_str);
+    m_chunk_lock_name = "lock_chunk";
     m_chunk_lock_name.append(group_str);
+    m_size_var_name = "var_size";
     m_size_var_name.append(group_str);
+    m_chunk_var_name = "var_chunk";
     m_chunk_var_name.append(group_str);
 
     // Initalize DataSpaces
@@ -58,6 +59,7 @@ DataSpacesReader::DataSpacesReader(int client_id, int group_id, unsigned long in
     // Application ID: Unique idenitifier (integer) for application
     // Pointer to the MPI Communicator, allows DS Layer to use MPI barrier func
     // Addt'l parameters: Placeholder for future arguments, currently NULL.
+    printf("---===== Initializing dpsaces client id %d\n", m_client_id);
     dspaces_init(nprocs, m_client_id, &m_gcomm, NULL);
     printf("---===== Initialized dspaces client id #%d in DataSpacesReader, total_chunks: %u \n", m_client_id, m_total_chunks);
 }
@@ -65,7 +67,7 @@ DataSpacesReader::DataSpacesReader(int client_id, int group_id, unsigned long in
 std::vector<Chunk*> DataSpacesReader::read_chunks(unsigned long int chunks_from, unsigned long int chunks_to)
 {
     unsigned long int chunk_id;
-    printf("---===== DataSpacesReader::get_chunks with chunk_from %lu, chunk_to %lu\n",chunks_from, chunks_to);
+    printf("---===== DataSpacesReader::read_chunks with chunk_from %lu, chunk_to %lu\n",chunks_from, chunks_to);
     std::vector<Chunk*> chunks; 
     MPI_Barrier(m_gcomm);
     int ndim = 1;

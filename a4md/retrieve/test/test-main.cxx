@@ -2,7 +2,7 @@
 
 #include <catch2/catch.hpp>
 #include <vector>
-#include "py_runner.h"
+#include "md_runner.h"
 
 TEST_CASE( "PyRunner ModuleLoadException Tests", "[retrieve]" )
 {
@@ -10,14 +10,15 @@ TEST_CASE( "PyRunner ModuleLoadException Tests", "[retrieve]" )
     std::string f("analyze");
     char* module_name = (char*)m.c_str();
     char* function_name = (char*)f.c_str();
+    char* python_path = (char*)"";
     bool caught_py_exception = false;
     try
     {
-      PyRunner runner = PyRunner(module_name,function_name);
+        MDRunner runner = MDRunner(module_name,function_name,python_path);
     }
     catch(PythonModuleException ex)
     {
-      caught_py_exception = true;
+        caught_py_exception = true;
     }
     catch(...)
     {
@@ -32,38 +33,31 @@ TEST_CASE( "PyRunner Tests", "[retrieve]" )
     std::string f("analyze");
     char* module_name = (char*)m.c_str();
     char* function_name = (char*)f.c_str();
+    char* python_path = (char*)"";
     bool caught_py_exception = false;
     char cwd[256];
     if (getcwd(cwd, sizeof(cwd)) == NULL)
-      perror("getcwd() error");
+        perror("getcwd() error");
     else
-      printf("current working directory: %s \n", cwd);
+        printf("current working directory: %s \n", cwd);
 
 
     try
     {
-      PyRunner runner = PyRunner(module_name,function_name);
-      std::vector<int> types = { 0, 0 ,0 };
-      std::vector<double> x_positions = { 1.0, 2.0, 3.0 };
-      double low, high;
-      low = 0.0;
-      high = 10.0;
-      int step = 1;
-      runner.analyze_frame(types,
-                             x_positions,
-                             x_positions,
-                             x_positions,
-                             low,
-                             high,
-                             low,
-                             high,
-                             low,
-                             high,
-                             step);
+        MDRunner runner = MDRunner(module_name,function_name,python_path);
+        std::vector<int> types = { 0, 0 ,0 };
+        std::vector<double> x_positions = { 1.0, 2.0, 3.0 };
+        double low, high;
+        low = 0.0;
+        high = 10.0;
+        int step = 1;
+        Chunk *chunk = new MDChunk(0,step,types,x_positions,x_positions,x_positions,low,low,low,high,high,high);
+        runner.input_chunk(chunk);
+        delete chunk;
     }
     catch(PythonModuleException ex)
     {
-      caught_py_exception = true;
+        caught_py_exception = true;
     }
     catch(...)
     {

@@ -1,5 +1,6 @@
 set(_a4md_cmn_sources_
         py_runner.cxx
+        md_runner.cxx
         chunk_serializer.cxx
         )
 set(_a4md_cmn_headers_
@@ -8,6 +9,7 @@ set(_a4md_cmn_headers_
         serializable_chunk.h
         exceptions.h
         py_runner.h
+        md_runner.h
         timer.h
         chunk_serializer.h
         )
