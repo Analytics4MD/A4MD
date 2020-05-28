@@ -1,9 +1,9 @@
 #include <unistd.h>
 #include "mpi.h"
 #include "dataspaces_reader.h"
-#include "md_runner.h"
 #include "md_analyzer.h"
 #include "md_retriever.h"
+#include "md_stager.h"
 #include "timer.h"
 
 std::string analyzer_name = "md_analyzer";
@@ -17,15 +17,16 @@ int main (int argc, const char** argv)
     }
     MPI_Init(NULL,NULL);
     printf("---======== In Retriever::main()\n");
+
+    int n_frames = atoi(argv[5]);
+    unsigned long int total_chunks = n_frames;// +1 for the call before simulation starts
     
     ChunkReader *chunk_reader;
     if (reader_type == "dataspaces")
     {
         int client_id = atoi(argv[1]);
         int group_id = atoi(argv[2]);
-        int n_frames = atoi(argv[5]);
         int n_analysis_stride = 1;
-        unsigned long int total_chunks = n_frames;// +1 for the call before simulation starts
         chunk_reader = new DataSpacesReader(2, 1, total_chunks, MPI_COMM_WORLD);
     }
     else
@@ -33,9 +34,7 @@ int main (int argc, const char** argv)
         throw NotImplementedException("Reader type is not implemented");
     }
 
-    PyRunner *py_runner;
-    ChunkAnalyzer *chunk_analyzer;
-    Retriever *retriever;
+    ChunkWriter* chunk_writer;
     if(analyzer_name == "md_analyzer")
     {
         std::string py_path((char*)argv[3]);
@@ -55,17 +54,16 @@ int main (int argc, const char** argv)
         printf("Python script name : %s\n", py_name.c_str());
         printf("Python function: %s\n", py_func.c_str());
 
-        py_runner = new MDRunner((char*)py_name.c_str(), (char*)py_func.c_str(), (char*)py_dir.c_str());
-        chunk_analyzer = new MDAnalyzer(*chunk_reader, *py_runner);
-        int n_frames = atoi(argv[5]);
-        int n_window_width = 1;
-        printf("Received n_frames = %i from user in Retriever\n",n_frames);
-        retriever = new MDRetriever(*chunk_analyzer, n_frames, n_window_width);
+        chunk_writer = new MDAnalyzer((char*)py_name.c_str(), (char*)py_func.c_str(), (char*)py_dir.c_str());
     }
     else
     {
         throw NotImplementedException("Analyzer type is not implemented");
     }
+
+    ChunkStager *chunk_stager = new MDStager(*chunk_reader, *chunk_writer);
+    int n_window_width = 1;
+    Retriever *retriever = new MDRetriever(*chunk_stager, total_chunks, n_window_width);
 
     TimeVar t_start = timeNow();
     retriever->run();
@@ -75,8 +73,8 @@ int main (int argc, const char** argv)
 
     // Free memory
     delete retriever;
-    delete chunk_analyzer;
-    delete py_runner;
+    delete chunk_stager;
+    delete chunk_writer;
     delete chunk_reader;
 
     MPI_Finalize();

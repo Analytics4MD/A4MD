@@ -1,14 +1,13 @@
 #ifndef __RETRIEVER_H__
 #define __RETRIEVER_H__
-#include "chunk_analyzer.h"
-
+#include "chunk_stager.h"
 
 class Retriever
 {
     protected:
-        ChunkAnalyzer & m_chunk_analyzer;
+        ChunkStager & m_chunk_stager;
     public:
-        Retriever(ChunkAnalyzer & chunk_analyzer);
+        Retriever(ChunkStager & chunk_stager);
         virtual ~Retriever();
         virtual void run() = 0;
 };

@@ -1,15 +1,15 @@
 set(_a4md_ingest_sources_
         ingester.cxx
         md_generator.cxx
-        chunk_stager.cxx
-        md_stager.cxx
+        # chunk_stager.cxx
+        # md_stager.cxx
 		pdb_chunker.cxx
 		)
 set(_a4md_ingest_headers_
         ingester.h
         md_generator.h
-        chunk_stager.h
-        md_stager.h
+        # chunk_stager.h
+        # md_stager.h
 		pdb_chunker.h
         )
 

@@ -1,65 +1,26 @@
 #include "md_analyzer.h"
+#include "md_runner.h"
 #ifdef TAU_PERF
 #include <TAU.h>
 #endif
 
-MDAnalyzer::MDAnalyzer(ChunkReader & chunk_reader,
-                                 PyRunner & py_runner)
-: ChunkAnalyzer(chunk_reader),
-  m_py_runner(py_runner)
+MDAnalyzer::MDAnalyzer(char* module_name, char* function_name, char* py_path)
 {
-    printf("---===== Initialized MDAnalyzer with %s chunk_reader and %s py_runner\n", typeid(m_chunk_reader).name(), typeid(m_py_runner).name());
+    m_py_runner = new MDRunner(module_name, function_name, py_path);
+    printf("---===== Initialized MDAnalyzer\n");
 }
 
 MDAnalyzer::~MDAnalyzer()
 {
+    delete m_py_runner;
     printf("---===== Finalized MDAnalyzer\n");
 }
 
-void MDAnalyzer::analyze(Chunk* chunk)
+void MDAnalyzer::write_chunks(std::vector<Chunk*> chunks)
 {
-    printf("---===== MDAnalyzer::analyzer() --> Analyze chunk\n");
-    // MDChunk *plmdchunk = dynamic_cast<MDChunk *>(chunk);
-    // //printf("Printing typecasted chunk\n");
-    // //chunk->print();
-    // auto x_positions = plmdchunk->get_x_positions();
-    // auto y_positions = plmdchunk->get_y_positions();
-    // auto z_positions = plmdchunk->get_z_positions();
-    // auto types = plmdchunk->get_types();
-
-    // //for (int i=0;i< types_vector.size(); i++)
-    // //    printf("type: %i ",types[i]);
-    // //printf("\n----=======Positions\n");
-    // //for (auto pos:positions)
-    // //    printf("%f %f %f \n",std::get<0>(pos), std::get<1>(pos),std::get<2>(pos));
-    // //printf("----=======Positions end\n");
-    // double lx, ly, lz, xy, xz, yz; //xy, xz, yz are tilt factors 
-    // lx = plmdchunk->get_box_lx();
-    // ly = plmdchunk->get_box_ly();
-    // lz = plmdchunk->get_box_lz();
-    // xy = plmdchunk->get_box_xy(); // 0 for orthorhombic
-    // xz = plmdchunk->get_box_xz(); // 0 for orthorhombic
-    // yz = plmdchunk->get_box_yz(); // 0 for orthorhombic
-    // int step = plmdchunk->get_timestep();
-#ifdef TAU_PERF
-    TAU_TRACK_MEMORY_FOOTPRINT_HERE();
-#endif
-    // m_py_runner.analyze_frame(types,
-    //                             x_positions,
-    //                             y_positions,
-    //                             z_positions,
-    //                             lx,
-    //                             ly,
-    //                             lz,
-    //                             xy,
-    //                             xz,
-    //                             yz,
-    //                             step);
-    m_py_runner.input_chunk(chunk);
-}
-
-void MDAnalyzer::free_chunk(Chunk* chunk)
-{
-    printf("---===== MDAnalyzer::free() --> Free memory of MDChunk\n");
-    delete chunk;
+    printf("---===== MDAnalyzer::write_chunks() Analyze MDChunks\n");
+    for(Chunk* chunk:chunks)
+    {
+        m_py_runner->input_chunk(chunk);
+    }
 }

@@ -1,17 +1,16 @@
 #ifndef __MD_ANALYZER_H__
 #define __MD_ANALYZER_H__
-#include "chunk_analyzer.h"
+#include "chunk_writer.h"
 #include "py_runner.h"
 
 
-class MDAnalyzer : public ChunkAnalyzer
+class MDAnalyzer : public ChunkWriter
 {
     private:
-        PyRunner & m_py_runner;
+        PyRunner *m_py_runner;
     public:
-        MDAnalyzer(ChunkReader & chunk_reader, PyRunner & py_runner);
+        MDAnalyzer(char* module_name, char* function_name, char* py_path = (char*)"");
         ~MDAnalyzer();
-        void analyze(Chunk* chunk) override;
-        void free_chunk(Chunk* chunk) override;
+        void write_chunks(std::vector<Chunk*> chunks) override;
 };
 #endif
