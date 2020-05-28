@@ -3,8 +3,8 @@ set(_a4md_dtl_sources_
     dataspaces_reader.cxx
     # decaf_writer.cxx
     # decaf_reader.cxx
-    chunk_writer.cxx
-    chunk_reader.cxx
+    # chunk_writer.cxx
+    # chunk_reader.cxx
     ims_reader.cxx
     ims_writer.cxx
     )
@@ -13,8 +13,8 @@ set(_a4md_dtl_headers_
     dataspaces_reader.h
     # decaf_writer.h
     # decaf_reader.h
-    chunk_writer.h
-    chunk_reader.h
+    # chunk_writer.h
+    # chunk_reader.h
     ims_writer.h
     ims_reader.h
     )

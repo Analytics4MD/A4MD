@@ -2,6 +2,10 @@ set(_a4md_cmn_sources_
         py_runner.cxx
         md_runner.cxx
         chunk_serializer.cxx
+        chunk_writer.cxx
+        chunk_reader.cxx
+        chunk_stager.cxx
+        md_stager.cxx
         )
 set(_a4md_cmn_headers_
         chunk.h
@@ -12,6 +16,10 @@ set(_a4md_cmn_headers_
         md_runner.h
         timer.h
         chunk_serializer.h
+        chunk_writer.h
+        chunk_reader.h
+        chunk_stager.h
+        md_stager.h
         )
 
 add_library(a4md_cmn ${_a4md_cmn_sources_})
