@@ -1,7 +1,6 @@
 #include <unistd.h>
 #include "mpi.h"
 #include "dataspaces_reader.h"
-// #include "md_runner.h"
 #include "md_analyzer.h"
 #include "md_retriever.h"
 #include "md_stager.h"
@@ -35,10 +34,7 @@ int main (int argc, const char** argv)
         throw NotImplementedException("Reader type is not implemented");
     }
 
-    // PyRunner *py_runner;
-    // ChunkAnalyzer *chunk_analyzer;
     ChunkWriter* chunk_writer;
-    // Retriever *retriever;
     if(analyzer_name == "md_analyzer")
     {
         std::string py_path((char*)argv[3]);
@@ -58,14 +54,7 @@ int main (int argc, const char** argv)
         printf("Python script name : %s\n", py_name.c_str());
         printf("Python function: %s\n", py_func.c_str());
 
-        // py_runner = new MDRunner((char*)py_name.c_str(), (char*)py_func.c_str(), (char*)py_dir.c_str());
-        // chunk_analyzer = new MDAnalyzer(*chunk_reader, *py_runner);
         chunk_writer = new MDAnalyzer((char*)py_name.c_str(), (char*)py_func.c_str(), (char*)py_dir.c_str());
-
-        // int n_frames = atoi(argv[5]);
-        
-        // printf("Received n_frames = %i from user in Retriever\n",n_frames);
-        // retriever = new MDRetriever(*chunk_analyzer, n_frames, n_window_width);
     }
     else
     {
@@ -84,9 +73,7 @@ int main (int argc, const char** argv)
 
     // Free memory
     delete retriever;
-    // delete chunk_analyzer;
     delete chunk_stager;
-    // delete py_runner;
     delete chunk_writer;
     delete chunk_reader;
 

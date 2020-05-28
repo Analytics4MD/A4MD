@@ -1,7 +1,6 @@
 #include <string>
 
 #include "mpi.h"
-#include "md_runner.h"
 #include "pdb_chunker.h"
 #include "dataspaces_writer.h"
 #include "md_stager.h"
@@ -45,13 +44,8 @@ int main(int argc, const char** argv)
     printf("Python function: %s\n", py_func.c_str());
 
     ChunkReader *chunk_reader;
-    PyRunner *py_runner;
     if (reader_type == "pdb")
     {
-        // py_runner = new MDRunner((char*)py_name.c_str(), 
-        //                                    (char*)py_func.c_str(),
-        //                                    (char*)py_dir.c_str());
-        // chunk_reader = new PDBChunker((*py_runner), (char*)file_path.c_str(), 0, n_atoms);
         chunk_reader = new PDBChunker((char*)py_name.c_str(), (char*)py_func.c_str(), (char*)py_dir.c_str(), (char*)file_path.c_str(), n_atoms, 0);
     }
     else 
@@ -83,7 +77,6 @@ int main(int argc, const char** argv)
     delete chunk_stager;
     delete chunk_writer;
     delete chunk_reader;
-    delete py_runner;
 
     MPI_Finalize();
     return 0;
