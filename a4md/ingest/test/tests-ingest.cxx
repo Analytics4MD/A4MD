@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include "chunk.h"
-#include "py_runner.h"
+#include "md_runner.h"
 #include "pdb_chunker.h"
 
 TEST_CASE("PyRunner extract_frame Tests", "[ingest]")
@@ -15,14 +15,19 @@ TEST_CASE("PyRunner extract_frame Tests", "[ingest]")
     std::string py_path = "./a4md/ingest/test";
     std::string file_path = "./a4md/ingest/test/test.pdb";
 
-    PyRunner* py_runner = new PyRunner((char*)name.c_str(), 
-                                       (char*)func.c_str(),
-                                       (char*)py_path.c_str());
-    
     int position = 0;
+    int natoms = 0;
+    MDRunner* py_runner = new MDRunner((char*)name.c_str(), 
+                                       (char*)func.c_str(),
+                                       (char*)py_path.c_str(), 
+                                       (char*)file_path.c_str(), 
+                                       natoms, 
+                                       position);
+    
     Chunk* chunk;
     unsigned long int id = 0;
-    int result = py_runner->extract_frame((char*)file_path.c_str(), id, position, &chunk);
+    chunk = py_runner->output_chunk(id);
+    position = py_runner->get_position();
     printf("New position : %d\n", position);
 
     MDChunk *plmdchunk = dynamic_cast<MDChunk *>(chunk);
@@ -32,7 +37,7 @@ TEST_CASE("PyRunner extract_frame Tests", "[ingest]")
     auto types_vector = plmdchunk->get_types();
     int timestep = plmdchunk->get_timestep();
 
-    REQUIRE( result == 0 );
+    // REQUIRE( result == 0 );
     REQUIRE( position == 4851 );
     REQUIRE( x_positions.size() == y_positions.size() );
     REQUIRE( y_positions.size() == z_positions.size() );
@@ -48,12 +53,11 @@ TEST_CASE("PDBChunker Tests", "[ingest]")
     std::string py_path = "./a4md/ingest/test";
     std::string file_path = "./a4md/ingest/test/test.pdb";
 
-    PyRunner* py_runner = new PyRunner((char*)name.c_str(), 
-                                       (char*)func.c_str(),
-                                       (char*)py_path.c_str());
+    // PyRunner* py_runner = new MDRunner((char*)name.c_str(), 
+    //                                    (char*)func.c_str(),
+    //                                    (char*)py_path.c_str());
     
-    PDBChunker* pdb_chunker = new PDBChunker((*py_runner),
-                                             (char*)file_path.c_str(), 0 , 0);
+    PDBChunker* pdb_chunker = new PDBChunker((char*)name.c_str(), (char*)func.c_str(), (char*)py_path.c_str(), (char*)file_path.c_str(), 0 , 0);
     //unsigned long int id = 0;
     // int result = pdb_chunker->extract_chunk();
     std::vector<Chunk*> chunk_vector = pdb_chunker->read_chunks(1,1);
@@ -83,12 +87,12 @@ TEST_CASE("Knob nAtoms Tests", "[ingest]")
     std::string py_path = "./a4md/ingest/test";
     std::string file_path = "./a4md/ingest/test/test.pdb";
 
-    PyRunner* py_runner = new PyRunner((char*)name.c_str(), 
-                                       (char*)func.c_str(),
-                                       (char*)py_path.c_str());
+    // PyRunner* py_runner = new MDRunner((char*)name.c_str(), 
+    //                                    (char*)func.c_str(),
+    //                                    (char*)py_path.c_str());
     
     int natoms = 100;
-    PDBChunker* pdb_chunker = new PDBChunker((*py_runner), (char*)file_path.c_str(), 0, natoms);
+    PDBChunker* pdb_chunker = new PDBChunker((char*)name.c_str(), (char*)func.c_str(), (char*)py_path.c_str(), (char*)file_path.c_str(), natoms, 0);
     // int result = pdb_chunker->extract_chunk();
     std::vector<Chunk*> chunk_vector = pdb_chunker->read_chunks(1,1);
     Chunk* chunk = chunk_vector.front();
@@ -103,9 +107,9 @@ TEST_CASE("Knob nAtoms Tests", "[ingest]")
     double box_lx = plmdchunk->get_box_lx();
     double box_ly = plmdchunk->get_box_ly();
     double box_lz = plmdchunk->get_box_lz();
-    double box_xy = plmdchunk->get_box_xy();
-    double box_yz = plmdchunk->get_box_yz();
-    double box_xz = plmdchunk->get_box_xz();
+    double box_hx = plmdchunk->get_box_hx();
+    double box_hy = plmdchunk->get_box_hy();
+    double box_hz = plmdchunk->get_box_hz();
     
     // REQUIRE( result == 0 );
     REQUIRE( chunk_vector.size() == 1 );
@@ -117,9 +121,9 @@ TEST_CASE("Knob nAtoms Tests", "[ingest]")
     REQUIRE( box_lx == 0.0 );
     REQUIRE( box_ly == 0.0 );
     REQUIRE( box_lz == 0.0 );
-    REQUIRE( box_xy == 0.0 );
-    REQUIRE( box_yz == 0.0 );
-    REQUIRE( box_xz == 0.0 );
+    REQUIRE( box_hx == 0.0 );
+    REQUIRE( box_hy == 0.0 );
+    REQUIRE( box_hz == 0.0 );
 }
 
 //int main(int argc, char* argv[])

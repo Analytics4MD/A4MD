@@ -29,9 +29,9 @@ class MDChunk : public Chunk
             ar & m_box_lx;
             ar & m_box_ly;
             ar & m_box_lz;
-            ar & m_box_xy;
-            ar & m_box_xz;
-            ar & m_box_yz;
+            ar & m_box_hx;
+            ar & m_box_hy;
+            ar & m_box_hz;
         }
         int m_timestep;
         std::vector<int> m_types;
@@ -41,9 +41,9 @@ class MDChunk : public Chunk
         double m_box_lx;
         double m_box_ly;
         double m_box_lz;
-        double m_box_xy;
-        double m_box_xz;
-        double m_box_yz;
+        double m_box_hx;
+        double m_box_hy;
+        double m_box_hz;
     public:
         MDChunk() : Chunk(){}
         MDChunk(const unsigned long int id,
@@ -55,9 +55,9 @@ class MDChunk : public Chunk
                   double box_lx,
                   double box_ly,
                   double box_lz,
-                  double box_xy,
-                  double box_xz,
-                  double box_yz) :
+                  double box_hx,
+                  double box_hy,
+                  double box_hz) :
                   Chunk(id),
                   m_timestep(timestep),
                   m_types(types),
@@ -67,9 +67,9 @@ class MDChunk : public Chunk
                   m_box_lx(box_lx),
                   m_box_ly(box_ly),
                   m_box_lz(box_lz),
-                  m_box_xy(box_xy),
-                  m_box_xz(box_xz),
-                  m_box_yz(box_yz)
+                  m_box_hx(box_hx),
+                  m_box_hy(box_hy),
+                  m_box_hz(box_hz)
         {
         } 
         ~MDChunk()
@@ -106,9 +106,9 @@ class MDChunk : public Chunk
         double get_box_lx(){ return m_box_lx; }
         double get_box_ly(){ return m_box_ly; }
         double get_box_lz(){ return m_box_lz; }
-        double get_box_xy(){ return m_box_xy; }
-        double get_box_xz(){ return m_box_xz; }
-        double get_box_yz(){ return m_box_yz; }
+        double get_box_hx(){ return m_box_hx; }
+        double get_box_hy(){ return m_box_hy; }
+        double get_box_hz(){ return m_box_hz; }
         double get_timestep(){ return m_timestep; }
 };
 

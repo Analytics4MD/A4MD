@@ -65,9 +65,9 @@ void ds_write_and_read()
       double recieved_lx = recieved_chunk->get_box_lx();
       double recieved_ly = recieved_chunk->get_box_ly();
       double recieved_lz = recieved_chunk->get_box_lz();
-      double recieved_xy = recieved_chunk->get_box_xy(); // 0 for orthorhombic
-      double recieved_xz = recieved_chunk->get_box_xz(); // 0 for orthorhombic
-      double recieved_yz = recieved_chunk->get_box_yz(); // 0 for orthorhombic
+      double recieved_hx = recieved_chunk->get_box_hx(); // 0 for orthorhombic
+      double recieved_hy = recieved_chunk->get_box_hy(); // 0 for orthorhombic
+      double recieved_hz = recieved_chunk->get_box_hz(); // 0 for orthorhombic
       int recieved_step = recieved_chunk->get_timestep();
 
       REQUIRE( chunk->get_chunk_id() == recieved_chunk->get_chunk_id() );

@@ -5,7 +5,7 @@
 #include <sys/wait.h>
 #include <fstream>
 #include <errno.h>
-#include "py_runner.h"
+#include "md_runner.h"
 #include "pdb_chunker.h"
 
 
@@ -28,11 +28,10 @@ void ds_write_and_read()
     std::string py_path = "./a4md/ingest/test";
     std::string file_path = "./a4md/ingest/test/test.pdb";
 
-    PyRunner* py_runner = new PyRunner((char*)name.c_str(), 
-                                       (char*)func.c_str(),
-                                       (char*)py_path.c_str());
-    PDBChunker* pdb_chunker = new PDBChunker((*py_runner),
-                                             (char*)file_path.c_str(), 0);
+    // PyRunner* py_runner = new MDRunner((char*)name.c_str(), 
+    //                                    (char*)func.c_str(),
+    //                                    (char*)py_path.c_str());
+    PDBChunker* pdb_chunker = new PDBChunker((char*)name.c_str(), (char*)func.c_str(), (char*)py_path.c_str(), (char*)file_path.c_str(), 0, 0);
     //unsigned long int id = 0;
     // int result = pdb_chunker->extract_chunk();
     std::vector<Chunk*> chunk_vector = pdb_chunker->read_chunks(1, 1);
@@ -60,9 +59,9 @@ void ds_write_and_read()
         double recieved_lx = recieved_chunk->get_box_lx();
         double recieved_ly = recieved_chunk->get_box_ly();
         double recieved_lz = recieved_chunk->get_box_lz();
-        double recieved_xy = recieved_chunk->get_box_xy(); // 0 for orthorhombic
-        double recieved_xz = recieved_chunk->get_box_xz(); // 0 for orthorhombic
-        double recieved_yz = recieved_chunk->get_box_yz(); // 0 for orthorhombic
+        double recieved_hx = recieved_chunk->get_box_hx(); // 0 for orthorhombic
+        double recieved_hy = recieved_chunk->get_box_hy(); // 0 for orthorhombic
+        double recieved_hz = recieved_chunk->get_box_hz(); // 0 for orthorhombic
         int recieved_step = recieved_chunk->get_timestep();
         
         REQUIRE( chunk->get_chunk_id() == recieved_chunk->get_chunk_id() );
@@ -79,8 +78,8 @@ TEST_CASE( "DS PDBChunker Ingest Test", "[ingest]" )
 {
     pid_t child_pid;
     extern char **environ;
-    char *cmd = "dataspaces_server -s 1 -c 1";
-    char *argv[] = {"sh", "-c", cmd, NULL};
+    char *cmd = (char*)"dataspaces_server -s 1 -c 1";
+    char *argv[] = {(char*)"sh", (char*)"-c", cmd, NULL};
     int status;
 
     ofstream file_("dataspaces.conf");
