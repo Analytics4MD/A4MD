@@ -33,7 +33,7 @@ TEST_CASE( "PyRunner Tests", "[retrieve]" )
     std::string f("analyze");
     char* module_name = (char*)m.c_str();
     char* function_name = (char*)f.c_str();
-    char* python_path = (char*)"";
+    char* python_path = (char*)"./a4md/retrieve/test";
     bool caught_py_exception = false;
     char cwd[256];
     if (getcwd(cwd, sizeof(cwd)) == NULL)
