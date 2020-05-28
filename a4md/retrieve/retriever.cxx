@@ -1,8 +1,8 @@
 #include "retriever.h"
 
 
-Retriever::Retriever(ChunkAnalyzer & chunk_analyzer)
-: m_chunk_analyzer(chunk_analyzer)
+Retriever::Retriever(ChunkStager & chunk_stager)
+: m_chunk_stager(chunk_stager)
 {
     printf("---===== Intialized Retriever\n");
 }
