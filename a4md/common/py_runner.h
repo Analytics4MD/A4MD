@@ -23,23 +23,8 @@ class PyRunner
         void print_py_error_and_rethrow();
 
         virtual void input_chunk(Chunk* chunk) = 0;
-        virtual Chunk* output_chunk(int chunk_id) = 0;
+        virtual Chunk* output_chunk(unsigned long int chunk_id) = 0;
+        virtual Chunk* direct_chunk(Chunk* chunk) = 0;
         
-        // virtual int analyze_frame(std::vector<int> types,
-        //                   std::vector<double> x_positions,
-        //                   std::vector<double> y_positions,
-        //                   std::vector<double> z_positions,
-        //                   double x_low,
-        //                   double x_high,
-        //                   double y_low,
-        //                   double y_high,
-        //                   double z_low,
-        //                   double z_high,
-        //                   int step) = 0;
-        // virtual int extract_frame(char* file_path,
-        //                   unsigned long int id,
-        //                   int &position,
-        //                   Chunk **chunk,
-        //                   int natoms = 0) = 0;
 };
 #endif
