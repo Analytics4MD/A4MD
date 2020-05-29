@@ -4,8 +4,10 @@ set(_a4md_cmn_sources_
         chunk_serializer.cxx
         chunk_writer.cxx
         chunk_reader.cxx
+        chunk_operator.cxx
         chunk_stager.cxx
         md_stager.cxx
+        md_intermediator.cxx
         )
 set(_a4md_cmn_headers_
         chunk.h
@@ -18,8 +20,10 @@ set(_a4md_cmn_headers_
         chunk_serializer.h
         chunk_writer.h
         chunk_reader.h
+        chunk_operator.h
         chunk_stager.h
         md_stager.h
+        md_intermediator.h
         )
 
 add_library(a4md_cmn ${_a4md_cmn_sources_})

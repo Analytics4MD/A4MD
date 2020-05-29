@@ -4,6 +4,7 @@
 #include <vector>
 #include "md_chunk.h"
 #include "md_runner.h"
+#include "md_intermediator.h"
 
 TEST_CASE( "Chunk Tests", "[common]" ) 
 {
@@ -38,9 +39,9 @@ TEST_CASE( "Chunk Tests", "[common]" )
     REQUIRE( md_chunk.get_box_lx() == 1.5 );
 }
 
-TEST_CASE( "MDRunner Tests", "[common]" )
+TEST_CASE( "MDIntermediator Tests", "[common]" )
 {
-    std::string m("test_mdrunner");
+    std::string m("test_direct");
     std::string f("direct");
     char* module_name = (char*)m.c_str();
     char* function_name = (char*)f.c_str();
@@ -58,8 +59,7 @@ TEST_CASE( "MDRunner Tests", "[common]" )
     int input_timestep, output_timestep;
     try
     {
-        MDRunner runner = MDRunner(module_name,function_name,python_path);
-
+        MDIntermediator *inter = new MDIntermediator(module_name,function_name,python_path);
         input_types = { 0, 0 ,0 };
         input_x_positions = { 1.0, 2.0, 3.0 };
         input_low = 0.0;
@@ -77,8 +77,9 @@ TEST_CASE( "MDRunner Tests", "[common]" )
             input_high, 
             input_high, 
             input_high);
-
-        Chunk* output_chunk = runner.direct_chunk(input_chunk);
+        std::vector<Chunk*> input_chunks = {input_chunk};
+        std::vector<Chunk*> output_chunks = inter->operate_chunks(input_chunks);
+        Chunk* output_chunk = output_chunks.front();
         MDChunk *plmdchunk = dynamic_cast<MDChunk *>(output_chunk);
         output_x_positions = plmdchunk->get_x_positions();
         output_types = plmdchunk->get_types();
@@ -88,6 +89,7 @@ TEST_CASE( "MDRunner Tests", "[common]" )
 
         delete input_chunk;
         delete output_chunk;
+        delete inter;
     }
     catch(PythonModuleException ex)
     {
