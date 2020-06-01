@@ -69,6 +69,39 @@ std::vector<T> listToVector(PyObject* incoming)
     return data;
 }
 
+template <typename T>
+PyObject* vectorTolist(std::vector<T> vecs) 
+{
+	PyObject* result;
+	if (vecs.empty())
+	{
+		return result;
+	}
+	int num = vecs.size();
+	result = PyList_New(num);
+	int i = 0;
+	for(auto vec: vecs)
+	{
+		PyObject *val;
+		if (std::is_same<T, int>::value)
+		{
+			val = PyLong_FromLong(vec);
+		}
+		else if (std::is_same<T, double>::value)
+		{
+			val = PyFloat_FromDouble(vec);
+		}
+		else
+		{
+			fprintf(stderr, "T should be integer or double\n");
+			return result;
+		}
+		PyList_SetItem(result, i, val);
+		i++;
+	}
+	return result;
+}
+
 void MDRunner::input_chunk(Chunk* chunk)
 {
     if (!m_py_module)
@@ -114,23 +147,28 @@ void MDRunner::input_chunk(Chunk* chunk)
 				return;
 			}
 
-			int count = x_positions.size();
 			PyObject* py_args = PyTuple_New(6);
-		    npy_intp types_dims[] = {count};
-		    PyObject* py_types = PyArray_SimpleNewFromData(1, types_dims, NPY_DOUBLE, static_cast<void*>(types.data()));
+
+			int count = x_positions.size();
+		    // npy_intp types_dims[] = {count};
+		    // PyObject* py_types = PyArray_SimpleNewFromData(1, types_dims, NPY_DOUBLE, static_cast<void*>(types.data()));
+		    PyObject* py_types = vectorTolist<int>(types);
 		    PyTuple_SetItem(py_args, 0, py_types);
 
-		    npy_intp positions_dims[] = {count};
-		    PyObject* py_x_positions = PyArray_SimpleNewFromData(1, positions_dims, NPY_DOUBLE, static_cast<void*>(x_positions.data()));
+		    // npy_intp positions_dims[] = {count};
+		    // PyObject* py_x_positions = PyArray_SimpleNewFromData(1, positions_dims, NPY_DOUBLE, static_cast<void*>(x_positions.data()));
+		    PyObject* py_x_positions = vectorTolist<double>(x_positions);
 		    PyTuple_SetItem(py_args, 1, py_x_positions);
 
-		    PyObject* py_y_positions = PyArray_SimpleNewFromData(1, positions_dims, NPY_DOUBLE, static_cast<void*>(y_positions.data()));
+		    // PyObject* py_y_positions = PyArray_SimpleNewFromData(1, positions_dims, NPY_DOUBLE, static_cast<void*>(y_positions.data()));
+		    PyObject* py_y_positions = vectorTolist<double>(y_positions);
 		    PyTuple_SetItem(py_args, 2, py_y_positions);
 
-		    PyObject* py_z_positions = PyArray_SimpleNewFromData(1, positions_dims, NPY_DOUBLE, static_cast<void*>(z_positions.data()));
+		    // PyObject* py_z_positions = PyArray_SimpleNewFromData(1, positions_dims, NPY_DOUBLE, static_cast<void*>(z_positions.data()));
+		    PyObject* py_z_positions = vectorTolist<double>(z_positions);
 		    PyTuple_SetItem(py_args, 3, py_z_positions);
 
-		    PyObject* py_box = Py_BuildValue("dddddd", lx, ly, lz, hx, hy, hz);
+		    PyObject* py_box = Py_BuildValue("[dddddd]", lx, ly, lz, hx, hy, hz);
 		    PyTuple_SetItem(py_args, 4, py_box);
 
 		    PyObject* py_step = Py_BuildValue("i", step);
@@ -188,22 +226,24 @@ Chunk* MDRunner::output_chunk(unsigned long int chunk_id)
             if (py_return == nullptr)
 			{
 			    fprintf(stderr, "---===== ERROR: MDRunner::output_chunk Python returns NULL\n");
+			    print_py_error_and_rethrow();
 			    return result;
 			}
-			int num = PyList_Size(py_return);
-			printf("---===== MDRunner::output_chunk Size of return Python object: %d\n", num);
-			if (PyList_Check(py_return))
+			
+			if (PyTuple_Check(py_return))
 			{
-			    if (PyList_Size(py_return) == 7)
+				int num = PyTuple_Size(py_return);
+				printf("---===== MDRunner::output_chunk Size of return Python object: %d\n", num);
+			    if (PyTuple_Size(py_return) == 7)
 			    {
 			        // ToDo: Directly casting type of PyList to vector / array  
-			        PyObject *py_types = PyList_GetItem(py_return, 0);
-			        PyObject *py_x_cords = PyList_GetItem(py_return, 1);
-			        PyObject *py_y_cords = PyList_GetItem(py_return, 2);
-			        PyObject *py_z_cords = PyList_GetItem(py_return, 3);
-			        PyObject* py_box = PyList_GetItem(py_return, 4);
-			        PyObject* py_step = PyList_GetItem(py_return, 5);
-			        m_position = PyLong_AsLong(PyList_GetItem(py_return, 6));
+			        PyObject *py_types = PyTuple_GetItem(py_return, 0);
+			        PyObject *py_x_cords = PyTuple_GetItem(py_return, 1);
+			        PyObject *py_y_cords = PyTuple_GetItem(py_return, 2);
+			        PyObject *py_z_cords = PyTuple_GetItem(py_return, 3);
+			        PyObject* py_box = PyTuple_GetItem(py_return, 4);
+			        PyObject* py_step = PyTuple_GetItem(py_return, 5);
+			        m_position = PyLong_AsLong(PyTuple_GetItem(py_return, 6));
 
 			        int ret_natoms = PyList_Size(py_types);
 			        printf("---===== MDRunner::output_chunk Number of returned atoms : %d\n", ret_natoms);
@@ -350,21 +390,25 @@ Chunk* MDRunner::direct_chunk(Chunk* chunk)
 
 			int count = x_positions.size();
 			PyObject* py_args = PyTuple_New(6);
-		    npy_intp types_dims[] = {count};
-		    PyObject* py_input_types = PyArray_SimpleNewFromData(1, types_dims, NPY_DOUBLE, static_cast<void*>(input_types.data()));
+		    // npy_intp types_dims[] = {count};
+		    // PyObject* py_input_types = PyArray_SimpleNewFromData(1, types_dims, NPY_DOUBLE, static_cast<void*>(input_types.data()));
+		    PyObject* py_input_types = vectorTolist<int>(input_types);
 		    PyTuple_SetItem(py_args, 0, py_input_types);
 
-		    npy_intp positions_dims[] = {count};
-		    PyObject* py_x_positions = PyArray_SimpleNewFromData(1, positions_dims, NPY_DOUBLE, static_cast<void*>(x_positions.data()));
+		    // npy_intp positions_dims[] = {count};
+		    // PyObject* py_x_positions = PyArray_SimpleNewFromData(1, positions_dims, NPY_DOUBLE, static_cast<void*>(x_positions.data()));
+		    PyObject* py_x_positions = vectorTolist<double>(x_positions);
 		    PyTuple_SetItem(py_args, 1, py_x_positions);
 
-		    PyObject* py_y_positions = PyArray_SimpleNewFromData(1, positions_dims, NPY_DOUBLE, static_cast<void*>(y_positions.data()));
+		    // PyObject* py_y_positions = PyArray_SimpleNewFromData(1, positions_dims, NPY_DOUBLE, static_cast<void*>(y_positions.data()));
+		    PyObject* py_y_positions = vectorTolist<double>(y_positions);
 		    PyTuple_SetItem(py_args, 2, py_y_positions);
 
-		    PyObject* py_z_positions = PyArray_SimpleNewFromData(1, positions_dims, NPY_DOUBLE, static_cast<void*>(z_positions.data()));
+		    // PyObject* py_z_positions = PyArray_SimpleNewFromData(1, positions_dims, NPY_DOUBLE, static_cast<void*>(z_positions.data()));
+		    PyObject* py_z_positions = vectorTolist<double>(z_positions);
 		    PyTuple_SetItem(py_args, 3, py_z_positions);
 
-		    PyObject* py_input_box = Py_BuildValue("dddddd", lx, ly, lz, hx, hy, hz);
+		    PyObject* py_input_box = Py_BuildValue("[dddddd]", lx, ly, lz, hx, hy, hz);
 		    PyTuple_SetItem(py_args, 4, py_input_box);
 
 		    PyObject* py_step = Py_BuildValue("i", step);
@@ -372,25 +416,27 @@ Chunk* MDRunner::direct_chunk(Chunk* chunk)
 
             PyObject* py_return = PyObject_CallObject(m_py_func, py_args);
             Py_DECREF(py_args);
-            if (py_return == nullptr)
+            if (py_return == NULL)
 			{
 			    fprintf(stderr, "---===== ERROR: MDRunner::direct_chunk Python returns NULL\n");
+			    print_py_error_and_rethrow();
 			    return result;
 			}
-			int num = PyList_Size(py_return);
-			printf("---===== MDRunner::direct_chunk Size of returned Python object: %d\n", num);
-			if (PyList_Check(py_return))
+			
+			if (PyTuple_Check(py_return))
 			{
-			    if (PyList_Size(py_return) == 7)
+				int num = PyTuple_Size(py_return);
+				printf("---===== MDRunner::direct_chunk Size of returned Python object: %d\n", num);
+			    if (PyTuple_Size(py_return) == 6)
 			    {
 			        // ToDo: Directly casting type of PyList to vector / array  
-			        PyObject *py_output_types = PyList_GetItem(py_return, 0);
-			        PyObject *py_x_cords = PyList_GetItem(py_return, 1);
-			        PyObject *py_y_cords = PyList_GetItem(py_return, 2);
-			        PyObject *py_z_cords = PyList_GetItem(py_return, 3);
-			        PyObject* py_output_box = PyList_GetItem(py_return, 4);
-			        PyObject* py_timestep = PyList_GetItem(py_return, 5);
-			        m_position = PyLong_AsLong(PyList_GetItem(py_return, 6));
+			        PyObject *py_output_types = PyTuple_GetItem(py_return, 0);
+			        PyObject *py_x_cords = PyTuple_GetItem(py_return, 1);
+			        PyObject *py_y_cords = PyTuple_GetItem(py_return, 2);
+			        PyObject *py_z_cords = PyTuple_GetItem(py_return, 3);
+			        PyObject* py_output_box = PyTuple_GetItem(py_return, 4);
+			        PyObject* py_timestep = PyTuple_GetItem(py_return, 5);
+			        // m_position = PyLong_AsLong(PyList_GetItem(py_return, 6));
 
 			        int ret_natoms = PyList_Size(py_output_types);
 			        printf("---===== MDRunner::direct_chunk Number of returned atoms : %d\n", ret_natoms);
