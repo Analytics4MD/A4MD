@@ -15,8 +15,8 @@ class MDRunner : public PyRunner
 		~MDRunner();
 
 		void input_chunk(Chunk* chunk) override;
-        Chunk* output_chunk(int chunk_id) override;
-  //       // Chunk* direct_chunk(Chunk* chunk) override;
+        Chunk* output_chunk(unsigned long int chunk_id) override;
+        Chunk* direct_chunk(Chunk* chunk) override;
 
         int get_position();
         void set_position(int position);

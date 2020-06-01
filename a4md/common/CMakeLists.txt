@@ -4,8 +4,10 @@ set(_a4md_cmn_sources_
         chunk_serializer.cxx
         chunk_writer.cxx
         chunk_reader.cxx
+        chunk_operator.cxx
         chunk_stager.cxx
         md_stager.cxx
+        md_intermediator.cxx
         )
 set(_a4md_cmn_headers_
         chunk.h
@@ -18,8 +20,10 @@ set(_a4md_cmn_headers_
         chunk_serializer.h
         chunk_writer.h
         chunk_reader.h
+        chunk_operator.h
         chunk_stager.h
         md_stager.h
+        md_intermediator.h
         )
 
 add_library(a4md_cmn ${_a4md_cmn_sources_})
@@ -30,7 +34,7 @@ set_target_properties(a4md_cmn PROPERTIES
     POSITION_INDEPENDENT_CODE ON
 )
 
-target_link_libraries(a4md_cmn ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${TAU_LIBRARIES})
+target_link_libraries(a4md_cmn ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${PYTHON_LIBRARIES} ${TAU_LIBRARIES})
 get_target_property(A4MD_CMN_LIBRARIES a4md_cmn LINK_LIBRARIES)
 message(STATUS "A4MD_CMN_LIBRARIES = ${A4MD_CMN_LIBRARIES}")
 

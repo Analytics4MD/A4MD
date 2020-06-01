@@ -87,5 +87,6 @@ def extract_frame(fileName, position, nAtoms):
 
     lp = file.tell()
     #pickle.dump(lp, open( logName, "wb" ))
-    return [types, x_cords, y_cords, z_cords, [None, None, None, None, None, None], None, lp]
+
+    return types, x_cords, y_cords, z_cords, [None, None, None, None, None, None], None, lp
 
