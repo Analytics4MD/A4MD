@@ -61,7 +61,7 @@ int main (int argc, const char** argv)
         throw NotImplementedException("Analyzer type is not implemented");
     }
 
-    ChunkStager *chunk_stager = new MDStager(*chunk_reader, *chunk_writer);
+    ChunkStager *chunk_stager = new MDStager(chunk_reader, chunk_writer);
     int n_window_width = 1;
     Retriever *retriever = new MDRetriever(*chunk_stager, total_chunks, n_window_width);
 

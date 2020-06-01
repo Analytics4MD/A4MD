@@ -63,7 +63,7 @@ int main(int argc, const char** argv)
         throw NotImplementedException("Writer type is not implemented\n");
     }
 
-    ChunkStager *chunk_stager = new MDStager(*chunk_reader, *chunk_writer);
+    ChunkStager *chunk_stager = new MDStager(chunk_reader, chunk_writer);
     Ingester *ingester = new MDGenerator(*chunk_stager, total_chunks, n_delay_ms);
 
     TimeVar t_start = timeNow();
