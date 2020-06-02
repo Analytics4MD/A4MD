@@ -1,30 +1,3 @@
-# FindPythonInterp will search for an interpreter with 3.3 <= version <= 3.7
-set(Python_ADDITIONAL_VERSIONS 3.7 3.6 3.5 3.4 3.3)
-
-# find python interpreter (minimum version 3.3)
-find_package(PythonInterp 3.3 REQUIRED)
-
-# Reset Python_ADDITIONAL_VERSIONS so that FindPythonLibs only searches for the
-# same version as the Interpreter.
-unset(Python_ADDITIONAL_VERSIONS)
-set(Python_ADDITIONAL_VERSIONS ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
-
-# find python libs (minimum version matches the interpreter's version)
-find_package(PythonLibs ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR} REQUIRED)
-include_directories(${PYTHON_INCLUDE_DIRS})
-
-# find Numpy
-find_package(NumPy REQUIRED)
-include_directories(${NUMPY_INCLUDE_DIR})
-
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-
-# Add include directories
-include_directories("${PROJECT_SOURCE_DIR}/a4md/common")
-include_directories("${PROJECT_SOURCE_DIR}/a4md/dtl")
-include_directories("${PROJECT_SOURCE_DIR}/a4md/ingest")
-include_directories("${PROJECT_SOURCE_DIR}/a4md/retrieve")
-
 # Add subdirectories
 add_subdirectory(common)
 add_subdirectory(dtl)
