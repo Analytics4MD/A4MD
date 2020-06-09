@@ -7,11 +7,12 @@
 ## -----------=========== PARAMETERS =========-------------
 
 ## A4MD installation directory
-A4MD=$SCRATCH/application/a4md/a4md/bin
+A4MD=$HOME/application/a4md/bin
+ENV_SCRIPT=$HOME/application/a4md_env/a4md.sh
 ## Number of ingesters
 NWRITERS=2
 ## Ratio
-NREADERS_PER_WRITER=1
+NREADERS_PER_WRITER=3
 ## Number of consumers
 NREADERS=$(( $NWRITERS*$NREADERS_PER_WRITER ))
 ## Lock type
@@ -32,7 +33,10 @@ DELAY=0
 NCLIENTS=$(( $NREADERS+$NWRITERS ))
 
 ## Clean up
-rm -rf __pycache__ conf dataspaces.conf log.*
+rm -rf __pycache__ conf* dataspaces.conf log.*
+
+## Load modules on compute nodes
+ . ${ENV_SCRIPT}
 
 ## Create dataspaces configuration file
 echo "## Config file for DataSpaces
@@ -52,7 +56,7 @@ server_pid=$!
 
 ## Give some time for the servers to load and startup
 sleep 1s
-while [ ! -f conf ]; do
+while [ ! -f conf.0 ]; do
     echo "-- File conf is not yet available from server. Sleep more"
     sleep 1s
 done
@@ -60,7 +64,7 @@ sleep 3s  # wait server to fill up the conf file
 ## Export the main server config to the environment
 while read line; do
     export set "${line}"
-done < conf
+done < conf.0
 echo "-- Dataspaces Servers initialize successfully"
 echo "-- DataSpaces IDs: P2TNID = $P2TNID   P2TPID = $P2TPID"
 echo "-- Staging Method: $STAGING_METHOD"
