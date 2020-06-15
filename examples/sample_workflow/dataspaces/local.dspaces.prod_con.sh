@@ -10,6 +10,10 @@ NWRITERS=2
 NREADERS_PER_WRITER=1
 ## Number of consumers
 NREADERS=$(( $NWRITERS*$NREADERS_PER_WRITER ))
+## Number of producer processes
+NP_WRITER=2
+## Number of consumer processes
+NP_READER=2
 ## Lock type
 LOCK=2
 ## Number of DataSpaces servers
@@ -71,7 +75,7 @@ do
     ((client_id=client_id+1))
     ((group_id=group_id+1)) 
     echo "-- Start producer application id $i"
-    producer_cmd="mpirun -np 1 ./producer dataspaces $client_id $group_id ./load.py extract_frame $NSTEPS $NATOMS $DELAY"
+    producer_cmd="mpirun -np $NP_WRITER ./producer dataspaces $client_id $group_id ./load.py extract_frame $NSTEPS $NATOMS $DELAY"
     echo ${producer_cmd}
     eval ${producer_cmd} &> log.producer${i} &
     declare producer${i}_pid=$!
@@ -82,7 +86,7 @@ do
     do
         ((client_id=client_id+1))
         echo "-- Start consumer application id ${j} with respect to producer application id ${i}"
-        consumer_cmd="mpirun -np 1 ./consumer dataspaces $client_id $group_id ./compute.py analyze $NSTEPS"
+        consumer_cmd="mpirun -np $NP_READER ./consumer dataspaces $client_id $group_id ./compute.py analyze $NSTEPS"
         echo ${consumer_cmd}
         eval ${consumer_cmd} &> log.consumer${i}_${j} &
         declare consumer${i}_${j}_pid=$!

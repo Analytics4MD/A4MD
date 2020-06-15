@@ -14,6 +14,12 @@ NINTERMEDIATORS=$(( $NWRITERS*$NINTERMEDIATORS_PER_WRITER ))
 NREADERS_PER_INTERMEDIATOR=$NINTERMEDIATORS_PER_WRITER
 ## Number of consumers
 NREADERS=$(( $NINTERMEDIATORS*$NREADERS_PER_INTERMEDIATOR ))
+## Number of producer processes
+NP_WRITER=2
+## Number of consumer processes
+NP_READER=2
+## Number of intermediator processes
+NP_INTERMEDIATOR=2
 ## Lock type
 LOCK=2
 ## Number of DataSpaces servers
@@ -75,7 +81,7 @@ do
     ((client_id=client_id+1))
     ((group_id=group_id+1)) 
     echo "-- Start producer application id $i"
-    producer_cmd="mpirun -np 1 ./producer dataspaces $client_id $group_id ./load.py extract_frame $NSTEPS $NATOMS $DELAY"
+    producer_cmd="mpirun -np $NP_WRITER ./producer dataspaces $client_id $group_id ./load.py extract_frame $NSTEPS $NATOMS $DELAY"
     echo ${producer_cmd}
     eval ${producer_cmd} &> log.producer${i} &
     declare producer${i}_pid=$!
@@ -87,7 +93,7 @@ do
 	    ((client_id=client_id+1))
 	    ((sub_group_id=sub_group_id+1)) 
 	    echo "-- Start intermediator application id $j with respect to producer $i"
-	    intermediator_cmd="mpirun -np 1 ./intermediator dataspaces $client_id $group_id $client_id $sub_group_id ./forward.py direct $NSTEPS"
+	    intermediator_cmd="mpirun -np $NP_INTERMEDIATOR ./intermediator dataspaces $client_id $group_id $client_id $sub_group_id ./forward.py direct $NSTEPS"
 	    echo ${intermediator_cmd}
 	    eval ${intermediator_cmd} &> log.intermediator${i}_${j} &
 	    declare intermediator${i}_${j}_pid=$!
@@ -98,7 +104,7 @@ do
 	    do
 	        ((client_id=client_id+1))
 	        echo "-- Start consumer application id ${k} with respect to producer ${i} and intermediator ${j}"
-	        consumer_cmd="mpirun -np 1 ./consumer dataspaces $client_id $sub_group_id ./compute.py analyze $NSTEPS"
+	        consumer_cmd="mpirun -np $NP_READER ./consumer dataspaces $client_id $sub_group_id ./compute.py analyze $NSTEPS"
 	        echo ${consumer_cmd}
 	        eval ${consumer_cmd} &> log.consumer${i}_${j}_${j} &
 	        declare consumer${i}_${j}_${k}_pid=$!
