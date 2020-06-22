@@ -1,4 +1,8 @@
 #!/bin/bash
+#BSUB -n 8
+#BSUB -R "span[hosts=1]"
+#BSUB -J "sample_workflow"
+#BSUB -o "sample.out"
 
 ## -----------=========== PARAMETERS =========-------------
 
@@ -10,6 +14,10 @@ NWRITERS=2
 NREADERS_PER_WRITER=1
 ## Number of consumers
 NREADERS=$(( $NWRITERS*$NREADERS_PER_WRITER ))
+## Number of producer processes
+NP_WRITER=2
+## Number of consumer processes
+NP_READER=2
 ## Lock type
 LOCK=2
 ## Number of DataSpaces servers
@@ -61,36 +69,35 @@ echo "-- Dataspaces Servers initialize successfully"
 echo "-- DataSpaces IDs: P2TNID = $P2TNID   P2TPID = $P2TPID"
 echo "-- Staging Method: $STAGING_METHOD"
 
+
+client_id=0
+group_id=0
 ## Run producer application
 echo "-- Start producer applications"
 for (( i=1; i<=$NWRITERS; i++ ))
 do
-    client_id=$i 
-    echo "-- Start producer application id $i in group $i"
-    producer_cmd="mpirun -np 1 ./producer dataspaces $i $i ./load.py extract_frame $NSTEPS $NATOMS $DELAY"
+    ((client_id=client_id+1))
+    ((group_id=group_id+1)) 
+    echo "-- Start producer application id $i"
+    producer_cmd="mpirun -np $NP_WRITER ./producer dataspaces $client_id $group_id ./load.py extract_frame $NSTEPS $NATOMS $DELAY"
     echo ${producer_cmd}
-    eval ${producer_cmd} &> log.producer${client_id} &
-    declare producer${client_id}_pid=$!
-done
+    eval ${producer_cmd} &> log.producer${i} &
+    declare producer${i}_pid=$!
 
-## Run consumer application
-echo "-- Start consumer applications"
-for (( i=0; i<$NWRITERS; i++ ))
-do
+    ## Run consumer application
+    echo "-- Start consumer applications"
     for (( j=1; j<=$NREADERS_PER_WRITER; j++ ))
     do
-        client_id=$((NWRITERS+i*NREADERS_PER_WRITER+j))
-        echo "-- Start consumer application id ${client_id} in group $((i+1))"
-        consumer_cmd="mpirun -n 1 ./consumer dataspaces $client_id $((i+1)) ./compute.py analyze $NSTEPS"
+        ((client_id=client_id+1))
+        echo "-- Start consumer application id ${j} with respect to producer application id ${i}"
+        consumer_cmd="mpirun -np $NP_READER ./consumer dataspaces $client_id $group_id ./compute.py analyze $NSTEPS"
         echo ${consumer_cmd}
-        eval ${consumer_cmd} &> log.consumer$((i+1))_${j} &
-        declare consumer${client_id}_pid=$!
+        eval ${consumer_cmd} &> log.consumer${i}_${j} &
+        declare consumer${i}_${j}_pid=$!
     done
 done
 
-
 echo "-- Wait until all applications exit."
-#wait
 
 for (( i=1; i<=$NWRITERS; i++ ))
 do
@@ -100,11 +107,14 @@ do
 done
 echo "---- All producers exit."
 	
-for (( i=$((NWRITERS+1)); i<=$((NWRITERS+NREADERS_PER_WRITER*NWRITERS)); i++ ))
+for (( i=1; i<=$NWRITERS; i++ ))
 do
-    consumer_pid=consumer${i}_pid
-    wait ${!consumer_pid}
-    echo "---- Consumer id $i exit."
+    for (( j=1; j<=$NREADERS_PER_WRITER; j++ ))
+    do
+        consumer_pid=consumer${i}_${j}_pid
+        wait ${!consumer_pid}
+        echo "---- Consumer id ${i}_${j} exit."
+    done
 done
 echo "---- All consumers exit."
 

@@ -27,7 +27,7 @@ int main (int argc, const char** argv)
         int client_id = atoi(argv[1]);
         int group_id = atoi(argv[2]);
         int n_analysis_stride = 1;
-        chunk_reader = new DataSpacesReader(2, 1, total_chunks, MPI_COMM_WORLD);
+        chunk_reader = new DataSpacesReader(client_id, group_id, total_chunks, MPI_COMM_WORLD);
     }
     else
     {

@@ -4,10 +4,16 @@
 
 ## A4MD installation directory
 A4MD=$SCRATCH/application/a4md/a4md/bin
-## Number of consumers
-NREADERS=5
 ## Number of ingesters
-NWRITERS=1
+NWRITERS=2
+## Ratio
+NREADERS_PER_WRITER=1
+## Number of consumers
+NREADERS=$(( $NWRITERS*$NREADERS_PER_WRITER ))
+## Number of producer processes
+NP_WRITER=2
+## Number of consumer processes
+NP_READER=2
 ## Lock type
 LOCK=2
 ## Number of DataSpaces servers
@@ -33,7 +39,7 @@ echo "## Config file for DataSpaces
 ndim = 1
 dims = 1024
 max_versions = 1
-max_readers =" $NREADERS "
+max_readers =" $NREADERS_PER_WRITER "
 lock_type =" $LOCK > dataspaces.conf
 
 
@@ -59,36 +65,52 @@ echo "-- Dataspaces Servers initialize successfully"
 echo "-- DataSpaces IDs: P2TNID = $P2TNID   P2TPID = $P2TPID"
 echo "-- Staging Method: $STAGING_METHOD"
 
-## Run producer application
-echo "-- Start producer application"
-producer_cmd="mpirun -np $NWRITERS ./producer dataspaces 1 1 ./load.py extract_frame $NSTEPS $NATOMS $DELAY"
-echo ${producer_cmd}
-eval ${producer_cmd} &> log.producer &
-producer_pid=$!
 
-## Run consumer application
-echo "-- Start consumer applications"
-for (( i=1; i<=$NREADERS; i++ ))
+client_id=0
+group_id=0
+## Run producer application
+echo "-- Start producer applications"
+for (( i=1; i<=$NWRITERS; i++ ))
 do
-    echo "-- Start consumer application id $i"
-    consumer_cmd="mpirun -n 1 ./consumer dataspaces $((i+1)) 1 ./compute.py analyze $NSTEPS"
-    echo ${consumer_cmd}
-    eval ${consumer_cmd} &> log.consumer${i} &
-    declare consumer${i}_pid=$!
+    ((client_id=client_id+1))
+    ((group_id=group_id+1)) 
+    echo "-- Start producer application id $i"
+    producer_cmd="mpirun -np $NP_WRITER ./producer dataspaces $client_id $group_id ./load.py extract_frame $NSTEPS $NATOMS $DELAY"
+    echo ${producer_cmd}
+    eval ${producer_cmd} &> log.producer${i} &
+    declare producer${i}_pid=$!
+
+    ## Run consumer application
+    echo "-- Start consumer applications"
+    for (( j=1; j<=$NREADERS_PER_WRITER; j++ ))
+    do
+        ((client_id=client_id+1))
+        echo "-- Start consumer application id ${j} with respect to producer application id ${i}"
+        consumer_cmd="mpirun -np $NP_READER ./consumer dataspaces $client_id $group_id ./compute.py analyze $NSTEPS"
+        echo ${consumer_cmd}
+        eval ${consumer_cmd} &> log.consumer${i}_${j} &
+        declare consumer${i}_${j}_pid=$!
+    done
 done
 
-
 echo "-- Wait until all applications exit."
-#wait
 
-wait $producer_pid
-echo "---- Producer exit."
-	
-for (( i=1; i<=$NREADERS; i++ ))
+for (( i=1; i<=$NWRITERS; i++ ))
 do
-    consumer_pid=consumer${i}_pid
-    wait ${!consumer_pid}
-    echo "---- Consumer id $i exit."
+    producer_pid=producer${i}_pid
+    wait ${!producer_pid}
+    echo "---- Producer id $i exit."
+done
+echo "---- All producers exit."
+	
+for (( i=1; i<=$NWRITERS; i++ ))
+do
+    for (( j=1; j<=$NREADERS_PER_WRITER; j++ ))
+    do
+        consumer_pid=consumer${i}_${j}_pid
+        wait ${!consumer_pid}
+        echo "---- Consumer id ${i}_${j} exit."
+    done
 done
 echo "---- All consumers exit."
 
