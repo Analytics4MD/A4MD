@@ -1,7 +1,10 @@
 # project name
 project (a4md)
-
 cmake_minimum_required (VERSION 3.5)
+
+option(dtl_dspaces "Build A4MD with Dataspaces data transport layer" ON)
+option(dtl_decaf "Build A4MD with Decaf data transport layer" OFF)
+
 add_compile_options(-std=c++11)
 message(STATUS "CFLAGS : ${CMAKE_C_FLAGS}")
 message(STATUS "CXXFLAGS: ${CMAKE_CXX_FLAGS}")
@@ -97,13 +100,12 @@ set(Python_ADDITIONAL_VERSIONS ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
 # find python libs (minimum version matches the interpreter's version)
 find_package(PythonLibs ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR} REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
+
 # find Numpy
 find_package(NumPy REQUIRED)
 include_directories(${NUMPY_INCLUDE_DIR})
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-
-
 
 # Check TAU enabled
 set(TAU_LIBRARIES "")
