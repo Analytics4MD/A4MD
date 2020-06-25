@@ -1,12 +1,12 @@
 #include "md_runner.h"
 #include <iostream>
 
-#define NO_IMPORT_ARRAY
-#define PY_ARRAY_UNIQUE_SYMBOL PY_ARRAY_API
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#include <numpy/arrayobject.h>
-#include <numpy/ndarrayobject.h>
-#include <numpy/npy_common.h>
+// #define NO_IMPORT_ARRAY
+// #define PY_ARRAY_UNIQUE_SYMBOL PY_ARRAY_API
+// #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+// #include <numpy/arrayobject.h>
+// #include <numpy/ndarrayobject.h>
+// #include <numpy/npy_common.h>
 
 MDRunner::MDRunner(char* module_name, char* function_name, char* py_path)
 : PyRunner(module_name, function_name, py_path) 
