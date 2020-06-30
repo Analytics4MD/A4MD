@@ -3,11 +3,11 @@
 #include <stdio.h>
 #include <iostream>
 
-#define PY_ARRAY_UNIQUE_SYMBOL PY_ARRAY_API
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#include <numpy/arrayobject.h>
-#include <numpy/ndarrayobject.h>
-#include <numpy/npy_common.h>
+// #define PY_ARRAY_UNIQUE_SYMBOL PY_ARRAY_API
+// #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+// #include <numpy/arrayobject.h>
+// #include <numpy/ndarrayobject.h>
+// #include <numpy/npy_common.h>
 
 
 PyRunner::PyRunner(char* module_name, char* function_name, char* py_path)
@@ -21,7 +21,8 @@ PyRunner::PyRunner(char* module_name, char* function_name, char* py_path)
 PyRunner::~PyRunner()
 {
     Py_DECREF(m_py_module);
-    Py_DECREF(m_py_func); 
+    Py_DECREF(m_py_func);
+    /* Note: Python cannot completely unload extension modules, which prevent the interpreter from restarting when calling Py_Initialize second time */ 
     Py_FinalizeEx(); 
     printf("---===== Finalized PyRunner\n");
 }
@@ -70,16 +71,17 @@ int PyRunner::initialize_python(char* py_path)
     if (!Py_IsInitialized())
     {
         Py_Initialize();
+        // Py_InitializeEx(1);
     }
 
-    import_array();
-    PyObject* module = PyImport_ImportModule("numpy"); // New reference
-    if (!module)
-    {
-        PyErr_Print();
-        fprintf(stderr,"---===== ERROR : PyRunner::initialize_python Numpy import failed. See for an error message above");
-    } 
-    Py_DECREF(module);
+    // import_array();
+    // PyObject* module = PyImport_ImportModule("numpy"); // New reference
+    // if (!module)
+    // {
+    //     PyErr_Print();
+    //     fprintf(stderr,"---===== ERROR : PyRunner::initialize_python Numpy import failed. See for an error message above");
+    // } 
+    // Py_DECREF(module);
 
     char cwd[256];
     if (getcwd(cwd, sizeof(cwd)) == NULL)
