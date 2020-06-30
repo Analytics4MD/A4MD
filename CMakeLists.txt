@@ -110,6 +110,19 @@ include_directories(${NUMPY_INCLUDE_DIR})
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
+if (dtl_decaf)
+    # Find Decaf
+    find_package(Decaf REQUIRED)
+    message(STATUS "Found external Decaf installed at: ${DECAF_PREFIX}")
+    message(STATUS "DECAF_CXX_INCLUDE_DIR: ${DECAF_CXX_INCLUDE_DIR}")
+    message(STATUS "DECAF_CXX_DATA_MODEL_LIBRARY: ${DECAF_CXX_DATA_MODEL_LIBRARY}")
+    message(STATUS "DECAF_CXX_TRANSPORT_LIBRARY: ${DECAF_CXX_TRANSPORT_LIBRARY}")
+    message(STATUS "DECAF_CXX_RUNTIME_LIBRARY: ${DECAF_CXX_RUNTIME_LIBRARY}")
+    add_definitions(-DTRANSPORT_MPI)
+    include_directories(${DECAF_CXX_INCLUDE_DIR})
+    set(DECAF_LIBRARIES ${DECAF_CXX_TRANSPORT_LIBRARY} ${DECAF_CXX_DATA_MODEL_LIBRARY} ${DECAF_CXX_RUNTIME_LIBRARY})
+endif ()
+
 # Check TAU enabled
 set(TAU_LIBRARIES "")
 if(DEFINED ENV{TAU_LIBS})

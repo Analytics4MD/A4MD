@@ -1,7 +1,4 @@
-if (DECAF_FOUND)
-	STRING(REGEX REPLACE "include/decaf" "include" DECAF_CXX_INCLUDE_DIR ${DECAF_CXX_INCLUDE_DIR})
-	include_directories(${DECAF_CXX_INCLUDE_DIR})
-	add_definitions(-DTRANSPORT_MPI)
+if (dtl_decaf)
 	add_definitions(-DDTL_DECAF)
 endif()
 
