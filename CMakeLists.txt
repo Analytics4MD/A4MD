@@ -6,7 +6,7 @@ option(dtl_dspaces "Build A4MD with Dataspaces data transport layer" ON)
 option(dtl_decaf "Build A4MD with Decaf data transport layer" OFF)
 option(build_examples "Build examples" ON)
 option(build_tests "Build tests" OFF)
-option(build_wrap "Build MPI wrapper library for Decaf MPMD model" ON)
+option(build_wrap "Build MPI wrapper library for Decaf MPMD model" OFF)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
