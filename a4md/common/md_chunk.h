@@ -3,11 +3,6 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include <boost/iostreams/device/back_inserter.hpp>
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/iostreams/stream.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/list.hpp>
 #include "chunk.h"
 
 class MDChunk : public Chunk

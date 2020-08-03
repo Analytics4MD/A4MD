@@ -3,12 +3,8 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include <boost/iostreams/device/back_inserter.hpp>
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/iostreams/stream.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/list.hpp>
 #include "md_chunk.h"
+#include "cv_chunk.h"
 
 class SerializableChunk
 {
@@ -21,6 +17,7 @@ class SerializableChunk
         {
             // IMPORTANT: Any chunk subclass that needs to be serialized has to have an entry here.
             ar.register_type(static_cast<MDChunk *>(NULL));
+            ar.register_type(static_cast<CVChunk *>(NULL));
             ar & m_chunk;
         }
 
