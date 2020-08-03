@@ -3,10 +3,11 @@
 #include <catch2/catch.hpp>
 #include <vector>
 #include "md_chunk.h"
+#include "cv_chunk.h"
 #include "md_runner.h"
 #include "md_intermediator.h"
 
-TEST_CASE( "Chunk Tests", "[common]" ) 
+TEST_CASE( "MDChunk Tests", "[common]" ) 
 {
     unsigned long int current_chunk_id = 0;
     int step = 1;
@@ -37,6 +38,27 @@ TEST_CASE( "Chunk Tests", "[common]" )
     REQUIRE( md_chunk.get_types()[0] == 2 );
     REQUIRE( md_chunk.get_x_positions()[0] == 0.1 );
     REQUIRE( md_chunk.get_box_lx() == 1.5 );
+}
+
+TEST_CASE( "CVChunk Tests", "[common]" ) 
+{
+    unsigned long int current_chunk_id = 0;
+    std::vector<double> cv_values = { 0.1, 0.1, 0.1, 0.2, 0.2, 0.2 };
+
+    Chunk* chunk = new CVChunk(current_chunk_id, cv_values);
+    CVChunk *cv_chunk = dynamic_cast<CVChunk*>(chunk);
+
+    REQUIRE( chunk->get_chunk_id() == 0 );
+    REQUIRE( cv_chunk->get_cv_values()[0] == 0.1 );
+    REQUIRE( cv_chunk->get_cv_values()[3] == 0.2 );
+    REQUIRE( cv_chunk->get_cv_values().size() == 6 );
+
+    cv_chunk->append_cv_value(0.3);
+    // cv_chunk->print();
+    REQUIRE( cv_chunk->get_cv_values().size() == 7 );
+    REQUIRE( cv_chunk->get_cv_values()[6] == 0.3 );
+
+    delete chunk;
 }
 
 TEST_CASE( "MDIntermediator Tests", "[common]" )
