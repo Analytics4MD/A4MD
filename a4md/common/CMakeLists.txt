@@ -12,6 +12,7 @@ set(_a4md_cmn_sources_
 set(_a4md_cmn_headers_
         chunk.h
         md_chunk.h
+        cv_chunk.h
         serializable_chunk.h
         exceptions.h
         py_runner.h
