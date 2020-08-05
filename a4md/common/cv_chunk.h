@@ -22,12 +22,15 @@ class CVChunk : public Chunk
 
     public:
         CVChunk() : Chunk(){}
-        CVChunk(const unsigned long int id,
+        CVChunk(unsigned long int id,
                 std::vector<double> & cv_vals) :
                 Chunk(id),
                 m_cv_vals(cv_vals)
         {
         } 
+        CVChunk(unsigned long int id) : Chunk(id) 
+        {
+        }
         ~CVChunk()
         {
             printf("---===== Called destructor of CVChunk\n");
@@ -45,9 +48,16 @@ class CVChunk : public Chunk
             printf("---===== CVChunk::print end\n");
         }
 
-        void append_cv_value(double cv_val)
+        void append(double cv_val)
         {
             m_cv_vals.push_back(cv_val);
+        }
+
+        void append(Chunk* other_chunk)
+        {
+            CVChunk *other_cv_chunk = dynamic_cast<CVChunk*>(other_chunk);
+            std::vector<double> other_cv_vals = other_cv_chunk->get_cv_values();
+            m_cv_vals.insert(m_cv_vals.end(), other_cv_vals.begin(), other_cv_vals.end());
         }
 
         std::vector<double> get_cv_values(){ return m_cv_vals; }

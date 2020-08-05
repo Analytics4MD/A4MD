@@ -53,18 +53,25 @@ TEST_CASE( "CVChunk Tests", "[common]" )
     REQUIRE( cv_chunk->get_cv_values()[3] == 0.2 );
     REQUIRE( cv_chunk->get_cv_values().size() == 6 );
 
-    cv_chunk->append_cv_value(0.3);
+    cv_chunk->append(0.3);
     // cv_chunk->print();
     REQUIRE( cv_chunk->get_cv_values().size() == 7 );
     REQUIRE( cv_chunk->get_cv_values()[6] == 0.3 );
+
+    Chunk* other_chunk = new CVChunk(current_chunk_id, cv_values);
+    chunk->append(other_chunk);
+    // cv_chunk->print();
+    REQUIRE( cv_chunk->get_cv_values().size() == 13 );
+    REQUIRE( cv_chunk->get_cv_values()[7] == 0.1 );
+    REQUIRE( cv_chunk->get_cv_values()[10] == 0.2 );
 
     delete chunk;
 }
 
 TEST_CASE( "MDIntermediator Tests", "[common]" )
 {
-    std::string m("test_direct");
-    std::string f("direct");
+    std::string m("direct");
+    std::string f("mdchunk_to_mdchunk");
     char* module_name = (char*)m.c_str();
     char* function_name = (char*)f.c_str();
     char* python_path = (char*)"./a4md/common/test";
@@ -75,43 +82,28 @@ TEST_CASE( "MDIntermediator Tests", "[common]" )
     else
         printf("current working directory: %s \n", cwd);
 
-    std::vector<int> input_types, output_types;
-    std::vector<double> input_x_positions, output_x_positions;
-    double input_low, input_high, output_low, output_high;
-    int input_timestep, output_timestep;
     try
     {
         MDIntermediator *inter = new MDIntermediator(module_name,function_name,python_path);
-        input_types = { 0, 0 ,0 };
-        input_x_positions = { 1.0, 2.0, 3.0 };
-        input_low = 0.0;
-        input_high = 10.0;
-        input_timestep = 1;
-        Chunk *input_chunk = new MDChunk(0, 
-            input_timestep, 
-            input_types, 
-            input_x_positions, 
-            input_x_positions, 
-            input_x_positions, 
-            input_low, 
-            input_low, 
-            input_low, 
-            input_high, 
-            input_high, 
-            input_high);
+        std::vector<int> input_types = { 0, 0 ,0 };
+        std::vector<double> input_x_positions = { 1.0, 2.0, 3.0 };
+        double input_low = 0.0;
+        double input_high = 10.0;
+        int input_timestep = 1;
+        Chunk *input_chunk = new MDChunk(0, input_timestep, input_types, input_x_positions, input_x_positions, input_x_positions, input_low, input_low, input_low, input_high, input_high, input_high);
         std::vector<Chunk*> input_chunks = {input_chunk};
         std::vector<Chunk*> output_chunks = inter->operate_chunks(input_chunks);
         Chunk* output_chunk = output_chunks.front();
         MDChunk *plmdchunk = dynamic_cast<MDChunk *>(output_chunk);
-        output_x_positions = plmdchunk->get_x_positions();
-        output_types = plmdchunk->get_types();
-        output_timestep = plmdchunk->get_timestep();
-        output_low = plmdchunk->get_box_lx();
-        output_high = plmdchunk->get_box_hx();
+        REQUIRE( plmdchunk->get_x_positions().size() == input_x_positions.size() );
+        REQUIRE( plmdchunk->get_types().size() == input_types.size() );
+        REQUIRE( plmdchunk->get_timestep() == input_timestep);
+        REQUIRE( plmdchunk->get_box_lx() == input_low);
+        REQUIRE( plmdchunk->get_box_hx() == input_high);
 
         delete input_chunk;
         delete output_chunk;
-        delete inter;
+        // delete inter;
     }
     catch(PythonModuleException ex)
     {
@@ -122,9 +114,5 @@ TEST_CASE( "MDIntermediator Tests", "[common]" )
     }
 
     REQUIRE( caught_py_exception == false );
-    REQUIRE( output_x_positions.size() == input_x_positions.size() );
-    REQUIRE( output_types.size() == input_types.size() );
-    REQUIRE( output_timestep == input_timestep);
-    REQUIRE( output_low == input_low);
-    REQUIRE( output_high == input_high);
+    
 }
