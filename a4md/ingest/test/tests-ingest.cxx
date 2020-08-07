@@ -6,6 +6,7 @@
 #include "chunk.h"
 #include "md_runner.h"
 #include "pdb_chunker.h"
+#include "cv_buffer.h"
 
 TEST_CASE("PyRunner extract_frame Tests", "[ingest]")
 {
@@ -124,6 +125,38 @@ TEST_CASE("Knob nAtoms Tests", "[ingest]")
     REQUIRE( box_hx == 0.0 );
     REQUIRE( box_hy == 0.0 );
     REQUIRE( box_hz == 0.0 );
+}
+
+TEST_CASE("CVBuffer Tests", "[ingest]")
+{
+    std::vector<double> cv_values = { 0.1, 0.1, 0.1, 0.2, 0.2, 0.2 };
+
+    int interval = 2;
+    ChunkOperator* cv_buffer = new CVBuffer(interval);
+    
+    for(unsigned long int chunk_id = 0; chunk_id < 10; chunk_id++)
+    {
+        Chunk* chunk = new CVChunk(chunk_id, cv_values);
+        std::vector<Chunk*> input_chunks = {chunk};
+        std::vector<Chunk*> output_chunks = cv_buffer->operate_chunks(input_chunks);
+        if ((chunk_id + 1) % interval == 0)
+        {
+            Chunk* output_chunk = output_chunks.front();
+            CVChunk *cv_chunk = dynamic_cast<CVChunk *>(output_chunks.front());
+            // cv_chunk->print();
+            REQUIRE( output_chunks.size() == 1 );
+            REQUIRE( cv_chunk->get_cv_values().size() == 12);
+            REQUIRE( cv_chunk->get_cv_values()[0] == 0.1);
+            REQUIRE( cv_chunk->get_cv_values()[3] == 0.2);
+            delete output_chunk;
+        }
+        if (chunk_id % interval == 0)
+        {
+            REQUIRE( output_chunks.size() == 0);
+        }
+        delete chunk;
+    }
+    delete cv_buffer;
 }
 
 //int main(int argc, char* argv[])
