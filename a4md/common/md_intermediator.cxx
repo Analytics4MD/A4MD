@@ -7,6 +7,12 @@ MDIntermediator::MDIntermediator(char* module_name, char* function_name, char* p
 	printf("---===== Initialized MDIntermediator\n");
 }
 
+MDIntermediator::MDIntermediator(PyRunner* py_runner)
+{
+    m_py_runner = py_runner;
+    printf("---===== Initialized MDIntermediator with initialized PyRunner\n");
+}
+
 MDIntermediator::~MDIntermediator()
 {
     delete m_py_runner;
