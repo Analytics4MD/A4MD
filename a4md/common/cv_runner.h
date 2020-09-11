@@ -1,7 +1,6 @@
 #ifndef __CV_RUNNER_H__
 #define __CV_RUNNER_H__
 #include "py_runner.h"
-#include "cv_chunk.h"
 
 class CVRunner : public PyRunner 
 {

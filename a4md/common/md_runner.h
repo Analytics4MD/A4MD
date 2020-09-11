@@ -1,7 +1,6 @@
 #ifndef __MD_RUNNER_H__
 #define __MD_RUNNER_H__
 #include "py_runner.h"
-#include "md_chunk.h"
 
 class MDRunner : public PyRunner 
 {

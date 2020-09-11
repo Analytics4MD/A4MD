@@ -1,6 +1,7 @@
 #include "md_runner.h"
-#include <iostream>
 
+#include <iostream>
+#include "md_chunk.h"
 // #define NO_IMPORT_ARRAY
 // #define PY_ARRAY_UNIQUE_SYMBOL PY_ARRAY_API
 // #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
@@ -28,7 +29,7 @@ MDRunner::MDRunner(char* module_name, char* function_name, char* py_path, char* 
 
 MDRunner::~MDRunner()
 { 
-	printf("---===== Initialized MDRunner\n");
+	printf("---===== Finalized MDRunner\n");
 }
 
 template <typename T>

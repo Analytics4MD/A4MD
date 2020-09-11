@@ -1,4 +1,5 @@
 #include "cv_runner.h"
+#include "cv_chunk.h"
 
 CVRunner::CVRunner(char* module_name, char* function_name, char* py_path)
 : PyRunner(module_name, function_name, py_path) 
