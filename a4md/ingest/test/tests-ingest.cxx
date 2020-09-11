@@ -10,7 +10,7 @@
 
 TEST_CASE("PyRunner extract_frame Tests", "[ingest]")
 {
-    std::string name = "load";
+    std::string name = "ingest";
     std::string func = "extract_frame";
     // ToDo: unhardcode 
     std::string py_path = "./a4md/ingest/test";
@@ -48,7 +48,7 @@ TEST_CASE("PyRunner extract_frame Tests", "[ingest]")
 
 TEST_CASE("PDBChunker Tests", "[ingest]")
 {
-    std::string name = "load";
+    std::string name = "ingest";
     std::string func = "extract_frame";
     // ToDo: unhardcode 
     std::string py_path = "./a4md/ingest/test";
@@ -82,7 +82,7 @@ TEST_CASE("PDBChunker Tests", "[ingest]")
 
 TEST_CASE("Knob nAtoms Tests", "[ingest]")
 {
-    std::string name = "load";
+    std::string name = "ingest";
     std::string func = "extract_frame";
     // ToDo: unhardcode 
     std::string py_path = "./a4md/ingest/test";
@@ -141,10 +141,10 @@ TEST_CASE("CVBuffer Tests", "[ingest]")
         std::vector<Chunk*> output_chunks = cv_buffer->operate_chunks(input_chunks);
         if ((chunk_id + 1) % interval == 0)
         {
+            REQUIRE( output_chunks.size() == 1 );
             Chunk* output_chunk = output_chunks.front();
             CVChunk *cv_chunk = dynamic_cast<CVChunk *>(output_chunks.front());
             // cv_chunk->print();
-            REQUIRE( output_chunks.size() == 1 );
             REQUIRE( cv_chunk->get_cv_values().size() == 12);
             REQUIRE( cv_chunk->get_cv_values()[0] == 0.1);
             REQUIRE( cv_chunk->get_cv_values()[3] == 0.2);
@@ -158,42 +158,3 @@ TEST_CASE("CVBuffer Tests", "[ingest]")
     }
     delete cv_buffer;
 }
-
-//int main(int argc, char* argv[])
-//TEST_CASE("PDBChunker Tests", "[ingest]")
-//{
-//  //int catch_session = Catch::Session().run( argc, argv );
-//
-//  std::string name = "load";
-//  std::string func = "extract_frame";
-//  //std::string py_path((char*)argv[1]);
-//  //std::string file_path((char*)argv[2]);
-//  std::string py_path = "./a4md/ingest/test";
-//  std::string file_path = "./a4md/ingest/test/test.pdb";
-//
-//  PyRunner* py_runner = new PyRunner((char*)name.c_str(), 
-//                                     (char*)func.c_str(),
-//                                     (char*)py_path.c_str());
-//  PDBChunker* pdb_chunker = new PDBChunker((*py_runner),
-//                                           (char*)file_path.c_str());
-//  int result = pdb_chunker->extract_chunk();
-//  std::vector<Chunk*> chunk_vector = pdb_chunker->get_chunks(1);
-//  Chunk* chunk = chunk_vector.front();
-//  MDChunk *plmdchunk = dynamic_cast<MDChunk *>(chunk);
-//  
-//  auto x_positions = plmdchunk->get_x_positions();
-//  auto y_positions = plmdchunk->get_y_positions();
-//  auto z_positions = plmdchunk->get_z_positions();
-//  auto types_vector = plmdchunk->get_types();
-//  int timestep = plmdchunk->get_timestep();
-//
-//  REQUIRE( result == 0 );
-//  REQUIRE( chunk_vector.size() == 1 );
-//  REQUIRE( x_positions.size() == 37 );
-//  REQUIRE( y_positions.size() == 37 );
-//  REQUIRE( z_positions.size() == 37 );
-//  REQUIRE( types_vector.size() == 37 );
-//  REQUIRE( timestep == 0 );
-//  printf("End test\n");
-//  //return catch_session;
-//}
