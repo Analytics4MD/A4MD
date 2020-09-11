@@ -13,6 +13,12 @@ MDStager::MDStager(ChunkReader* chunk_reader, ChunkOperator* chunk_operator, Chu
     printf("---===== Initalized MDStager\n");
 }
 
+MDStager::MDStager(ChunkReader* chunk_reader, std::vector<ChunkOperator*> chunk_operators, ChunkWriter* chunk_writer)
+: ChunkStager(chunk_reader, chunk_operators, chunk_writer)
+{
+	printf("---===== Initalized MDStager\n");
+}
+
 MDStager::~MDStager()
 {
     printf("---===== Finalized MDStager\n");
