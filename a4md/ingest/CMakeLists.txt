@@ -4,6 +4,7 @@ set(_a4md_ingest_sources_
         # chunk_stager.cxx
         # md_stager.cxx
 		pdb_chunker.cxx
+        cv_buffer.cxx
 		)
 set(_a4md_ingest_headers_
         ingester.h
@@ -11,6 +12,7 @@ set(_a4md_ingest_headers_
         # chunk_stager.h
         # md_stager.h
 		pdb_chunker.h
+        cv_buffer.h
         )
 
 #include_directories(${PROJECT_SOURCE_DIR}/extern/dataspaces/include)

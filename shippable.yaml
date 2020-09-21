@@ -35,6 +35,7 @@ build:
     - export PATH=_install/bin:$PATH
     - ./build/a4md/tests-main -r junit -o shippable/testresults/tests-main-report.xml
     - ./build/a4md/common/test/tests-cmn -r junit -o shippable/testresults/tests-cmn-report.xml
+    - ./build/a4md/dtl/test/tests-dtl -r junit -o shippable/testresults/tests-dtl-report.xml
     - ./build/a4md/retrieve/test/tests-retrieve -r junit -o shippable/testresults/tests-retrieve-report.xml
     - ./build/a4md/ingest/test/tests-ingest -r junit -o shippable/testresults/tests-ingest-report.xml
     - echo "Build complete"

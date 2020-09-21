@@ -24,7 +24,7 @@ class Chunk
 
     public:
         Chunk(){}
-        Chunk(const unsigned long int id) :
+        Chunk(unsigned long int id) :
              m_id(id)
         {
         }
@@ -40,6 +40,15 @@ class Chunk
         int get_chunk_id()
         {
             return m_id;
+        }
+
+        void set_chunk_id(unsigned long int id)
+        {
+            m_id = id;
+        }
+
+        virtual void append(Chunk* other_chunk)
+        {
         }
 };
 

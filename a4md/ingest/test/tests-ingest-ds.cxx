@@ -23,7 +23,7 @@ void ds_write_and_read()
     DataSpacesReader* dataspaces_reader_ptr;
     unsigned long int current_chunk_id = 1;
 
-    std::string name = "load";
+    std::string name = "ingest";
     std::string func = "extract_frame";
     std::string py_path = "./a4md/ingest/test";
     std::string file_path = "./a4md/ingest/test/test.pdb";

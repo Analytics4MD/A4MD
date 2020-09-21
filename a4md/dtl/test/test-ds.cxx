@@ -4,6 +4,7 @@
 #include "dataspaces_writer.h"
 #include "dataspaces_reader.h"
 #include "md_chunk.h"
+#include "cv_chunk.h"
 #include <vector>
 #include <spawn.h>
 #include <sys/wait.h>
@@ -20,8 +21,12 @@ using namespace std;
 void ds_write_and_read()
 {
     MPI_Init(NULL,NULL);
-    DataSpacesWriter* dataspaces_writer_ptr;
-    DataSpacesReader* dataspaces_reader_ptr;
+    ChunkWriter* chunk_writer;
+    ChunkReader* chunk_reader;
+    unsigned long int total_chunks = 2;
+    chunk_writer = new DataSpacesWriter(1, 1, total_chunks, MPI_COMM_WORLD);
+    chunk_reader = new DataSpacesReader(2, 1, total_chunks, MPI_COMM_WORLD);
+
     unsigned long int current_chunk_id = 0;
     int step = 1;
     std::vector<int> types = { 2, 1, 1 };
@@ -32,50 +37,46 @@ void ds_write_and_read()
     lx=ly=lz=xy=xz=yz=1.0;
     lx=1.5;
 
-    MDChunk md_chunk(current_chunk_id,
-                           step,
-                           types,
-                           x_positions,
-                           y_positions,
-                           z_positions,
-                           lx,
-                           ly,
-                           lz,
-                           xy,
-                           xz,
-                           yz);
-    Chunk* chunk = &md_chunk; 
-
-    unsigned long int total_chunks = 1;
-    dataspaces_writer_ptr = new DataSpacesWriter(1, 1, total_chunks, MPI_COMM_WORLD);
-    dataspaces_reader_ptr = new DataSpacesReader(2, 1, total_chunks, MPI_COMM_WORLD);
+    Chunk* chunk = new MDChunk(current_chunk_id,step, types, x_positions, y_positions, z_positions, lx, ly, lz, xy, xz, yz);
+    MDChunk *md_chunk = dynamic_cast<MDChunk *>(chunk);
+    
     std::vector<Chunk*> chunks = {chunk};
-    dataspaces_writer_ptr->write_chunks(chunks);
-    std::vector<Chunk*> recieved_chunks = dataspaces_reader_ptr->read_chunks(current_chunk_id, current_chunk_id);
-    for (Chunk* chunk: recieved_chunks)
-    {
-      MDChunk *recieved_chunk = dynamic_cast<MDChunk *>(chunk);
-      //printf("Printing typecasted chunk\n");
-      //chunk->print();
-      auto recieved_x_positions = recieved_chunk->get_x_positions();
-      auto recieved_y_positions = recieved_chunk->get_y_positions();
-      auto recieved_z_positions = recieved_chunk->get_z_positions();
-      auto recieved_types_vector = recieved_chunk->get_types();
-     
-      double recieved_lx = recieved_chunk->get_box_lx();
-      double recieved_ly = recieved_chunk->get_box_ly();
-      double recieved_lz = recieved_chunk->get_box_lz();
-      double recieved_hx = recieved_chunk->get_box_hx(); // 0 for orthorhombic
-      double recieved_hy = recieved_chunk->get_box_hy(); // 0 for orthorhombic
-      double recieved_hz = recieved_chunk->get_box_hz(); // 0 for orthorhombic
-      int recieved_step = recieved_chunk->get_timestep();
+    chunk_writer->write_chunks(chunks);
+    std::vector<Chunk*> recv_chunks = chunk_reader->read_chunks(current_chunk_id, current_chunk_id);
 
-      REQUIRE( chunk->get_chunk_id() == recieved_chunk->get_chunk_id() );
-      REQUIRE( md_chunk.get_timestep() == recieved_chunk->get_timestep() );
-      REQUIRE( md_chunk.get_types()[0] == recieved_chunk->get_types()[0] );
-      REQUIRE( md_chunk.get_x_positions()[0] == recieved_chunk->get_x_positions()[0] );
-      REQUIRE( md_chunk.get_box_lx() == recieved_chunk->get_box_lx() );
-    }
+    MDChunk *recv_md_chunk = dynamic_cast<MDChunk *>(recv_chunks.front());
+    
+
+    REQUIRE( md_chunk->get_chunk_id() == recv_md_chunk->get_chunk_id() );
+    REQUIRE( md_chunk->get_timestep() == recv_md_chunk->get_timestep() );
+    REQUIRE( md_chunk->get_types()[0] == recv_md_chunk->get_types()[0] );
+    REQUIRE( md_chunk->get_types().size() == recv_md_chunk->get_types().size() );
+    REQUIRE( md_chunk->get_x_positions()[0] == recv_md_chunk->get_x_positions()[0] );
+    REQUIRE( md_chunk->get_x_positions().size() == recv_md_chunk->get_x_positions().size() );
+    REQUIRE( md_chunk->get_box_lx() == recv_md_chunk->get_box_lx() );
+    delete chunk;
+
+    current_chunk_id = 1;
+    std::vector<double> cv_values = { 0.1, 0.1, 0.1, 0.2, 0.2, 0.2 };
+    chunk = new CVChunk(current_chunk_id, cv_values);
+    CVChunk *cv_chunk = dynamic_cast<CVChunk*>(chunk);
+    chunks.clear();
+    recv_chunks.clear();
+
+    chunks.push_back(chunk);
+    chunk_writer->write_chunks(chunks);
+    recv_chunks = chunk_reader->read_chunks(current_chunk_id, current_chunk_id);
+    CVChunk *recv_cv_chunk = dynamic_cast<CVChunk *>(recv_chunks.front());
+    // recv_cv_chunk->print();
+
+    REQUIRE( cv_chunk->get_chunk_id() == recv_cv_chunk->get_chunk_id() );
+    REQUIRE( cv_chunk->get_cv_values()[0] == recv_cv_chunk->get_cv_values()[0] );
+    REQUIRE( cv_chunk->get_cv_values().size() == recv_cv_chunk->get_cv_values().size() );
+    delete chunk;
+    
+    delete chunk_writer;
+    delete chunk_reader;
+
     MPI_Finalize(); 
     printf("Completed dataspaces write and read successfully\n");
 }
@@ -94,7 +95,7 @@ TEST_CASE( "DS Write-Read Test", "[dtl]" )
       file_ << " \n";
       file_ << "ndim = 1\n";
       file_ << "dims = 100000\n";
-      file_ << "max_versions = 10\n";
+      file_ << "max_versions = 1\n";
       file_ << "max_readers = 1\n";
       file_ << "lock_type = 1\n";
       file_ << "hash_version = 1\n";
