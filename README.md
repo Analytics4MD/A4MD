@@ -19,7 +19,7 @@ A framework that enables in situ molecular dynamic analytics via using in-memory
 ## Prerequisites
 
 In order to use this package, your system should have the following installed:
-- git
+- C++11
 - cmake
 - boost
 - python3
@@ -30,10 +30,11 @@ In order to use this package, your system should have the following installed:
 
 ## Dependencies
 
-The framework also builds the following external libraries as dependencies: 
+The framework is also built on top the following third-party libraries: 
 - Dataspaces
-- Catch2
+- Decaf (optional) 
 
+We also use Catch2 as a test framework.
 
 ## Installation
 
@@ -47,38 +48,35 @@ git clone --recursive git@github.com:Analytics4MD/A4MD-project-a4md.git a4md
 
 2. Build A4MD package 
 
-Target build system should be specified in *-DTARGET_ARCH*. Please reference TargetArchList.txt for current support systems.
-
 ```
 cd a4md
 mkdir build
 cd build
 
-CC=$(which gcc) CXX=$(which g++) cmake .. \
+cmake .. \
 -DCMAKE_INSTALL_PREFIX=${A4MD_ROOT} \
--DBOOST_ROOT=${BOOST_ROOT} \
--DPYTHON_EXECUTABLE=$(which python) \
--DPYTHON_INCLUDE_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
--DPYTHON_LIBRARY=$(python -c "import distutils.sysconfig as sysconfig; import os; print(os.path.join(sysconfig.get_config_var('LIBDIR'), sysconfig.get_config_var('LDLIBRARY')))") \
--DMPI_C_COMPILER=$(which mpicc) \
--DMPI_CXX_COMPILER=$(which mpicxx) \
--DMPI_FORTRAN_COMPILER=$(which mpifort) \
--DTARGET_SYSTEM=${SYSTEM}
+-DDATASPACES_PREFIX=${DATASPACES_ROOT}
 
 make
 make install
 ```
 
-> *Note that* on Cori at NERSC, it is required to replace pure MPI compilers (mpicc, mpicxx, mpifort) with compiler wrappers (cc, CC, ftn), respectively.
+> *Note that* on Cori at NERSC or Summit at OLCF, it is required to specify compiler wrappers (cc, CC, ftn) or MPI compilers (mpicc, mpicxx, mpifort), respectively.
 
-3. Build A4MD built-in analysis package
+3. To build additional data transport layer based on Decaf, specify Decaf installation directory as follows:
+
+```
+-Ddtl_decaf=on -DDECAF_PREFIX=${DECAF_ROOT}
+```
+
+4. Build A4MD built-in analysis package
 
 ```
 cd a4md
 pip install -e .
 ```
 
-4. (Optional) To use TAU profiling in the code the cmake command can include the following flags. Of course, TAU needs to be installed on the system.
+5. (Optional) To use TAU profiling in the code the cmake command can include the following flags. Of course, TAU needs to be installed on the system.
 
 ```
 -DCMAKE_C_COMPILER=$(which tau_cc.sh) -DCMAKE_CXX_COMPILER=$(which tau_cxx.sh)
@@ -96,7 +94,7 @@ export TAU_LIBS=$(tau_cxx.sh -tau:showlibs)
 export CXXFLAGS="-g -DPROFILING_ON -DTAU_STDCXXLIB -I${TAU_ROOT}/include"
 ```
 
-5. (Optional) To use build-in performance scheme, run cmake command with the following flag:
+6. (Optional) To use built-in performance scheme via predefined timers, run cmake command with the following flag:
 
 ```
 -DBUILT_IN_PERF=ON
