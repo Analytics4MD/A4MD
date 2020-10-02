@@ -3,6 +3,7 @@ project (a4md)
 cmake_minimum_required (VERSION 3.5)
 
 option(dtl_dspaces "Build A4MD with Dataspaces data transport layer" ON)
+option(dtl_dimes "Build A4MD with DIMES data transport layer" OFF)
 option(dtl_decaf "Build A4MD with Decaf data transport layer" OFF)
 option(build_examples "Build examples" ON)
 option(build_tests "Build tests" OFF)

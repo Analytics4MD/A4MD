@@ -151,6 +151,11 @@ if (dtl_dspaces)
     endif()
 endif ()
 
+if (dtl_dimes)
+    message(STATUS "Building with DIMES data transport layer")
+    add_definitions(-DDTL_DIMES)
+endif ()
+
 if (dtl_decaf)
     list(APPEND DTL_LIBRARIES ${DECAF_LIBRARIES})
     set(_decaf_dtl_sources_ decaf_writer.cxx decaf_reader.cxx)

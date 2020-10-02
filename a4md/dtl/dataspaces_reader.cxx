@@ -1,5 +1,8 @@
 #include "dataspaces_reader.h"
 #include "dataspaces.h"
+#ifdef DTL_DIMES
+#include "dimes_interface.h"
+#endif
 #include "chunk_serializer.h"
 #include <sstream>
 #if defined(BUILT_IN_PERF) || defined(COUNT_LOST_FRAMES)
@@ -154,14 +157,24 @@ std::vector<Chunk*> DataSpacesReader::read_chunks(unsigned long int chunks_from,
         TAU_STATIC_TIMER_START("total_read_size_time");
         TAU_DYNAMIC_TIMER_START("step_read_size_time");
 #endif
-        int error = dspaces_get(m_size_var_name.c_str(),
+        int error;
+#ifdef DTL_DIMES
+        error = dimes_get(m_size_var_name.c_str(),
                                 chunk_id,
                                 sizeof(std::size_t),
                                 ndim,
                                 lb,
                                 ub,
                                 &chunk_size);
-
+#else
+        error = dspaces_get(m_size_var_name.c_str(),
+                                chunk_id,
+                                sizeof(std::size_t),
+                                ndim,
+                                lb,
+                                ub,
+                                &chunk_size);
+#endif
         if (error != 0)
         {
             if (error == -11)
@@ -220,6 +233,16 @@ std::vector<Chunk*> DataSpacesReader::read_chunks(unsigned long int chunks_from,
         //TAU_TRACK_MEMORY_FOOTPRINT();
         //TAU_TRACK_MEMORY_FOOTPRINT_HERE();
 #endif
+
+#ifdef DTL_DIMES
+        error = dimes_get(m_chunk_var_name.c_str(),
+                            chunk_id,
+                            chunk_size,
+                            ndim,
+                            lb,
+                            ub,
+                            input_data);
+#else
         error = dspaces_get(m_chunk_var_name.c_str(),
                             chunk_id,
                             chunk_size,
@@ -227,7 +250,7 @@ std::vector<Chunk*> DataSpacesReader::read_chunks(unsigned long int chunks_from,
                             lb,
                             ub,
                             input_data);
-
+#endif
         if (error != 0)
         {
             if (error == -11)
