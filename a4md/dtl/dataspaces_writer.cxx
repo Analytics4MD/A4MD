@@ -290,9 +290,9 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
     if (chunk_id == m_total_chunks-1)
     {
 #ifdef DTL_DIMES
-        dspaces_lock_on_write("last_syn_lock", &m_gcomm);
+        dspaces_lock_on_write(m_chunk_lock_name.c_str(), &m_gcomm);
         dimes_put_sync_all();
-        dspaces_unlock_on_write("last_syn_lock", &m_gcomm);
+        dspaces_unlock_on_write(m_chunk_lock_name.c_str(), &m_gcomm);
 #endif
 
 #ifdef BUILT_IN_PERF
