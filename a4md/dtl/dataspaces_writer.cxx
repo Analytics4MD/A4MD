@@ -97,7 +97,8 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         //printf("MAX SIZE of string is %zu \n", data.max_size());
         // printf("Chunk size for chunk_id %i is %zu\n",chunk_id,size);
 
-#ifdef NERSC
+        // Data padding to resolve GNI alignment error
+#ifdef GNI
         // Padding to multiple of 8 byte
         std::size_t c_size = round_up_8(size);
         char *c_data = new char [c_size];
@@ -107,7 +108,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
 #else
         std::size_t c_size = size;
         char *c_data = (char*)data.data();
-#endif /* NERSC */
+#endif /* GNI */
 
 #ifdef TAU_PERF
         TAU_DYNAMIC_TIMER_STOP("step_write_ser_time");
