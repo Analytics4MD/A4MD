@@ -1,5 +1,8 @@
 #include "dataspaces_writer.h"
 #include "dataspaces.h"
+#ifdef DTL_DIMES
+#include "dimes_interface.h"
+#endif
 #include "chunk_serializer.h"
 #ifdef BUILT_IN_PERF
 #include "timer.h"
@@ -94,7 +97,8 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         //printf("MAX SIZE of string is %zu \n", data.max_size());
         // printf("Chunk size for chunk_id %i is %zu\n",chunk_id,size);
 
-#ifdef NERSC
+        // Data padding to resolve GNI alignment error
+#ifdef GNI
         // Padding to multiple of 8 byte
         std::size_t c_size = round_up_8(size);
         char *c_data = new char [c_size];
@@ -104,7 +108,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
 #else
         std::size_t c_size = size;
         char *c_data = (char*)data.data();
-#endif /* NERSC */
+#endif /* GNI */
 
 #ifdef TAU_PERF
         TAU_DYNAMIC_TIMER_STOP("step_write_ser_time");
@@ -148,22 +152,36 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         TAU_STATIC_TIMER_START("total_write_size_time");
         TAU_DYNAMIC_TIMER_START("step_write_size_time");
 #endif
-        int error = dspaces_put(m_size_var_name.c_str(),
+
+        int error;
+#ifdef DTL_DIMES
+        error = dimes_put(m_size_var_name.c_str(),
                                 chunk_id,
                                 sizeof(std::size_t),
                                 ndim,
                                 lb,
                                 ub,
                                 &c_size);
-
+#else
+        error = dspaces_put(m_size_var_name.c_str(),
+                                chunk_id,
+                                sizeof(std::size_t),
+                                ndim,
+                                lb,
+                                ub,
+                                &c_size);
+#endif
        
         if (error != 0)
             printf("----====== ERROR: Did not write size of chunk id: %lu to dataspaces successfully\n",chunk_id);
         //else
         //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
+#ifndef DTL_DIMES
         error = dspaces_put_sync();
         if (error != 0) 
             printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_size_var_name.c_str());
+#endif
+
 #ifdef BUILT_IN_PERF
         DurationMilli size_write_time_ms = timeNow() - t_wsstart;
         m_step_size_write_time_ms[chunk_id] = size_write_time_ms.count();
@@ -205,6 +223,16 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         //TAU_TRACK_MEMORY_FOOTPRINT();
         //TAU_TRACK_MEMORY_FOOTPRINT_HERE();
 #endif
+
+#ifdef DTL_DIMES
+        error = dimes_put(m_chunk_var_name.c_str(),
+                            chunk_id,
+                            c_size,
+                            ndim,
+                            lb,
+                            ub,
+                            c_data);
+#else
         error = dspaces_put(m_chunk_var_name.c_str(),
                             chunk_id,
                             c_size,
@@ -212,13 +240,17 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
                             lb,
                             ub,
                             c_data);
+#endif
         if (error != 0)
             printf("----====== ERROR: Did not write chunk id: %i to dataspaces successfully\n",chunk_id);
         //else
         //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
+#ifndef DTL_DIMES
         error = dspaces_put_sync();
         if (error != 0)
             printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_chunk_var_name.c_str());
+#endif
+
 #ifdef TAU_PERF
         TAU_DYNAMIC_TIMER_STOP("step_write_chunk_time");
         TAU_STATIC_TIMER_STOP("total_write_chunk_time");
@@ -255,9 +287,15 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
 #endif
     }
     //MPI_Barrier(m_gcomm);
-#ifdef BUILT_IN_PERF
     if (chunk_id == m_total_chunks-1)
     {
+#ifdef DTL_DIMES
+        dspaces_lock_on_write(m_chunk_lock_name.c_str(), &m_gcomm);
+        dimes_put_sync_all();
+        dspaces_unlock_on_write(m_chunk_lock_name.c_str(), &m_gcomm);
+#endif
+
+#ifdef BUILT_IN_PERF
         printf("total_chunks written : %u\n",m_total_chunks);
         printf("total_chunk_data_written : %u\n",m_total_size);
         printf("total_data_write_time_ms : %f\n",m_total_data_write_time_ms);
@@ -308,8 +346,8 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         delete[] m_step_size_write_time_ms;
         delete[] m_step_between_write_time_ms;
         delete[] m_step_ser_time_ms;
-    }
 #endif
+    }
 }
 
 DataSpacesWriter::~DataSpacesWriter() 
