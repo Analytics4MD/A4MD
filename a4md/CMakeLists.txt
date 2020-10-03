@@ -11,12 +11,16 @@ add_subdirectory(extern)
 #add_executable(mdgenerator mdgenerator.cxx)
 add_executable(generator generator.cxx)
 add_executable(analyzer analyzer.cxx)
+add_executable(test_producer test_producer.cxx)
+add_executable(test_consumer test_consumer.cxx)
 
 # target_link_libraries(ingester ingest a4md_cmn ${Boost_LIBRARIES} ${TAU_LIBRARIES})
 # target_link_libraries(retriever retrieve a4md_cmn ${Boost_LIBRARIES} ${TAU_LIBRARIES})
 #target_link_libraries(mdgenerator ingest a4md_cmn ${Boost_LIBRARIES} ${TAU_LIBRARIES})
 target_link_libraries(generator a4md_cmn a4md_dtl a4md_ingest ${Boost_LIBRARIES} ${TAU_LIBRARIES})
 target_link_libraries(analyzer a4md_cmn a4md_dtl a4md_retrieve ${Boost_LIBRARIES} ${TAU_LIBRARIES})
+target_link_libraries(test_producer a4md_cmn a4md_dtl a4md_ingest ${Boost_LIBRARIES} ${TAU_LIBRARIES})
+target_link_libraries(test_consumer a4md_cmn a4md_dtl a4md_retrieve ${Boost_LIBRARIES} ${TAU_LIBRARIES})
 
 ## Install executables
 # install (TARGETS ingester DESTINATION bin)
@@ -24,6 +28,8 @@ target_link_libraries(analyzer a4md_cmn a4md_dtl a4md_retrieve ${Boost_LIBRARIES
 #install (TARGETS mdgenerator DESTINATION bin)
 install (TARGETS generator DESTINATION bin)
 install (TARGETS analyzer DESTINATION bin)
+install (TARGETS test_producer DESTINATION bin)
+install (TARGETS test_consumer DESTINATION bin)
 
 if (dtl_decaf)
 	add_executable(generator_decaf generator_decaf.cxx)
