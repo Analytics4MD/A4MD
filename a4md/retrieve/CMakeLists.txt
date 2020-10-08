@@ -21,6 +21,8 @@ set_target_properties(a4md_retrieve PROPERTIES
 
 add_dependencies(a4md_retrieve a4md_cmn a4md_dtl)
 target_link_libraries(a4md_retrieve a4md_cmn a4md_dtl ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${PYTHON_LIBRARIES} ${TAU_LIBRARIES})
+get_target_property(A4MD_RETRIEVE_LIBRARIES a4md_retrieve LINK_LIBRARIES)
+message(STATUS "A4MD_RETRIEVE_LIBRARIES = ${A4MD_RETRIEVE_LIBRARIES}")
 
 add_subdirectory(test)
 install (TARGETS a4md_retrieve DESTINATION lib)
