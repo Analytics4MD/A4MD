@@ -18,6 +18,9 @@ message(STATUS "CXXFLAGS: ${CMAKE_CXX_FLAGS}")
 # Set Cmake verbose
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
+# Custom CMake scripts
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
 #################################
 
 ## Update submodules
@@ -49,6 +52,7 @@ endif()
 find_package(MPI REQUIRED)
 if (MPI_FOUND)
     include_directories(SYSTEM ${MPI_INCLUDE_PATH})
+    list(APPEND A4MD_INCLUDE_DIRS ${MPI_INCLUDE_PATH})
     if (MPI_C_FOUND)
         message(STATUS "--==MPI C COMPILER FOUND==--" ${MPI_C_COMPILER})
         message(STATUS "MPI_C_COMPILE_FLAGS" ${MPI_C_COMPILE_FLAGS})
@@ -90,12 +94,11 @@ else()
   message(STATUS " Boost Include Directories : ${Boost_INCLUDE_DIRS}")
   message(STATUS " Boost Libraries : ${Boost_LIBRARIES}")
   include_directories(${Boost_INCLUDE_DIRS})
+  list(APPEND A4MD_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
   link_directories(${Boost_LIBRARY_DIRS})
 endif (NOT Boost_FOUND)
 
-# Custom CMake scripts
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
+# Add Python
 # FindPythonInterp will search for an interpreter with 3.3 <= version <= 3.7
 set(Python_ADDITIONAL_VERSIONS 3.7 3.6 3.5 3.4 3.3)
 # find python interpreter (minimum version 3.3)
@@ -112,7 +115,22 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 find_package(NumPy REQUIRED)
 include_directories(${NUMPY_INCLUDE_DIR})
 
+# Pthread
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+
+if (dtl_dspaces)
+    find_package(DataSpaces)
+    if (DATASPACES_FOUND)
+        message(STATUS "Found external Dataspaces installed at: ${DATASPACES_PREFIX}")
+        message(STATUS "DATASPACES_VERSION: ${DATASPACES_VERSION}")
+        message(STATUS "DATASPACES_INCLUDE_DIR: ${DATASPACES_INCLUDE_DIR}")
+        message(STATUS "DATASPACES_LIBRARIES: ${DATASPACES_LIBRARIES}")
+        include_directories(${DATASPACES_INCLUDE_DIR})
+        list(APPEND A4MD_INCLUDE_DIRS ${DATASPACES_INCLUDE_DIR})
+        set(DATASPACES_LIBRARIES ${DATASPACES_LIBRARIES})
+        list(APPEND DTL_LIBRARIES ${DATASPACES_LIBRARIES})
+    endif ()
+endif ()
 
 if (dtl_decaf)
     # Find Decaf
@@ -124,7 +142,9 @@ if (dtl_decaf)
     message(STATUS "DECAF_CXX_RUNTIME_LIBRARY: ${DECAF_CXX_RUNTIME_LIBRARY}")
     add_definitions(-DTRANSPORT_MPI)
     include_directories(${DECAF_CXX_INCLUDE_DIR})
+    list(APPEND A4MD_INCLUDE_DIRS ${DECAF_CXX_INCLUDE_DIR})
     set(DECAF_LIBRARIES ${DECAF_CXX_TRANSPORT_LIBRARY} ${DECAF_CXX_DATA_MODEL_LIBRARY} ${DECAF_CXX_RUNTIME_LIBRARY})
+    list(APPEND DTL_LIBRARIES ${DECAF_LIBRARIES})
 endif ()
 
 # Check TAU enabled
@@ -169,3 +189,4 @@ endif(build_tests)
 if (build_wrap)
     add_subdirectory(wrap)
 endif(build_wrap)
+add_subdirectory(config)

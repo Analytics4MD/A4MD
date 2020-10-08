@@ -29,16 +29,7 @@ add_dependencies(a4md_dtl a4md_cmn)
 target_link_libraries(a4md_dtl a4md_cmn)
 
 if (dtl_dspaces)
-    find_package(DataSpaces)
     if (DATASPACES_FOUND)
-        message(STATUS "Found external Dataspaces installed at: ${DATASPACES_PREFIX}")
-        message(STATUS "DATASPACES_VERSION: ${DATASPACES_VERSION}")
-        message(STATUS "DATASPACES_INCLUDE_DIR: ${DATASPACES_INCLUDE_DIR}")
-        message(STATUS "DATASPACES_LIBRARIES: ${DATASPACES_LIBRARIES}")
-        message(STATUS "DATASPACES_LIBRARY: ${DATASPACES_LIBRARY}")
-        include_directories(${DATASPACES_INCLUDE_DIR})
-        set(DATASPACES_LIBRARIES ${DATASPACES_LIBRARIES})
-        list(APPEND DTL_LIBRARIES ${DATASPACES_LIBRARIES})
         install(DIRECTORY "${DATASPACES_ROOT}/bin/" 
             DESTINATION "${CMAKE_INSTALL_PREFIX}/bin"
             USE_SOURCE_PERMISSIONS
@@ -157,7 +148,6 @@ if (dtl_dimes)
 endif ()
 
 if (dtl_decaf)
-    list(APPEND DTL_LIBRARIES ${DECAF_LIBRARIES})
     set(_decaf_dtl_sources_ decaf_writer.cxx decaf_reader.cxx)
     target_sources(a4md_dtl PRIVATE ${_decaf_dtl_sources_})
     set(_a4md_dtl_headers_ ${_a4md_dtl_headers_} decaf_writer.h decaf_reader.h)
