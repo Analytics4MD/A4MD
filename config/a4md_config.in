@@ -1,0 +1,75 @@
+function usage() {
+  echo "a4md_config [OPTION]"
+  echo "  -h, --help       Display help information"
+  echo "  -v, --version    Display version information"
+  echo "  -c               Preprocessor and compile flags"
+  echo "  -l               Linker flags"
+}
+
+if [ $# -eq 0 ]
+then
+  usage
+  exit 1
+fi
+
+CMAKE="@CMAKE_COMMAND@"
+INSTALL_DIR="@CMAKE_INSTALL_PREFIX@"
+MPI_LIBRARIES="@MPI_LIBRARIES@"
+BOOST_LIBRARIES="@Boost_LIBRARIES@" 
+PYTHON_LIBRARIES="@PYTHON_LIBRARIES@"
+DTL_LIBRARIES="@DTL_LIBRARIES@"
+TAU_LIBRARIES="@TAU_LIBRARIES@"
+A4MD_INCLUDE_DIRS="@A4MD_INCLUDE_DIRS@"
+A4MD_LIBRARIES="${MPI_LIBRARIES};${BOOST_LIBRARIES};${PYTHON_LIBRARIES};${DTL_LIBRARIES};${TAU_LIBRARIES}"
+
+for INCLUDE_DIR in  ${A4MD_INCLUDE_DIRS//;/ }; do
+    if [ -z "$INCLUDE_DIRS" ]; then
+        INCLUDE_DIRS="-I${INCLUDE_DIR}"
+    else
+        INCLUDE_DIRS="${INCLUDE_DIRS} -I${INCLUDE_DIR}"
+    fi
+done
+#echo $INCLUDE_DIRS
+INCLUDE_DIRS="-I${INSTALL_DIR}/include ${INCLUDE_DIRS}"
+
+for LIBRARY in ${A4MD_LIBRARIES//;/ }; do
+	if [ -z "$LIBRARIES" ]; then
+		LIBRARIES=""
+	else
+		LIBRARIES="${LIBRARIES} "
+	fi
+	LIBRARY_PATH=${LIBRARY%/*}
+	LIBRARY_BASE=${LIBRARY##*/}
+	LIBRARY_EXT=${LIBRARY_BASE##*.}
+	LIBRARY_NAME=${LIBRARY_BASE%.*}
+	LIBRARIES="${LIBRARIES} -L${LIBRARY_PATH} -l${LIBRARY_NAME:3}"
+done
+#echo $LIBRARIES
+
+LIBRARIES=$(echo $LIBRARIES | awk -vRS=" " -vORS=" " '!a[$1]++ {print $1}' ; echo)
+LIBRARIES="-L${INSTALL_DIR}/lib -la4md_comm -la4md_dtl -la4md_ingest -la4md_retrieve ${LIBRARIES}"
+#echo $LIBRARIES
+
+CF=0
+CL=0
+while [ $# -gt 0 ]
+do
+	case $1
+	in
+		-c) CF=1;;
+		-l) CL=1;;
+		-h|--help)
+			usage
+			exit 1
+			;;
+		*)
+			echo "Error: Unknown argument: $1"
+			usage
+			exit 1
+			;;
+	esac
+	shift
+done
+
+if [ $CF -eq 1 ]; then echo ${INCLUDE_DIRS}; fi
+if [ $CL -eq 1 ]; then echo ${LIBRARIES}; fi
