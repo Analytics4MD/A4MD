@@ -1,5 +1,6 @@
 # project name
-project (a4md)
+project (A4MD)
+set(A4MD_VERSION 1.0)
 cmake_minimum_required (VERSION 3.5)
 
 option(dtl_dspaces "Build A4MD with Dataspaces data transport layer" ON)
