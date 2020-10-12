@@ -111,6 +111,7 @@ set(Python_ADDITIONAL_VERSIONS ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
 # find python libs (minimum version matches the interpreter's version)
 find_package(PythonLibs ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR} REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
+list(APPEND A4MD_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS})
 
 # find Numpy
 find_package(NumPy REQUIRED)
