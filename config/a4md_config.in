@@ -48,7 +48,7 @@ done
 #echo $LIBRARIES
 
 LIBRARIES=$(echo $LIBRARIES | awk -vRS=" " -vORS=" " '!a[$1]++ {print $1}' ; echo)
-LIBRARIES="-L${INSTALL_DIR}/lib -la4md_cmn -la4md_dtl -la4md_ingest -la4md_retrieve ${LIBRARIES}"
+LIBRARIES="-L${INSTALL_DIR}/lib -la4md_dtl -la4md_cmn -la4md_ingest -la4md_retrieve ${LIBRARIES}"
 #echo $LIBRARIES
 
 CF=0
