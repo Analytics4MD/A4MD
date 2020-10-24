@@ -23,6 +23,7 @@ int main(int argc, const char** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     printf("rank = %d\n", rank);
     int color = (rank == 0) ? 0 : 1;
+    MPI_Comm dtl_comm;
     MPI_Comm_split(MPI_COMM_WORLD, color, rank, &dtl_comm);
     /*MPI_Group world_group;
     MPI_Comm_group(MPI_COMM_WORLD, &world_group);
