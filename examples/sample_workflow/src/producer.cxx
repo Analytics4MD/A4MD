@@ -19,28 +19,23 @@
 int main(int argc, const char** argv)
 {
     MPI_Init(NULL,NULL);
-    int rank, app_rank;
-    MPI_Comm global_comm = MPI_COMM_WORLD;
-    MPI_Comm app_comm, dtl_comm;
-    int color;
-    int *appnum, present;
-    MPI_Comm_rank(global_comm, &rank);
-    MPI_Comm_get_attr(global_comm, MPI_APPNUM, &appnum, &present);
-    MPI_Comm_split(global_comm, *appnum, rank, &app_comm);
-    MPI_Comm_rank(app_comm, &app_rank);
-    MPI_Comm_free(&app_comm);
-    if (app_rank == ROOT) 
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    printf("rank = %d\n", rank);
+    int color = (rank == 0) ? 0 : 1;
+    MPI_Comm_split(MPI_COMM_WORLD, color, rank, &dtl_comm);
+    /*MPI_Group world_group;
+    MPI_Comm_group(MPI_COMM_WORLD, &world_group);
+    int ranks[1] = {0};
+    MPI_Group dtl_group;
+    MPI_Group_incl(world_group, 1, ranks, &dtl_group);
+    MPI_Comm dtl_comm;
+    MPI_Comm_create(MPI_COMM_WORLD, dtl_group, &dtl_comm);*/
+    if (rank == 0)
     {
-        color = DTL_COLOR;
-    } 
-    else
-    {
-        color = NON_DTL_COLOR; 
-    }
-    MPI_Comm_split(global_comm, color, rank, &dtl_comm);
-
-    if (app_rank == ROOT)
-    {
+        int dtl_rank;
+        MPI_Comm_rank(dtl_comm, &dtl_rank);
+        printf("dtl_rank = %d\n", dtl_rank);
         printf("---======== In Producer::main()\n");
         if (argc < 2)
         {
@@ -121,8 +116,6 @@ int main(int argc, const char** argv)
         printf("Python script name : %s\n", py_name.c_str());
         printf("Python function: %s\n", py_func.c_str());
 
-        char *file_path = (char*)"";
-        ChunkReader *chunk_reader = new PDBChunker((char*)py_name.c_str(), (char*)py_func.c_str(), (char*)py_dir.c_str(), file_path, n_atoms, 0);
 
         ChunkWriter *chunk_writer;
         
@@ -136,6 +129,9 @@ int main(int argc, const char** argv)
         {
             chunk_writer = new DataSpacesWriter(client_id, group_id, total_chunks, dtl_comm);
         }
+    
+        char *file_path = (char*)"";
+        ChunkReader *chunk_reader = new PDBChunker((char*)py_name.c_str(), (char*)py_func.c_str(), (char*)py_dir.c_str(), file_path, n_atoms, 0);
 
         ChunkStager *chunk_stager = new MDStager(chunk_reader, chunk_writer);
         Ingester *ingester = new MDGenerator(*chunk_stager, total_chunks, n_delay_ms);
@@ -150,11 +146,11 @@ int main(int argc, const char** argv)
         // Free Memory
         delete ingester;
         delete chunk_stager;
-        delete chunk_writer;
         delete chunk_reader;
+        delete chunk_writer;
     }
 
-    MPI_Comm_free(&dtl_comm);
+    //MPI_Comm_free(&dtl_comm);
     MPI_Finalize();
     return 0;
 }
