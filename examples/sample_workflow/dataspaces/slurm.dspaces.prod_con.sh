@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH --nodes=3
+#SBATCH --nodes=1
 #SBATCH --time=00:10:00
 #SBATCH --qos=debug
 #SBATCH --gres=craynetwork:0
 #SBATCH --job-name=sample_workflow
 #SBATCH --constraint=haswell
-##SBATCH --exclusive
+#SBATCH --exclusive
 
 ## -----------=========== PARAMETERS =========-------------
 
@@ -41,7 +41,7 @@ DELAY=0
 NCLIENTS=$(( $NREADERS+$NWRITERS ))
 
 ## Load modules at runtime
-#source ${HOME}/application/envs/a4md.sh
+. ${HOME}/application/envs/a4md.sh
 
 ## Clean up
 rm -rf __pycache__ conf cred dataspaces.conf log.*
@@ -58,9 +58,9 @@ max_readers =" $NREADERS_PER_WRITER "
 lock_type =" $LOCK > dataspaces.conf
 
 
-## Run DataSpaces servers
+e# Run DataSpaces servers
 echo "-- Start DataSpaces server on $NSERVERS PEs"
-server_cmd="srun -n $NSERVERS --nodelist=${NODES[0]} $SERVER -s$NSERVERS"
+server_cmd="srun -N 1 -n $NSERVERS --cpu-bind=cores --exclusive --mem=0 --gres=craynetwork:0 --nodelist=${NODES[0]} $SERVER -s$NSERVERS"
 echo ${server_cmd}
 ${server_cmd} &> log.server &
 server_pid=$!
@@ -90,7 +90,7 @@ do
     ((client_id=client_id+1))
     ((group_id=group_id+1)) 
     echo "-- Start producer application id $i"
-    producer_cmd="srun -n $NP_WRITER --nodelist=${NODES[0]} ./producer dataspaces $client_id $group_id ./load.py extract_frame $NSTEPS $NATOMS $DELAY"
+    producer_cmd="srun -N 1 -n $NP_WRITER --cpu-bind=cores --exclusive --mem=0 --gres=craynetwork:0 --nodelist=${NODES[0]} ./producer dataspaces $client_id $group_id ./load.py extract_frame $NSTEPS $NATOMS $DELAY"
     echo ${producer_cmd}
     ${producer_cmd} &> log.producer${i} &
     declare producer${i}_pid=$!
@@ -101,7 +101,7 @@ do
     do
         ((client_id=client_id+1))
         echo "-- Start consumer application id ${j} with respect to producer application id ${i}"
-        consumer_cmd="srun -n $NP_READER --nodelist=${NODES[0]} ./consumer dataspaces $client_id $group_id ./compute.py analyze $NSTEPS"
+        consumer_cmd="srun -N 1 -n $NP_READER --cpu-bind=cores --exclusive --mem=0 --gres=craynetwork:0 --nodelist=${NODES[0]} ./consumer dataspaces $client_id $group_id ./compute.py analyze $NSTEPS"
         echo ${consumer_cmd}
         ${consumer_cmd} &> log.consumer${i}_${j} &
         declare consumer${i}_${j}_pid=$!
