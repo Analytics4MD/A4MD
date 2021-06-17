@@ -17,28 +17,24 @@
 int main (int argc, const char** argv)
 {
     MPI_Init(NULL,NULL);
-    int rank, app_rank;
-    MPI_Comm global_comm = MPI_COMM_WORLD;
-    MPI_Comm app_comm, dtl_comm;
-    int color;
-    int *appnum, present;
-    MPI_Comm_rank(global_comm, &rank);
-    MPI_Comm_get_attr(global_comm, MPI_APPNUM, &appnum, &present);
-    MPI_Comm_split(global_comm, *appnum, rank, &app_comm);
-    MPI_Comm_rank(app_comm, &app_rank);
-    MPI_Comm_free(&app_comm);
-    if (app_rank == ROOT) 
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    printf("rank = %d\n", rank);
+    int color = (rank == 0) ? 0 : 1;
+    MPI_Comm dtl_comm;
+    MPI_Comm_split(MPI_COMM_WORLD, color, rank, &dtl_comm);
+    /*MPI_Group world_group;
+    MPI_Comm_group(MPI_COMM_WORLD, &world_group);
+    int ranks[1] = {0};
+    MPI_Group dtl_group;
+    MPI_Group_incl(world_group, 1, ranks, &dtl_group);
+    MPI_Comm dtl_comm;
+    MPI_Comm_create(MPI_COMM_WORLD, dtl_group, &dtl_comm);*/
+    if (rank == 0)
     {
-        color = DTL_COLOR;
-    } 
-    else
-    {
-        color = NON_DTL_COLOR; 
-    }
-    MPI_Comm_split(global_comm, color, rank, &dtl_comm);
-
-    if (app_rank == ROOT)
-    {
+        int dtl_rank;
+        MPI_Comm_rank(dtl_comm, &dtl_rank);
+        printf("dtl_rank = %d\n", dtl_rank);
         printf("---======== In Consummer::main()\n");
         if (argc < 2)
         {
@@ -147,7 +143,7 @@ int main (int argc, const char** argv)
         delete chunk_reader;
     }
 
-    MPI_Comm_free(&dtl_comm);
+    //MPI_Comm_free(&dtl_comm);
     MPI_Finalize();
     return 0;
 }

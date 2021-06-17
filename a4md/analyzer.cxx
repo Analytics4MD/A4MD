@@ -11,11 +11,18 @@ std::string reader_type = "dataspaces";
 
 int main (int argc, const char** argv)
 {
+    MPI_Init(NULL,NULL);
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    int color = (rank == 0) ? 0 : 1;
+    MPI_Comm dtl_comm;
+    MPI_Comm_split(MPI_COMM_WORLD, color, rank, &dtl_comm);
+
+    if (rank == 0){
     if (argc != 6) 
     {
         fprintf(stderr, "ERROR: ./analyzer client_id group_id py_path py_func n_frames\n");
     }
-    MPI_Init(NULL,NULL);
     printf("---======== In Retriever::main()\n");
 
     int n_frames = atoi(argv[5]);
@@ -27,7 +34,7 @@ int main (int argc, const char** argv)
         int client_id = atoi(argv[1]);
         int group_id = atoi(argv[2]);
         int n_analysis_stride = 1;
-        chunk_reader = new DataSpacesReader(client_id, group_id, total_chunks, MPI_COMM_WORLD);
+        chunk_reader = new DataSpacesReader(client_id, group_id, total_chunks, dtl_comm);
     }
     else
     {
@@ -76,7 +83,7 @@ int main (int argc, const char** argv)
     delete chunk_stager;
     delete chunk_writer;
     delete chunk_reader;
-
+    }
     MPI_Finalize();
     return 0;
 }
