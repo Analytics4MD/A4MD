@@ -13,6 +13,13 @@ std::string writer_type = "dataspaces";
 int main(int argc, const char** argv)
 {
     MPI_Init(NULL,NULL);
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    int color = (rank == 0) ? 0 : 1;
+    MPI_Comm dtl_comm;
+    MPI_Comm_split(MPI_COMM_WORLD, color, rank, &dtl_comm);
+
+    if (rank == 0){
     printf("---======== In Generator::main()\n");
     if (argc != 9)
     {
@@ -56,7 +63,7 @@ int main(int argc, const char** argv)
     ChunkWriter *chunk_writer;
     if (writer_type == "dataspaces") 
     {
-        chunk_writer = new DataSpacesWriter(client_id, group_id, total_chunks, MPI_COMM_WORLD);
+        chunk_writer = new DataSpacesWriter(client_id, group_id, total_chunks, dtl_comm);
     }
     else 
     {
@@ -77,7 +84,7 @@ int main(int argc, const char** argv)
     delete chunk_stager;
     delete chunk_writer;
     delete chunk_reader;
-
+    }
     MPI_Finalize();
     return 0;
 }
