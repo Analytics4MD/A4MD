@@ -10,31 +10,31 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/list.hpp>
 
+
 class Chunk
 {
-    friend class boost::serialization::access;
-    template<class Archive>
-    void serialize(Archive & ar, const unsigned int version)
-    {
-        ar & m_id;
-    }
+    private:
+        friend class boost::serialization::access;
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version)
+        {
+            ar & m_id;
+        }
 
     protected:
         unsigned long int m_id;
 
     public:
         Chunk(){}
-        Chunk(unsigned long int id) :
-             m_id(id)
+        Chunk(unsigned long int id) : m_id(id) { }
+        virtual ~Chunk() 
         {
-        }
-        virtual ~Chunk()
-        {
+            printf("(%s): destructor\n", __func__);
         }
 
         virtual void print()
         {
-            printf("chunk id %lu\n",  m_id);
+            printf("(%s): chunk id %lu\n", __func__, m_id);
         }
 
         int get_chunk_id()
@@ -47,9 +47,35 @@ class Chunk
             m_id = id;
         }
 
-        virtual void append(Chunk* other_chunk)
+        virtual void append(Chunk* other_chunk) { }
+};
+
+void print(Chunk* chunk);
+
+class TestChunk : public Chunk
+{
+    private:
+        friend class boost::serialization::access;
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version)
         {
+            ar & boost::serialization::base_object<Chunk>(*this);
+            ar & m_timestep;
+        }
+        int m_timestep;
+    public:
+        TestChunk() {}
+        TestChunk(unsigned long int id, int timestep) : Chunk(id), m_timestep(timestep) {}
+        ~TestChunk() 
+        { 
+            printf("(%s): destructor\n", __func__);
+        }
+        void print()
+        {
+            Chunk::print();
+            printf("(%s): time step %d\n", __func__, m_timestep);
         }
 };
+
 
 #endif

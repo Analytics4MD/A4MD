@@ -41,46 +41,46 @@ class MDChunk : public Chunk
         double m_box_hz;
     public:
         MDChunk() : Chunk(){}
-        MDChunk(const unsigned long int id,
-                  const int timestep,
-                  const std::vector<int> & types,
-                  const std::vector<double> & x_cords,
-                  const std::vector<double> & y_cords,
-                  const std::vector<double> & z_cords,
-                  double box_lx,
-                  double box_ly,
-                  double box_lz,
-                  double box_hx,
-                  double box_hy,
-                  double box_hz) :
-                  Chunk(id),
-                  m_timestep(timestep),
-                  m_types(types),
-                  m_x_cords(x_cords),
-                  m_y_cords(y_cords),
-                  m_z_cords(z_cords),
-                  m_box_lx(box_lx),
-                  m_box_ly(box_ly),
-                  m_box_lz(box_lz),
-                  m_box_hx(box_hx),
-                  m_box_hy(box_hy),
-                  m_box_hz(box_hz)
+        MDChunk(unsigned long int id,
+                int timestep,
+                std::vector<int> & types,
+                std::vector<double> & x_cords,
+                std::vector<double> & y_cords,
+                std::vector<double> & z_cords,
+                double box_lx,
+                double box_ly,
+                double box_lz,
+                double box_hx,
+                double box_hy,
+                double box_hz) :
+                Chunk(id),
+                m_timestep(timestep),
+                m_types(types),
+                m_x_cords(x_cords),
+                m_y_cords(y_cords),
+                m_z_cords(z_cords),
+                m_box_lx(box_lx),
+                m_box_ly(box_ly),
+                m_box_lz(box_lz),
+                m_box_hx(box_hx),
+                m_box_hy(box_hy),
+                m_box_hz(box_hz)
         {
         } 
         ~MDChunk()
         {
-            printf("---===== Called destructor of MDChunk\n");
+            printf("(%s): destructor\n", __func__);
         }
 
         void print()
         {
             printf("--------==========MDChunk::print start=============--------------\n");
             Chunk::print();
-            printf("types : ");
+            printf("(%s): types : ", __func__);
             for (auto i: m_types)
                 printf("%d ", i);
             printf("\n");
-            printf("positions :\n");
+            printf("(%s): positions :\n", __func__);
             for( auto iterator = m_x_cords.begin() ; iterator != m_x_cords.end() ; ++iterator )
             {
                 int position = std::distance( m_x_cords.begin(), iterator ) ;
