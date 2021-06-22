@@ -154,7 +154,9 @@ set(TAU_LIBRARIES "")
 if(DEFINED ENV{TAU_LIBS})
     set(TAU_LIBRARIES "$ENV{TAU_LIBS}")
     message("TAU libraries " ${TAU_LIBRARIES})
-    add_definitions(-DTAU_PERF)
+    #add_definitions(-DTAU_PERF)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+    message(STATUS "CXXFLAGS: ${CMAKE_CXX_FLAGS}")
 endif()
 
 # Check BUILT_IN_PERF
@@ -181,6 +183,9 @@ include_directories("${PROJECT_SOURCE_DIR}/a4md/dtl")
 include_directories("${PROJECT_SOURCE_DIR}/a4md/ingest")
 include_directories("${PROJECT_SOURCE_DIR}/a4md/retrieve")
 
+# Import pybind11
+add_subdirectory(${PROJECT_SOURCE_DIR}/a4md/extern/pybind11)
+# Build A4MD main sources
 add_subdirectory(a4md)
 if (build_examples)
     add_subdirectory(examples)

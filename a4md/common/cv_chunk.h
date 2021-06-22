@@ -33,7 +33,7 @@ class CVChunk : public Chunk
         }
         ~CVChunk()
         {
-            printf("---===== Called destructor of CVChunk\n");
+            printf("(%s): destructor\n", __func__);
         }
 
         void print()

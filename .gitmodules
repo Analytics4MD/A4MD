@@ -19,3 +19,7 @@
 [submodule "a4md/extern/wrap"]
 	path = a4md/extern/wrap
 	url = https://github.com/LLNL/wrap.git
+[submodule "a4md/extern/pybind11"]
+	path = a4md/extern/pybind11
+	url = ../../pybind/pybind11
+	branch = stable
