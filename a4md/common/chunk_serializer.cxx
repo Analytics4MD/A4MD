@@ -12,13 +12,13 @@
 template<typename SerializableContainer>
 ChunkSerializer<SerializableContainer>::ChunkSerializer()
 {
-	printf("---===== Initialized ChunkSerializer on %s\n", typeid(SerializableContainer).name());
+	printf("(%s): initialized on %s\n", __func__, typeid(SerializableContainer).name());
 }
 
 template<typename SerializableContainer>
 ChunkSerializer<SerializableContainer>::~ChunkSerializer()
 {
-	printf("---===== Finalized ChunkSerializer on %s\n", typeid(SerializableContainer).name());
+	printf("(%s): finalized on %s\n", __func__, typeid(SerializableContainer).name());
 }
 
 template<typename SerializableContainer>

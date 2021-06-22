@@ -33,6 +33,7 @@ class SerializableChunk
 
         ~SerializableChunk()
         {
+            printf("(%s): destructor\n", __func__);
         }
 
         void print()
