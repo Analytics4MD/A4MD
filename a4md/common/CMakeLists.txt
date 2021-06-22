@@ -51,9 +51,10 @@ set(_py_a4md_sources_
 set(_py_a4md_headers_ 
     py_chunks.h
     )
-pybind11_add_module(a4md ${_py_a4md_sources_})
+pybind11_add_module(pya4md ${_py_a4md_sources_})
 
 # Common tests
 add_subdirectory(test)
 install (TARGETS a4md_cmn DESTINATION lib)
 install (FILES ${_a4md_cmn_headers_} DESTINATION include)
+install (TARGETS pya4md DESTINATION lib)
