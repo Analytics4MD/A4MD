@@ -1,12 +1,10 @@
-#define CATCH_CONFIG_MAIN
-
 #include <catch2/catch.hpp>
 #include <iostream>
 #include <string>
 #include "py_caller.h"
 #include "chunks.h"
 
-PyCaller caller;
+static PyCaller caller;
 
 TEST_CASE( "PyCaller initilization Tests", "[common]" ) 
 {
@@ -35,7 +33,8 @@ TEST_CASE( "PyChunks module Tests", "[common]" )
     int num_atoms = 0;
 	py::object func = caller.call((char*)py_path.c_str(), (char*)"extract_frame");
 	REQUIRE(py::isinstance<py::function>(func) == true);
-	py::object result = func(file_path, position, num_atoms);
+	py::tuple args = py::make_tuple(file_path, position, num_atoms);
+	py::object result = func(*args);
 	// REQUIRE(py::isinstance<py::class_<Chunk>>(result) == true);
 	Chunk *chunk = result.cast<Chunk*>();
 	chunk->print();

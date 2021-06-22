@@ -1,7 +1,8 @@
 #include <catch2/catch.hpp>
 #include "md_runner.h"
-#include "cv_chunk.h"
+#include "chunks.h"
 #include "cv_runner.h"
+#include "py_caller.h"
 
 TEST_CASE("MDRunner direct_chunk Tests", "[common]")
 {
@@ -45,6 +46,34 @@ TEST_CASE("MDRunner direct_chunk Tests", "[common]")
     REQUIRE( caught_py_exception == false );
 }
 
+static PyCaller py_caller;
+TEST_CASE("Direct md_chunk new Tests", "[common]")
+{
+
+    std::string py_function = "mdchunk_to_mdchunk";
+    std::string py_script = "./a4md/common/test/tests.py";
+
+    std::vector<int> input_types = { 0, 0 ,0 };
+    std::vector<double> input_x_positions = { 1.0, 2.0, 3.0 };
+    double input_low = 0.0;
+    double input_high = 10.0;
+    int input_timestep = 1;
+    unsigned long int id = 0;
+
+    MDChunk md_chunk(id, input_timestep, input_types, input_x_positions, input_x_positions, input_x_positions, input_low, input_low, input_low, input_high, input_high, input_high);
+    Chunk *input_chunk = &md_chunk;
+    py::object py_result = py_caller.call((char*)py_script.c_str(), (char*)py_function.c_str())(input_chunk);
+    Chunk* output_chunk = py_result.cast<Chunk*>();
+    output_chunk->print();
+    MDChunk *plmdchunk = dynamic_cast<MDChunk *>(output_chunk);
+
+    REQUIRE( plmdchunk->get_x_positions().size() == input_x_positions.size() );
+    REQUIRE( plmdchunk->get_types().size() == input_types.size() );
+    REQUIRE( plmdchunk->get_timestep() == input_timestep);
+    REQUIRE( plmdchunk->get_box_lx() == input_low);
+    REQUIRE( plmdchunk->get_box_hx() == input_high);
+}
+
 TEST_CASE("CVRunner direct_chunk Tests", "[common]")
 {
     std::string name = "direct";
@@ -82,4 +111,28 @@ TEST_CASE("CVRunner direct_chunk Tests", "[common]")
     {
     }
     REQUIRE( caught_py_exception == false );
+}
+
+TEST_CASE("Direct cv_chunk new Tests", "[common]")
+{
+
+    std::string py_function = "mdchunk_to_cvchunk";
+    std::string py_script = "./a4md/common/test/tests.py";
+
+    std::vector<int> input_types = { 0, 0 ,0 };
+    std::vector<double> input_x_positions = { 1.0, 2.0, 3.0 };
+    double input_low = 0.0;
+    double input_high = 10.0;
+    int input_timestep = 1;
+    unsigned long int id = 0;
+
+    MDChunk md_chunk(id, input_timestep, input_types, input_x_positions, input_x_positions, input_x_positions, input_low, input_low, input_low, input_high, input_high, input_high);
+    Chunk *input_chunk = &md_chunk;
+    py::object py_result = py_caller.call((char*)py_script.c_str(), (char*)py_function.c_str())(input_chunk);
+    Chunk* output_chunk = py_result.cast<Chunk*>();
+    output_chunk->print();
+    CVChunk *cv_chunk = dynamic_cast<CVChunk *>(output_chunk);
+
+    REQUIRE( cv_chunk->get_cv_values().size() == input_x_positions.size() );
+    REQUIRE( cv_chunk->get_cv_values()[0] == input_x_positions[0] );
 }

@@ -1,6 +1,6 @@
 import numpy as np
 import time
-from a4md import *
+from pya4md import *
 
 def my_function():
     print("Hello from a function")
@@ -78,4 +78,13 @@ def extract_frame(fileName, position, nAtoms):
     lp = file.tell()
     chunk = MDChunk(1, 1, types, x_cords, y_cords, z_cords, 1, 2, 3, 4, 5, 6)
     return chunk
+
+def mdchunk_to_mdchunk(chunk):
+    return chunk
+
+def mdchunk_to_cvchunk(chunk):
+    id = chunk.getChunkID()
+    cv_vals = chunk.getXPositions()
+    return CVChunk(id, cv_vals)
+
 
