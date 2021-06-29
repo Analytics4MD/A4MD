@@ -11,6 +11,6 @@ class MDAnalyzer : public ChunkWriter
     public:
         MDAnalyzer(char* module_name, char* function_name, char* py_path = (char*)"");
         ~MDAnalyzer();
-        void write_chunks(std::vector<Chunk*> chunks) override;
+        void write_chunks(std::vector<std::shared_ptr<Chunk>> chunks) override;
 };
 #endif

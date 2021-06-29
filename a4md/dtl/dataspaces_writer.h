@@ -30,6 +30,6 @@ class DataSpacesWriter : public ChunkWriter
     public:
         DataSpacesWriter(int client_id, int group_id, unsigned long int total_chunks, MPI_Comm comm);
         ~DataSpacesWriter();
-        void write_chunks(std::vector<Chunk*> chunks) override;
+        void write_chunks(std::vector<std::shared_ptr<Chunk>> chunks) override;
 };
 #endif

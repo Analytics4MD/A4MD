@@ -6,6 +6,6 @@ class ChunkOperator
 {
     public:
         virtual ~ChunkOperator();
-        virtual std::vector<Chunk*> operate_chunks(std::vector<Chunk*> chunks) = 0;
+        virtual std::vector<std::shared_ptr<Chunk>> operate_chunks(std::vector<std::shared_ptr<Chunk>> chunks) = 0;
 };
 #endif

@@ -7,12 +7,12 @@
 class CVBuffer : public ChunkOperator
 {
     private:
-        Chunk* m_chunk_buffer;
+        std::shared_ptr<Chunk> m_chunk_buffer;
         int m_interval;
         int m_buffer_id;
     public:
         CVBuffer(int interval);
         ~CVBuffer();
-        std::vector<Chunk*> operate_chunks(std::vector<Chunk*> chunks) override;
+        std::vector<std::shared_ptr<Chunk>> operate_chunks(std::vector<std::shared_ptr<Chunk>> chunks) override;
 };
 #endif /* __CV_BUFFER_H__ */

@@ -83,20 +83,20 @@ PyObject* vectorTolist(std::vector<T> vecs)
 	return result;
 }
 
-void CVRunner::input_chunk(Chunk* chunk) 
+void CVRunner::input_chunk(std::shared_ptr<Chunk> chunk) 
 {
 
 }
 
-Chunk* CVRunner::output_chunk(unsigned long int chunk_id) 
+std::shared_ptr<Chunk> CVRunner::output_chunk(unsigned long int chunk_id) 
 {
-	Chunk* result;
+	std::shared_ptr<Chunk> result;
 	return result;
 }
 
-Chunk* CVRunner::direct_chunk(Chunk* chunk) 
+std::shared_ptr<Chunk> CVRunner::direct_chunk(std::shared_ptr<Chunk> chunk) 
 {
-	Chunk* result;
+	std::shared_ptr<Chunk> result;
 	if (!m_py_module)
     {
         PyErr_Print();
@@ -116,7 +116,7 @@ Chunk* CVRunner::direct_chunk(Chunk* chunk)
 	}
 
 	unsigned long int chunk_id = chunk->get_chunk_id();
-	MDChunk *md_chunk = dynamic_cast<MDChunk*>(chunk);
+	std::shared_ptr<MDChunk> md_chunk = std::dynamic_pointer_cast<MDChunk>(chunk);
 	if (md_chunk == nullptr) 
 	{
 		fprintf(stderr, "---===== ERROR: CVRunner::direct_chunk Failed to uppercast the chunk to MDChunk");
@@ -164,7 +164,7 @@ Chunk* CVRunner::direct_chunk(Chunk* chunk)
 	}
 	std::vector<double> cv_values = listToVector<double>(py_return);
 
-	result = new CVChunk(chunk_id, cv_values);
+	result = std::make_shared<CVChunk>(chunk_id, cv_values);
 	Py_DECREF(py_return);
     return result;
 }

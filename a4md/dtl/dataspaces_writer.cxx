@@ -62,12 +62,12 @@ static inline std::size_t round_up_8(std::size_t n)
     return (n%8 == 0) ? n : (n/8 + 1)*8;
 }
 
-void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
+void DataSpacesWriter::write_chunks(std::vector<std::shared_ptr<Chunk>> chunks)
 {
     unsigned long int chunk_id; 
     printf("---===== DataSpacesWriter::write_chunks\n");
     MPI_Barrier(m_gcomm);
-    for(Chunk* chunk:chunks)
+    for(std::shared_ptr<Chunk>& chunk:chunks)
     {
         chunk_id = chunk->get_chunk_id();
 #ifdef BUILT_IN_PERF
@@ -176,7 +176,11 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
             printf("----====== ERROR: Did not write size of chunk id: %lu to dataspaces successfully\n",chunk_id);
         //else
         //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
-#ifndef DTL_DIMES
+#ifdef DTL_DIMES
+/*        error = dimes_put_sync_all();
+        if (error != 0)
+            printf("----====== ERROR: dimes_put_sync_all(%s) failed\n", m_size_var_name.c_str());*/
+#else
         error = dspaces_put_sync();
         if (error != 0) 
             printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_size_var_name.c_str());
@@ -245,7 +249,11 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
             printf("----====== ERROR: Did not write chunk id: %i to dataspaces successfully\n",chunk_id);
         //else
         //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
-#ifndef DTL_DIMES
+#ifdef DTL_DIMES
+/*        error = dimes_put_sync_all();
+        if (error != 0) 
+            printf("---====== ERROR: dimes_put_sync_all(%s) failed\n", m_chunk_var_name.c_str());*/
+#else
         error = dspaces_put_sync();
         if (error != 0)
             printf("----====== ERROR: dspaces_put_sync(%s) failed\n", m_chunk_var_name.c_str());
@@ -291,6 +299,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
     {
 #ifdef DTL_DIMES
         dspaces_lock_on_write(m_chunk_lock_name.c_str(), &m_gcomm);
+        printf("dimes_put_sync_all()\n");
         dimes_put_sync_all();
         dspaces_unlock_on_write(m_chunk_lock_name.c_str(), &m_gcomm);
 #endif

@@ -36,7 +36,7 @@ class DataSpacesReader : public ChunkReader
     public:
         DataSpacesReader(int client_id, int group_id, unsigned long int total_chunks, MPI_Comm comm);
         ~DataSpacesReader();
-        std::vector<Chunk*> read_chunks(unsigned long int chunks_from, unsigned long int chunks_to) override;
+        std::vector<std::shared_ptr<Chunk>> read_chunks(unsigned long int chunks_from, unsigned long int chunks_to) override;
 
 };
 #endif

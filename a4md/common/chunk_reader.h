@@ -6,6 +6,6 @@ class ChunkReader
 {
     public:
         virtual ~ChunkReader();
-        virtual std::vector<Chunk*> read_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to) = 0;
+        virtual std::vector<std::shared_ptr<Chunk>> read_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to) = 0;
 };
 #endif
