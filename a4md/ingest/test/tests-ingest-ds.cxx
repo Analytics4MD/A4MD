@@ -34,22 +34,22 @@ void ds_write_and_read()
     PDBChunker* pdb_chunker = new PDBChunker((char*)name.c_str(), (char*)func.c_str(), (char*)py_path.c_str(), (char*)file_path.c_str(), 0, 0);
     //unsigned long int id = 0;
     // int result = pdb_chunker->extract_chunk();
-    std::vector<Chunk*> chunk_vector = pdb_chunker->read_chunks(1, 1);
-    Chunk* chunk = chunk_vector.front(); 
-    MDChunk *md_chunk = dynamic_cast<MDChunk *>(chunk);
+    std::vector<std::shared_ptr<Chunk>> chunk_vector = pdb_chunker->read_chunks(1, 1);
+    std::shared_ptr<Chunk> chunk = chunk_vector.front(); 
+    std::shared_ptr<MDChunk> md_chunk = std::dynamic_pointer_cast<MDChunk>(chunk);
     //md_chunk->print();
     
     unsigned long int total_chunks = 1;
     dataspaces_writer_ptr = new DataSpacesWriter(1, 1, total_chunks, MPI_COMM_WORLD);
     dataspaces_reader_ptr = new DataSpacesReader(2, 1, total_chunks, MPI_COMM_WORLD);
-    std::vector<Chunk*> chunks = {chunk};
+    std::vector<std::shared_ptr<Chunk>> chunks = {chunk};
     dataspaces_writer_ptr->write_chunks(chunks);
     
-    std::vector<Chunk*> recieved_chunks = dataspaces_reader_ptr->read_chunks(current_chunk_id, current_chunk_id);
+    std::vector<std::shared_ptr<Chunk>> recieved_chunks = dataspaces_reader_ptr->read_chunks(current_chunk_id, current_chunk_id);
     
-    for (Chunk* chunk: recieved_chunks)
+    for (auto chunk: recieved_chunks)
     {
-        MDChunk *recieved_chunk = dynamic_cast<MDChunk *>(chunk);
+        std::shared_ptr<MDChunk> recieved_chunk = std::dynamic_pointer_cast<MDChunk>(chunk);
         //recieved_chunk->print();
         auto recieved_x_positions = recieved_chunk->get_x_positions();
         auto recieved_y_positions = recieved_chunk->get_y_positions();

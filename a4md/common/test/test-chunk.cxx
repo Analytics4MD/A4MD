@@ -45,27 +45,31 @@ TEST_CASE( "CVChunk Tests", "[common]" )
     unsigned long int current_chunk_id = 0;
     std::vector<double> cv_values = { 0.1, 0.1, 0.1, 0.2, 0.2, 0.2 };
 
-    CVChunk cv_chunk(current_chunk_id, cv_values);
-    Chunk* chunk = &cv_chunk;
+    // CVChunk cv_chunk(current_chunk_id, cv_values);
+    // Chunk* chunk = &cv_chunk;
     // CVChunk *cv_chunk = dynamic_cast<CVChunk*>(chunk);
+    std::shared_ptr<CVChunk> cv_chunk = std::make_shared<CVChunk>(current_chunk_id, cv_values);
+    std::shared_ptr<Chunk> chunk = cv_chunk;    
 
     REQUIRE( chunk->get_chunk_id() == 0 );
-    REQUIRE( cv_chunk.get_cv_values()[0] == 0.1 );
-    REQUIRE( cv_chunk.get_cv_values()[3] == 0.2 );
-    REQUIRE( cv_chunk.get_cv_values().size() == 6 );
+    REQUIRE( cv_chunk->get_cv_values()[0] == 0.1 );
+    REQUIRE( cv_chunk->get_cv_values()[3] == 0.2 );
+    REQUIRE( cv_chunk->get_cv_values().size() == 6 );
 
-    cv_chunk.append(0.3);
+    cv_chunk->append(0.3);
     // cv_chunk->print();
-    REQUIRE( cv_chunk.get_cv_values().size() == 7 );
-    REQUIRE( cv_chunk.get_cv_values()[6] == 0.3 );
+    REQUIRE( cv_chunk->get_cv_values().size() == 7 );
+    REQUIRE( cv_chunk->get_cv_values()[6] == 0.3 );
 
-    CVChunk cv_other_chunk(current_chunk_id, cv_values);
-    Chunk* other_chunk = &cv_other_chunk;
+    // CVChunk cv_other_chunk(current_chunk_id, cv_values);
+    // Chunk* other_chunk = &cv_other_chunk;
+    std::shared_ptr<CVChunk> cv_other_chunk = std::make_shared<CVChunk>(current_chunk_id, cv_values);
+    std::shared_ptr<Chunk> other_chunk = cv_other_chunk;
     chunk->append(other_chunk);
     // cv_chunk->print();
-    REQUIRE( cv_chunk.get_cv_values().size() == 13 );
-    REQUIRE( cv_chunk.get_cv_values()[7] == 0.1 );
-    REQUIRE( cv_chunk.get_cv_values()[10] == 0.2 );
+    REQUIRE( cv_chunk->get_cv_values().size() == 13 );
+    REQUIRE( cv_chunk->get_cv_values()[7] == 0.1 );
+    REQUIRE( cv_chunk->get_cv_values()[10] == 0.2 );
 
     // delete chunk;
 }
@@ -132,15 +136,17 @@ TEST_CASE( "Intermediator new Tests", "[common]" )
     double input_high = 10.0;
     int input_timestep = 1;
 
-    MDChunk md_chunk(0, input_timestep, input_types, input_x_positions, input_x_positions, input_x_positions, input_low, input_low, input_low, input_high, input_high, input_high);
-    Chunk *input_chunk = &md_chunk;
+    // MDChunk md_chunk(0, input_timestep, input_types, input_x_positions, input_x_positions, input_x_positions, input_low, input_low, input_low, input_high, input_high, input_high);
+    // Chunk *input_chunk = &md_chunk;
+    std::shared_ptr<MDChunk> md_chunk = std::make_shared<MDChunk>(0, input_timestep, input_types, input_x_positions, input_x_positions, input_x_positions, input_low, input_low, input_low, input_high, input_high, input_high);
+    std::shared_ptr<Chunk> input_chunk = md_chunk;
 
     // py::object py_chunk = py::cast(input_chunk);
     py::object py_result = py_caller.call((char*)py_script.c_str(), (char*)py_function.c_str())(input_chunk);
     
-    Chunk* output_chunk = py_result.cast<Chunk*>();
+    std::shared_ptr<Chunk> output_chunk = py_result.cast<std::shared_ptr<Chunk>>();
     output_chunk->print();
-    MDChunk *plmdchunk = static_cast<MDChunk *>(output_chunk);
+    std::shared_ptr<MDChunk> plmdchunk = std::dynamic_pointer_cast<MDChunk>(output_chunk);
     REQUIRE( plmdchunk->get_x_positions().size() == input_x_positions.size() );
     REQUIRE( plmdchunk->get_types().size() == input_types.size() );
     REQUIRE( plmdchunk->get_timestep() == input_timestep);

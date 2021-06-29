@@ -36,7 +36,7 @@ TEST_CASE( "PyChunks module Tests", "[common]" )
 	py::tuple args = py::make_tuple(file_path, position, num_atoms);
 	py::object result = func(*args);
 	// REQUIRE(py::isinstance<py::class_<Chunk>>(result) == true);
-	Chunk *chunk = result.cast<Chunk*>();
+	std::shared_ptr<Chunk> chunk = result.cast<std::shared_ptr<Chunk>>();
 	chunk->print();
 }
 
