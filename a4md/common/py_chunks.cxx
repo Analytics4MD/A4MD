@@ -2,7 +2,7 @@
 #include <pybind11/stl.h>
 
 PYBIND11_MODULE(pya4md, m) {      
-    py::class_<Chunk, PyChunk>(m, "Chunk")
+    py::class_<Chunk, PyChunk, std::shared_ptr<Chunk>>(m, "Chunk")
         .def(py::init<>())
         .def(py::init<unsigned long int>())
         .def("getChunkID", &Chunk::get_chunk_id)
@@ -10,13 +10,13 @@ PYBIND11_MODULE(pya4md, m) {
         .def("print", &Chunk::print)
         .def("append", &Chunk::append);
 
-    py::class_<TestChunk, Chunk>(m, "TestChunk")
+    py::class_<TestChunk, Chunk, std::shared_ptr<TestChunk>>(m, "TestChunk")
         .def(py::init<>())
         .def(py::init<unsigned long int, int>());
 
     m.def("print", &print);
 
-    py::class_<MDChunk, Chunk>(m, "MDChunk")
+    py::class_<MDChunk, Chunk, std::shared_ptr<MDChunk>>(m, "MDChunk")
         .def(py::init<>())
         .def(py::init<unsigned long int, int, std::vector<int> &, std::vector<double> &, std::vector<double> &, std::vector<double> &, double, double, double, double, double, double>())
         .def("getTypes", &MDChunk::get_types)
@@ -31,11 +31,11 @@ PYBIND11_MODULE(pya4md, m) {
         .def("getBoxHZ", &MDChunk::get_box_hz)
         .def("getTimeStep", &MDChunk::get_timestep);
 
-    py::class_<CVChunk, Chunk>(m, "CVChunk")
+    py::class_<CVChunk, Chunk, std::shared_ptr<CVChunk>>(m, "CVChunk")
         .def(py::init<>())
         .def(py::init<unsigned long int>())
         .def(py::init<unsigned long int, std::vector<double> &>())
         .def("append", static_cast<void (CVChunk::*)(double)>(&CVChunk::append))
-        .def("append", static_cast<void (CVChunk::*)(Chunk*)>(&CVChunk::append))
+        .def("append", static_cast<void (CVChunk::*)(std::shared_ptr<Chunk>)>(&CVChunk::append))
         .def("getCVValues", &CVChunk::get_cv_values);
 }
