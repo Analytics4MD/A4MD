@@ -1,7 +1,7 @@
 #include <unistd.h>
 #include "mpi.h"
 #include "dataspaces_reader.h"
-#include "md_stager.h"
+#include "chunk_stager.h"
 #include "md_analyzer.h"
 #include "md_retriever.h"
 #include "timer.h"
@@ -51,7 +51,7 @@ int main (int argc, const char** argv)
     ChunkWriter *chunk_writer = nullptr;
     // chunk_writer = new MDAnalyzer((char*)py_name.c_str(), (char*)py_func.c_str(), (char*)py_dir.c_str());
 
-    ChunkStager *chunk_stager = new MDStager(chunk_reader, chunk_writer);
+    ChunkStager *chunk_stager = new ChunkStager(chunk_reader, chunk_writer);
     int n_window_width = 1;
     Retriever *retriever = new MDRetriever(*chunk_stager, n_frames, n_window_width);
     

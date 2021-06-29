@@ -7,7 +7,7 @@
 #endif
 #include "dataspaces_writer.h"
 #include "pdb_chunker.h"
-#include "md_stager.h"
+#include "chunk_stager.h"
 #include "md_intermediator.h"
 #include "md_generator.h"
 #include "timer.h"
@@ -134,7 +134,7 @@ int main(int argc, const char** argv)
         char *file_path = (char*)"";
         ChunkReader *chunk_reader = new PDBChunker((char*)py_name.c_str(), (char*)py_func.c_str(), (char*)py_dir.c_str(), file_path, n_atoms, 0);
 
-        ChunkStager *chunk_stager = new MDStager(chunk_reader, chunk_writer);
+        ChunkStager *chunk_stager = new ChunkStager(chunk_reader, chunk_writer);
         Ingester *ingester = new MDGenerator(*chunk_stager, total_chunks, n_delay_ms);
 
         // Main run
