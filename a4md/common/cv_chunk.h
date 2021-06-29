@@ -53,9 +53,9 @@ class CVChunk : public Chunk
             m_cv_vals.push_back(cv_val);
         }
 
-        void append(Chunk* other_chunk)
+        void append(std::shared_ptr<Chunk> other_chunk)
         {
-            CVChunk *other_cv_chunk = dynamic_cast<CVChunk*>(other_chunk);
+            std::shared_ptr<CVChunk> other_cv_chunk = std::dynamic_pointer_cast<CVChunk>(other_chunk);
             std::vector<double> other_cv_vals = other_cv_chunk->get_cv_values();
             m_cv_vals.insert(m_cv_vals.end(), other_cv_vals.begin(), other_cv_vals.end());
         }
