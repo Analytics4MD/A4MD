@@ -3,5 +3,5 @@
 
 ChunkWriter::~ChunkWriter()
 {
-    printf("---===== Finalized ChunkWriter\n");
+    printf("(%s): finalized\n", __func__);
 }

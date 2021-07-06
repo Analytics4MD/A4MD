@@ -5,13 +5,14 @@
 #include <iostream>
 #include "md_chunk.h"
 #include "cv_chunk.h"
+#include <boost/serialization/shared_ptr.hpp>
 
 class SerializableChunk
 {
     private:
         friend class boost::serialization::access;
         friend std::ostream & operator<<(std::ostream &os, const SerializableChunk &ca);
-        Chunk* m_chunk;
+        std::shared_ptr<Chunk> m_chunk;
         template<class Archive>
         void serialize(Archive & ar, const unsigned int version)
         {
@@ -26,7 +27,7 @@ class SerializableChunk
         {
         }
 
-        SerializableChunk(Chunk* chunk)
+        SerializableChunk(std::shared_ptr<Chunk> chunk)
         :m_chunk(chunk)
         {
         }
@@ -46,7 +47,7 @@ class SerializableChunk
             m_chunk->get_chunk_id();
         }
 
-        Chunk* get_chunk()
+        std::shared_ptr<Chunk> get_chunk()
         {
             return m_chunk;
         }

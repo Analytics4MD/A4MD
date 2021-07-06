@@ -3,5 +3,5 @@
 
 ChunkReader::~ChunkReader()
 {
-    printf("---===== Finalized ChunkReader\n");
+    printf("(%s): finalized\n", __func__);
 }

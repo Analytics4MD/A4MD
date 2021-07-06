@@ -9,9 +9,9 @@ class CVRunner : public PyRunner
 		CVRunner(char* module_name, char* function_name, char* py_path = (char*)"");
 		~CVRunner();
 
-		void input_chunk(Chunk* chunk) override;
-        Chunk* output_chunk(unsigned long int chunk_id) override;
-        Chunk* direct_chunk(Chunk* chunk) override;
+		void input_chunk(std::shared_ptr<Chunk> chunk) override;
+        std::shared_ptr<Chunk> output_chunk(unsigned long int chunk_id) override;
+        std::shared_ptr<Chunk> direct_chunk(std::shared_ptr<Chunk> chunk) override;
 };
 
 #endif /* __CV_RUNNER_H__ */

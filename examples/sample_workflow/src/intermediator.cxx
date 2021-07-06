@@ -8,7 +8,7 @@
 #include "dataspaces_writer.h"
 #include "dataspaces_reader.h"
 #include "md_intermediator.h"
-#include "md_stager.h"
+#include "chunk_stager.h"
 #include "md_generator.h"
 #include "timer.h"
 
@@ -143,7 +143,7 @@ int main (int argc, const char** argv)
 
         ChunkOperator *chunk_operator = new MDIntermediator((char*)py_name.c_str(), (char*)py_func.c_str(), (char*)py_dir.c_str());
 
-        ChunkStager *chunk_stager = new MDStager(chunk_reader, chunk_operator, chunk_writer);
+        ChunkStager *chunk_stager = new ChunkStager(chunk_reader, chunk_operator, chunk_writer);
         Ingester *ingester = new MDGenerator(*chunk_stager, total_chunks, 0);
         
         // Main run

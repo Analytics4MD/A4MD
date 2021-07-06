@@ -1,12 +1,12 @@
 set(_a4md_retrieve_sources_
         md_analyzer.cxx
-        chunk_analyzer.cxx
+        # chunk_analyzer.cxx
         md_retriever.cxx
         retriever.cxx
 		)
 set(_a4md_retrieve_headers_
         md_analyzer.h
-        chunk_analyzer.h
+        # chunk_analyzer.h
         md_retriever.h
         retriever.h
 		)

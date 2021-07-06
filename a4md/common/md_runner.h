@@ -13,9 +13,9 @@ class MDRunner : public PyRunner
 		MDRunner(char* module_name, char* function_name, char* py_path, char* trajectory_path, int num_atoms, int position = 0);
 		~MDRunner();
 
-		void input_chunk(Chunk* chunk) override;
-        Chunk* output_chunk(unsigned long int chunk_id) override;
-        Chunk* direct_chunk(Chunk* chunk) override;
+		void input_chunk(std::shared_ptr<Chunk> chunk) override;
+        std::shared_ptr<Chunk> output_chunk(unsigned long int chunk_id) override;
+        std::shared_ptr<Chunk> direct_chunk(std::shared_ptr<Chunk> chunk) override;
 
         int get_position();
         void set_position(int position);

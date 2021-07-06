@@ -22,10 +22,10 @@ TEST_CASE("MDRunner direct_chunk Tests", "[common]")
         double input_high = 10.0;
         int input_timestep = 1;
         unsigned long int id = 0;
-        Chunk *input_chunk = new MDChunk(id, input_timestep, input_types, input_x_positions, input_x_positions, input_x_positions, input_low, input_low, input_low, input_high, input_high, input_high);
+        std::shared_ptr<Chunk> input_chunk = std::make_shared<MDChunk>(id, input_timestep, input_types, input_x_positions, input_x_positions, input_x_positions, input_low, input_low, input_low, input_high, input_high, input_high);
     
-    	Chunk* output_chunk = py_runner->direct_chunk(input_chunk);
-    	MDChunk *plmdchunk = dynamic_cast<MDChunk *>(output_chunk);
+    	std::shared_ptr<Chunk> output_chunk = py_runner->direct_chunk(input_chunk);
+    	std::shared_ptr<MDChunk> plmdchunk = std::dynamic_pointer_cast<MDChunk>(output_chunk);
 
     	REQUIRE( plmdchunk->get_x_positions().size() == input_x_positions.size() );
 	    REQUIRE( plmdchunk->get_types().size() == input_types.size() );
@@ -33,8 +33,8 @@ TEST_CASE("MDRunner direct_chunk Tests", "[common]")
 	    REQUIRE( plmdchunk->get_box_lx() == input_low);
 	    REQUIRE( plmdchunk->get_box_hx() == input_high);
 
-	    delete input_chunk;
-	    delete output_chunk;
+	    // delete input_chunk;
+	    // delete output_chunk;
     }
     catch(PythonModuleException ex)
     {
@@ -60,12 +60,12 @@ TEST_CASE("Direct md_chunk new Tests", "[common]")
     int input_timestep = 1;
     unsigned long int id = 0;
 
-    MDChunk md_chunk(id, input_timestep, input_types, input_x_positions, input_x_positions, input_x_positions, input_low, input_low, input_low, input_high, input_high, input_high);
-    Chunk *input_chunk = &md_chunk;
+    std::shared_ptr<MDChunk> md_chunk = std::make_shared<MDChunk>(id, input_timestep, input_types, input_x_positions, input_x_positions, input_x_positions, input_low, input_low, input_low, input_high, input_high, input_high);
+    std::shared_ptr<Chunk> input_chunk = md_chunk;
     py::object py_result = py_caller.call((char*)py_script.c_str(), (char*)py_function.c_str())(input_chunk);
-    Chunk* output_chunk = py_result.cast<Chunk*>();
+    std::shared_ptr<Chunk> output_chunk = py_result.cast<std::shared_ptr<Chunk>>();
     output_chunk->print();
-    MDChunk *plmdchunk = dynamic_cast<MDChunk *>(output_chunk);
+    std::shared_ptr<MDChunk> plmdchunk = std::dynamic_pointer_cast<MDChunk>(output_chunk);
 
     REQUIRE( plmdchunk->get_x_positions().size() == input_x_positions.size() );
     REQUIRE( plmdchunk->get_types().size() == input_types.size() );
@@ -92,16 +92,16 @@ TEST_CASE("CVRunner direct_chunk Tests", "[common]")
         double input_high = 10.0;
         int input_timestep = 1;
         unsigned long int id = 0;
-        Chunk *input_chunk = new MDChunk(id, input_timestep, input_types, input_x_positions, input_x_positions, input_x_positions, input_low, input_low, input_low, input_high, input_high, input_high);
+        std::shared_ptr<Chunk> input_chunk = std::make_shared<MDChunk>(id, input_timestep, input_types, input_x_positions, input_x_positions, input_x_positions, input_low, input_low, input_low, input_high, input_high, input_high);
     
-    	Chunk* output_chunk = py_runner->direct_chunk(input_chunk);
-    	CVChunk *cv_chunk = dynamic_cast<CVChunk *>(output_chunk);
+    	std::shared_ptr<Chunk> output_chunk = py_runner->direct_chunk(input_chunk);
+    	std::shared_ptr<CVChunk> cv_chunk = std::dynamic_pointer_cast<CVChunk>(output_chunk);
 
     	REQUIRE( cv_chunk->get_cv_values().size() == input_x_positions.size() );
 	    REQUIRE( cv_chunk->get_cv_values()[0] == input_x_positions[0] );
 
-	    delete input_chunk;
-	    delete output_chunk;
+	    // delete input_chunk;
+	    // delete output_chunk;
     }
     catch(PythonModuleException ex)
     {
@@ -126,12 +126,12 @@ TEST_CASE("Direct cv_chunk new Tests", "[common]")
     int input_timestep = 1;
     unsigned long int id = 0;
 
-    MDChunk md_chunk(id, input_timestep, input_types, input_x_positions, input_x_positions, input_x_positions, input_low, input_low, input_low, input_high, input_high, input_high);
-    Chunk *input_chunk = &md_chunk;
+    std::shared_ptr<MDChunk> md_chunk = std::make_shared<MDChunk>(id, input_timestep, input_types, input_x_positions, input_x_positions, input_x_positions, input_low, input_low, input_low, input_high, input_high, input_high);
+    std::shared_ptr<Chunk> input_chunk = md_chunk;
     py::object py_result = py_caller.call((char*)py_script.c_str(), (char*)py_function.c_str())(input_chunk);
-    Chunk* output_chunk = py_result.cast<Chunk*>();
+    std::shared_ptr<Chunk> output_chunk = py_result.cast<std::shared_ptr<Chunk>>();
     output_chunk->print();
-    CVChunk *cv_chunk = dynamic_cast<CVChunk *>(output_chunk);
+    std::shared_ptr<CVChunk> cv_chunk = std::dynamic_pointer_cast<CVChunk>(output_chunk);
 
     REQUIRE( cv_chunk->get_cv_values().size() == input_x_positions.size() );
     REQUIRE( cv_chunk->get_cv_values()[0] == input_x_positions[0] );

@@ -51,9 +51,9 @@ TEST_CASE( "PyRunner Tests", "[retrieve]" )
         low = 0.0;
         high = 10.0;
         int step = 1;
-        Chunk *chunk = new MDChunk(0,step,types,x_positions,x_positions,x_positions,low,low,low,high,high,high);
+        std::shared_ptr<Chunk> chunk = std::make_shared<MDChunk>(0,step,types,x_positions,x_positions,x_positions,low,low,low,high,high,high);
         runner.input_chunk(chunk);
-        delete chunk;
+        // delete chunk;
     }
     catch(PythonModuleException ex)
     {

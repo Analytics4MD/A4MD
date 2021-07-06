@@ -46,13 +46,13 @@ int PDBChunker::get_position()
 //     return result;
 // }
 
-std::vector<Chunk*> PDBChunker::read_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to)
+std::vector<std::shared_ptr<Chunk>> PDBChunker::read_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to)
 {
     printf("---===== PDBChunker::read_chunks --> Get chunks from chunk_id_from = %lu to chunk_id_to = %lu\n", chunk_id_from, chunk_id_to);
-    std::vector<Chunk*> chunks;
+    std::vector<std::shared_ptr<Chunk>> chunks;
     for (unsigned long int chunk_id = chunk_id_from; chunk_id <= chunk_id_from; chunk_id++)
     {
-        Chunk* chunk = nullptr;
+        std::shared_ptr<Chunk> chunk;
         chunk = m_py_runner->output_chunk(chunk_id);
         if (chunk != nullptr)
         {

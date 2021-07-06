@@ -47,7 +47,7 @@ class Chunk
             m_id = id;
         }
 
-        virtual void append(Chunk* other_chunk) { }
+        virtual void append(std::shared_ptr<Chunk> other_chunk) { }
 };
 
 void print(Chunk* chunk);

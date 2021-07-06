@@ -10,7 +10,7 @@ class PyChunk: public Chunk
     public:
         using Chunk::Chunk; // Inherit constructurs
         void print() override { PYBIND11_OVERRIDE(void, Chunk, print, ); }
-        void append(Chunk* other_chunk) override { PYBIND11_OVERRIDE(void, Chunk, append, other_chunk); }
+        void append(std::shared_ptr<Chunk> other_chunk) override { PYBIND11_OVERRIDE(void, Chunk, append, other_chunk); }
 };
 
 #endif

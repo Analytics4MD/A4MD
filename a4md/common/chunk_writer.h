@@ -6,6 +6,6 @@ class ChunkWriter // Writes chunks into an IMS. No application logic here.
 {
     public:
         virtual ~ChunkWriter();
-        virtual void write_chunks(std::vector<Chunk*> chunks) = 0;
+        virtual void write_chunks(std::vector<std::shared_ptr<Chunk>> chunks) = 0;
 };
 #endif

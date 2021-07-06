@@ -16,10 +16,10 @@ MDAnalyzer::~MDAnalyzer()
     printf("---===== Finalized MDAnalyzer\n");
 }
 
-void MDAnalyzer::write_chunks(std::vector<Chunk*> chunks)
+void MDAnalyzer::write_chunks(std::vector<std::shared_ptr<Chunk>> chunks)
 {
     printf("---===== MDAnalyzer::write_chunks() Analyze MDChunks\n");
-    for(Chunk* chunk:chunks)
+    for(auto chunk:chunks)
     {
         m_py_runner->input_chunk(chunk);
     }

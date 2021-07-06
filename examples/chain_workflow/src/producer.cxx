@@ -3,7 +3,7 @@
 #include "mpi.h"
 #include "dataspaces_writer.h"
 #include "pdb_chunker.h"
-#include "md_stager.h"
+#include "chunk_stager.h"
 #include "md_intermediator.h"
 #include "md_generator.h"
 #include "timer.h"
@@ -59,7 +59,7 @@ int main(int argc, const char** argv)
     ChunkWriter *chunk_writer;
     chunk_writer = new DataSpacesWriter(client_id, group_id, total_chunks, MPI_COMM_WORLD);
 
-    ChunkStager *chunk_stager = new MDStager(chunk_reader, chunk_writer);
+    ChunkStager *chunk_stager = new ChunkStager(chunk_reader, chunk_writer);
     Ingester *ingester = new MDGenerator(*chunk_stager, total_chunks, n_delay_ms);
 
     // Main run

@@ -23,9 +23,9 @@ class PyRunner
 
         void print_py_error_and_rethrow();
 
-        virtual void input_chunk(Chunk* chunk) = 0;
-        virtual Chunk* output_chunk(unsigned long int chunk_id) = 0;
-        virtual Chunk* direct_chunk(Chunk* chunk) = 0;
+        virtual void input_chunk(std::shared_ptr<Chunk> chunk) = 0;
+        virtual std::shared_ptr<Chunk> output_chunk(unsigned long int chunk_id) = 0;
+        virtual std::shared_ptr<Chunk> direct_chunk(std::shared_ptr<Chunk> chunk) = 0;
         
 };
 #endif

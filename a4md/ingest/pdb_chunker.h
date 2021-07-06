@@ -17,7 +17,7 @@ class PDBChunker : public ChunkReader
         ~PDBChunker();
         // int extract_chunk();
         int get_position();
-        std::vector<Chunk*> read_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to) override;
+        std::vector<std::shared_ptr<Chunk>> read_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to) override;
 };
 
 #endif

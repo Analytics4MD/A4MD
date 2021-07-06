@@ -2,5 +2,5 @@
 
 ChunkOperator::~ChunkOperator()
 {
-    printf("---===== Finalized ChunkOperator\n");
+    printf("(%s): finalized\n", __func__);
 }

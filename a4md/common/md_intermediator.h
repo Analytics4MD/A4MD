@@ -11,6 +11,6 @@ class MDIntermediator : public ChunkOperator
         MDIntermediator(char* module_name, char* function_name, char* py_path = (char*)"");
         MDIntermediator(PyRunner* py_runner);
         ~MDIntermediator();
-        std::vector<Chunk*> operate_chunks(std::vector<Chunk*> chunks) override;
+        std::vector<std::shared_ptr<Chunk>> operate_chunks(std::vector<std::shared_ptr<Chunk>> chunks) override;
 };
 #endif /* __MD_INTERMEDIATOR_H__ */

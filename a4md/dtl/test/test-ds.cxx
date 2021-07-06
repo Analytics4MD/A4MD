@@ -37,14 +37,14 @@ void ds_write_and_read()
     lx=ly=lz=xy=xz=yz=1.0;
     lx=1.5;
 
-    Chunk* chunk = new MDChunk(current_chunk_id,step, types, x_positions, y_positions, z_positions, lx, ly, lz, xy, xz, yz);
-    MDChunk *md_chunk = dynamic_cast<MDChunk *>(chunk);
+    std::shared_ptr<Chunk> chunk = std::make_shared<MDChunk>(current_chunk_id,step, types, x_positions, y_positions, z_positions, lx, ly, lz, xy, xz, yz);
+    std::shared_ptr<MDChunk> md_chunk = std::dynamic_pointer_cast<MDChunk>(chunk);
     
-    std::vector<Chunk*> chunks = {chunk};
+    std::vector<std::shared_ptr<Chunk>> chunks = {chunk};
     chunk_writer->write_chunks(chunks);
-    std::vector<Chunk*> recv_chunks = chunk_reader->read_chunks(current_chunk_id, current_chunk_id);
+    std::vector<std::shared_ptr<Chunk>> recv_chunks = chunk_reader->read_chunks(current_chunk_id, current_chunk_id);
 
-    MDChunk *recv_md_chunk = dynamic_cast<MDChunk *>(recv_chunks.front());
+    std::shared_ptr<MDChunk> recv_md_chunk = std::dynamic_pointer_cast<MDChunk>(recv_chunks.front());
     
 
     REQUIRE( md_chunk->get_chunk_id() == recv_md_chunk->get_chunk_id() );
@@ -54,25 +54,25 @@ void ds_write_and_read()
     REQUIRE( md_chunk->get_x_positions()[0] == recv_md_chunk->get_x_positions()[0] );
     REQUIRE( md_chunk->get_x_positions().size() == recv_md_chunk->get_x_positions().size() );
     REQUIRE( md_chunk->get_box_lx() == recv_md_chunk->get_box_lx() );
-    delete chunk;
+    // delete chunk;
 
     current_chunk_id = 1;
     std::vector<double> cv_values = { 0.1, 0.1, 0.1, 0.2, 0.2, 0.2 };
-    chunk = new CVChunk(current_chunk_id, cv_values);
-    CVChunk *cv_chunk = dynamic_cast<CVChunk*>(chunk);
+    chunk = std::make_shared<CVChunk>(current_chunk_id, cv_values);
+    std::shared_ptr<CVChunk> cv_chunk = std::dynamic_pointer_cast<CVChunk>(chunk);
     chunks.clear();
     recv_chunks.clear();
 
     chunks.push_back(chunk);
     chunk_writer->write_chunks(chunks);
     recv_chunks = chunk_reader->read_chunks(current_chunk_id, current_chunk_id);
-    CVChunk *recv_cv_chunk = dynamic_cast<CVChunk *>(recv_chunks.front());
+    std::shared_ptr<CVChunk> recv_cv_chunk = std::dynamic_pointer_cast<CVChunk>(recv_chunks.front());
     // recv_cv_chunk->print();
 
     REQUIRE( cv_chunk->get_chunk_id() == recv_cv_chunk->get_chunk_id() );
     REQUIRE( cv_chunk->get_cv_values()[0] == recv_cv_chunk->get_cv_values()[0] );
     REQUIRE( cv_chunk->get_cv_values().size() == recv_cv_chunk->get_cv_values().size() );
-    delete chunk;
+    // delete chunk;
     
     delete chunk_writer;
     delete chunk_reader;

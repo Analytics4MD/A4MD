@@ -103,7 +103,7 @@ PyObject* vectorTolist(std::vector<T> vecs)
 	return result;
 }
 
-void MDRunner::input_chunk(Chunk* chunk)
+void MDRunner::input_chunk(std::shared_ptr<Chunk> chunk)
 {
     if (!m_py_module)
     {
@@ -120,7 +120,7 @@ void MDRunner::input_chunk(Chunk* chunk)
 				fprintf(stderr, "---===== ERROR: MDRunner::input_chunk Input chunk is a null pointer\n");
 				return;
 			}
-			MDChunk *md_chunk = dynamic_cast<MDChunk*>(chunk);
+			std::shared_ptr<MDChunk> md_chunk = std::dynamic_pointer_cast<MDChunk>(chunk);
 			if (md_chunk == nullptr) 
 			{
 				fprintf(stderr, "---===== ERROR: MDRunner::input_chunk Failed to uppercast the chunk");
@@ -199,9 +199,9 @@ void MDRunner::input_chunk(Chunk* chunk)
     return;
 }
 
-Chunk* MDRunner::output_chunk(unsigned long int chunk_id)
+std::shared_ptr<Chunk> MDRunner::output_chunk(unsigned long int chunk_id)
 {
-    Chunk* result = nullptr;
+    std::shared_ptr<Chunk> result;
     if (!m_py_module)
     {
         PyErr_Print();
@@ -304,7 +304,7 @@ Chunk* MDRunner::output_chunk(unsigned long int chunk_id)
 			        {
 			            timestep = PyLong_AsLong(py_step);
 			        }
-			        result = new MDChunk(chunk_id, 
+			        result = std::make_shared<MDChunk>(chunk_id, 
 			                            timestep,
 			                            types,
 			                            x_cords,
@@ -341,9 +341,9 @@ Chunk* MDRunner::output_chunk(unsigned long int chunk_id)
     return result;
 }
 
-Chunk* MDRunner::direct_chunk(Chunk* chunk)
+std::shared_ptr<Chunk> MDRunner::direct_chunk(std::shared_ptr<Chunk> chunk)
 {
-	Chunk* result = nullptr;
+	std::shared_ptr<Chunk> result = nullptr;
 	if (!m_py_module)
     {
         PyErr_Print();
@@ -361,7 +361,7 @@ Chunk* MDRunner::direct_chunk(Chunk* chunk)
 			}
 			unsigned long int chunk_id = chunk->get_chunk_id();
 
-			MDChunk *md_chunk = dynamic_cast<MDChunk*>(chunk);
+			std::shared_ptr<MDChunk> md_chunk = std::dynamic_pointer_cast<MDChunk>(chunk);
 			if (md_chunk == nullptr) 
 			{
 				fprintf(stderr, "---===== ERROR: MDRunner::direct_chunk Failed to uppercast the chunk");
@@ -497,7 +497,7 @@ Chunk* MDRunner::direct_chunk(Chunk* chunk)
 			        {
 			            timestep = PyLong_AsLong(py_timestep);
 			        }
-			        result = new MDChunk(chunk_id, 
+			        result = std::make_shared<MDChunk>(chunk_id, 
 			                            timestep,
 			                            output_types,
 			                            x_cords,
