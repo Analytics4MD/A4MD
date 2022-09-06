@@ -1,0 +1,8 @@
+#ifndef CONFIG_DECAF_H
+#define CONFIG_DECAF_H
+
+#cmakedefine TRANSPORT_MPI
+#cmakedefine TRANSPORT_CCI
+#cmakedefine TRANSPORT_FILE
+
+#endif

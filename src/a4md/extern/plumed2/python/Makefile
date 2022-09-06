@@ -1,0 +1,46 @@
+# include the machine dependent configuration
+ifneq ($(MAKECMDGOALS),clean)
+  -include ../Makefile.conf
+endif
+
+.PHONY: all clean install
+
+plumed_compiled := $(wildcard ../src/lib/plumed)
+
+ifeq ($(strip $(plumed_compiled)),)
+
+all:
+	@echo You must compile plumed before building the cython interface
+
+else
+
+ifdef python_bin
+
+ifeq ($(SOEXT),dylib)
+PYTHON_EXTRA_LDFLAGS=-undefined dynamic_lookup
+else
+PYTHON_EXTRA_LDFLAGS=
+endif
+
+all:
+	@echo Building python interface for PLUMED 
+	LD_LIBRARY_PATH=$$PWD/../src/lib:$$LD_LIBRARY_PATH \
+	  CC="$(CC)" \
+          LDSHARED="$(LDSHARED) $(PYTHON_EXTRA_LDFLAGS)" \
+          CXX="$(CXX)" \
+          program_name=plumed \
+          plumedexe=../src/lib/plumed \
+          include_dir=../src/wrapper \
+          lib_dir=../src/lib \
+          $(python_bin) buildPythonInterface.py build_ext -i
+
+else
+
+all:
+	@echo Python support was not configure
+endif
+
+endif
+
+clean:
+	rm -fr *.so plumed.cpp build
