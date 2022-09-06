@@ -2,7 +2,7 @@
 
 #include <catch2/catch.hpp>
 #include <vector>
-#include "md_runner.h"
+#include "../../common/include/md_runner.h"
 
 TEST_CASE( "PyRunner ModuleLoadException Tests", "[retrieve]" )
 {

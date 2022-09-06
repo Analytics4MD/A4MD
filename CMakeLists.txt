@@ -186,7 +186,7 @@ include_directories("${PROJECT_SOURCE_DIR}/src/a4md/retrieve")
 # Import pybind11
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/a4md/extern/pybind11)
 # Build A4MD main sources
-add_subdirectory(/src/a4md)
+add_subdirectory(src/a4md)
 if (build_examples)
     add_subdirectory(examples)
 endif(build_examples)

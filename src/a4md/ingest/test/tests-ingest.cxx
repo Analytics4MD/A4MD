@@ -3,10 +3,10 @@
 #include <catch2/catch.hpp>
 #include <string>
 #include <vector>
-#include "chunk.h"
-#include "md_runner.h"
-#include "pdb_chunker.h"
-#include "cv_buffer.h"
+#include "../../common/include/chunk.h"
+#include "../../common/include/md_runner.h"
+#include "../include/pdb_chunker.h"
+#include "../include/cv_buffer.h"
 
 TEST_CASE("PyRunner extract_frame Tests", "[ingest]")
 {

@@ -2,10 +2,10 @@
 
 #include <catch2/catch.hpp>
 #include <vector>
-#include "md_chunk.h"
-#include "cv_chunk.h"
-#include "md_runner.h"
-#include "md_intermediator.h"
+#include "../include/md_chunk.h"
+#include "../include/cv_chunk.h"
+#include "../include/md_runner.h"
+#include "../include/md_intermediator.h"
 
 TEST_CASE( "MDChunk Tests", "[common]" ) 
 {

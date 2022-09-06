@@ -1,7 +1,7 @@
 #include <catch2/catch.hpp>
 #include <iostream>
 #include <string>
-#include "chunk_serializer.h"
+#include "../include/chunk_serializer.h"
 
 TEST_CASE( "ChunkSerializer Test on MDChunk", "[common]" ) 
 {

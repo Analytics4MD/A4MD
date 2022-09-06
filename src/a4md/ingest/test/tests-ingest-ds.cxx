@@ -1,12 +1,12 @@
-#include "dataspaces_writer.h"
-#include "dataspaces_reader.h"
+#include "../../dtl/include/dataspaces_writer.h"
+#include "../../dtl/include/dataspaces_reader.h"
 #include <catch2/catch.hpp>
 #include <spawn.h>
 #include <sys/wait.h>
 #include <fstream>
 #include <errno.h>
-#include "md_runner.h"
-#include "pdb_chunker.h"
+#include "../../common/include/md_runner.h"
+#include "../include/pdb_chunker.h"
 
 
 #define errExit(msg)    do { perror(msg); \

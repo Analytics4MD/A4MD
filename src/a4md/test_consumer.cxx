@@ -2,8 +2,8 @@
 #include "mpi.h"
 #ifdef DTL_DECAF
 #include <bredala/data_model/boost_macros.h>
-#endif
 #include "dtl/include/decaf_reader.h"
+#endif
 #include "dtl/include/dataspaces_reader.h"
 #include "common/include/md_stager.h"
 #include "common/include/timer.h"

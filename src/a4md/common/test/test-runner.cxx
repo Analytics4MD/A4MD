@@ -1,7 +1,7 @@
 #include <catch2/catch.hpp>
-#include "md_runner.h"
-#include "cv_chunk.h"
-#include "cv_runner.h"
+#include "../include/md_runner.h"
+#include "../include/cv_chunk.h"
+#include "../include/cv_runner.h"
 
 TEST_CASE("MDRunner direct_chunk Tests", "[common]")
 {

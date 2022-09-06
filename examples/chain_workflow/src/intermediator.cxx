@@ -1,13 +1,13 @@
 #include <unistd.h>
 #include "mpi.h"
-#include "dataspaces_writer.h"
-#include "dataspaces_reader.h"
-#include "md_intermediator.h"
-#include "chunk_stager.h"
-#include "md_generator.h"
-#include "cv_runner.h"
-#include "cv_buffer.h"
-#include "timer.h"
+#include "../../../src/a4md/dtl/include/dataspaces_writer.h"
+#include "../../../src/a4md/dtl/include/dataspaces_reader.h"
+#include "../../../src/a4md/common/include/md_intermediator.h"
+#include "../../../src/a4md/common/include/md_stager.h"
+#include "../../../src/a4md/ingest/include/md_generator.h"
+#include "../../../src/a4md/common/include/cv_runner.h"
+#include "../../../src/a4md/ingest/include/cv_buffer.h"
+#include "../../../src/a4md/common/include/timer.h"
 
 int main (int argc, const char** argv)
 {
@@ -65,7 +65,7 @@ int main (int argc, const char** argv)
     ChunkOperator *chunk_operator_1 = new MDIntermediator(py_runner);
     ChunkOperator *chunk_operator_2 = new CVBuffer(interval);
 
-    ChunkStager *chunk_stager = new ChunkStager(chunk_reader, std::vector<ChunkOperator*>{chunk_operator_1, chunk_operator_2}, chunk_writer);
+    ChunkStager *chunk_stager = new MDStager(chunk_reader, std::vector<ChunkOperator*>{chunk_operator_1, chunk_operator_2}, chunk_writer);
     Ingester *ingester = new MDGenerator(*chunk_stager, total_chunks, 0);
     
     // Main run

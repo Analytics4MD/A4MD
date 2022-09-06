@@ -1,10 +1,10 @@
 #define CATCH_CONFIG_MAIN
 
 #include <catch2/catch.hpp>
-#include "dataspaces_writer.h"
-#include "dataspaces_reader.h"
-#include "md_chunk.h"
-#include "cv_chunk.h"
+#include "../include/dataspaces_writer.h"
+#include "../include/dataspaces_reader.h"
+#include "../../common/include/md_chunk.h"
+#include "../../common/include/cv_chunk.h"
 #include <vector>
 #include <spawn.h>
 #include <sys/wait.h>
