@@ -1,6 +1,6 @@
 #ifndef __DATASPACES_WRITER_H__
 #define __DATASPACES_WRITER_H__
-#include "../../common/include/chunk_writer.h"
+#include "chunk_writer.h"
 #include "mpi.h"
 
 class DataSpacesWriter : public ChunkWriter

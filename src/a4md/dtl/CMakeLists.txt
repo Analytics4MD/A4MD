@@ -8,6 +8,7 @@ set(_a4md_dtl_sources_
     src/ims_reader.cxx
     src/ims_writer.cxx
     )
+#include_directories(include/)
 set(_a4md_dtl_headers_
     include/dataspaces_writer.h
     include/dataspaces_reader.h
@@ -19,6 +20,7 @@ set(_a4md_dtl_headers_
     include/ims_reader.h
     )
 add_library(a4md_dtl ${_a4md_dtl_sources_})
+target_include_directories(a4md_dtl PUBLIC include/)
 set_target_properties(a4md_dtl PROPERTIES
     CXX_STANDARD 11
     CXX_STANDARD_REQUIRED ON

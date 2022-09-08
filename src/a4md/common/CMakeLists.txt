@@ -10,6 +10,7 @@ set(_a4md_cmn_sources_
         src/md_stager.cxx
         src/md_intermediator.cxx
         )
+include_directories(include/)
 set(_a4md_cmn_headers_
         include/chunk.h
         include/md_chunk.h
@@ -30,6 +31,7 @@ set(_a4md_cmn_headers_
         )
 
 add_library(a4md_cmn ${_a4md_cmn_sources_})
+target_include_directories(a4md_cmn PUBLIC include/)
 set_target_properties(a4md_cmn PROPERTIES
     CXX_STANDARD 11
     CXX_STANDARD_REQUIRED ON

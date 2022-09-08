@@ -1,6 +1,6 @@
 #ifndef __DATASPACES_READER_H__
 #define __DATASPACES_READER_H__
-#include "../../common/include/chunk_reader.h"
+#include "chunk_reader.h"
 #include "mpi.h"
 
 class DataSpacesReader : public ChunkReader
