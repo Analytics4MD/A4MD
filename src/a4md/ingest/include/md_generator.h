@@ -1,7 +1,7 @@
 #ifndef __MD_GENERATOR_H__
 #define __MD_GENERATOR_H__
 #include "ingester.h"
-#include "../../common/include/chunk_stager.h"
+#include "chunk_stager.h"
 
 class MDGenerator : public Ingester
 {

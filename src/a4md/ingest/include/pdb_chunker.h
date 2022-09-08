@@ -1,7 +1,7 @@
 #ifndef __PDB_CHUNKER_H__
 #define __PDB_CHUNKER_H__
-#include "../../common/include/chunk_reader.h"
-#include "../../common/include/py_runner.h"
+#include "chunk_reader.h"
+#include "py_runner.h"
 
 class PDBChunker : public ChunkReader
 {

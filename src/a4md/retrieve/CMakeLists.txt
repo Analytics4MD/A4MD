@@ -12,6 +12,7 @@ set(_a4md_retrieve_headers_
 		)
 
 add_library(a4md_retrieve ${_a4md_retrieve_sources_})
+target_include_directories(a4md_retrieve PUBLIC include/)
 set_target_properties(a4md_retrieve PROPERTIES
     CXX_STANDARD 11
     CXX_STANDARD_REQUIRED ON

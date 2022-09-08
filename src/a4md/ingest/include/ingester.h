@@ -1,7 +1,7 @@
 #ifndef __INGESTER_H__
 #define __INGESTER_H__
 #include <vector>
-#include "../../common/include/chunk_stager.h"
+#include "chunk_stager.h"
 
 class Ingester
 {

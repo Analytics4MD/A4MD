@@ -18,6 +18,7 @@ set(_a4md_ingest_headers_
 #include_directories(${PROJECT_SOURCE_DIR}/extern/dataspaces/include)
 
 add_library(a4md_ingest ${_a4md_ingest_sources_})
+target_include_directories(a4md_ingest PUBLIC include/)
 set_target_properties(a4md_ingest PROPERTIES
     CXX_STANDARD 11
     CXX_STANDARD_REQUIRED ON

@@ -1,6 +1,6 @@
 #ifndef __RETRIEVER_H__
 #define __RETRIEVER_H__
-#include "../../common/include/chunk_stager.h"
+#include "chunk_stager.h"
 
 class Retriever
 {

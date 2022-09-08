@@ -1,7 +1,7 @@
 #ifndef __MD_ANALYZER_H__
 #define __MD_ANALYZER_H__
-#include "../../common/include/chunk_writer.h"
-#include "../../common/include/py_runner.h"
+#include "chunk_writer.h"
+#include "py_runner.h"
 
 
 class MDAnalyzer : public ChunkWriter
