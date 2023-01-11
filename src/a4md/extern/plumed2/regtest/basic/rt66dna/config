@@ -1,3 +1,0 @@
-plumed_needs="cregex"
-type=driver
-arg="--igro 1bna.gro"

@@ -1,5 +1,0 @@
-# vim: ft=plumed
-RESTART
-INCLUDE FILE=cv0.dat
-INCLUDE FILE=plumedcommon_all.dat
-

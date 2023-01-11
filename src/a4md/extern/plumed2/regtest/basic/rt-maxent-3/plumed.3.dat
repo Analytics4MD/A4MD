@@ -1,3 +1,0 @@
-RESTART
-INCLUDE FILE=cv3.dat
-INCLUDE FILE=plumedcommon_all.dat

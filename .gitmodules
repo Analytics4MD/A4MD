@@ -1,25 +1,25 @@
 [submodule "a4md/extern/argparse"]
-	path = a4md/extern/argparse
+	path = src/a4md/extern/argparse
 	url = https://github.com/hbristow/argparse.git
 [submodule "a4md/extern/dataspaces"]
-	path = a4md/extern/dataspaces
+	path = src/a4md/extern/dataspaces
     #url = git@github.com:Analytics4MD/dataspaces.git
     url = ../dataspaces.git
     #branch = cori_deployment
 [submodule "a4md/extern/plumed2"]
-	path = a4md/extern/plumed2
+	path = src/a4md/extern/plumed2
     #url = https://github.com/Analytics4MD/plumed2.git
 	url = ../plumed2.git
 [submodule "a4md/extern/catch2"]
-	path = a4md/extern/catch2
+	path = src/a4md/extern/catch2
 	url = https://github.com/catchorg/Catch2.git
 [submodule "a4md/extern/decaf"]
-	path = a4md/extern/decaf
+	path = src/a4md/extern/decaf
 	url = https://github.com/tpeterka/decaf.git
 [submodule "a4md/extern/wrap"]
-	path = a4md/extern/wrap
+	path = src/a4md/extern/wrap
 	url = https://github.com/LLNL/wrap.git
 [submodule "a4md/extern/pybind11"]
-	path = a4md/extern/pybind11
+	path = src/a4md/extern/pybind11
 	url = ../../pybind/pybind11
 	branch = stable

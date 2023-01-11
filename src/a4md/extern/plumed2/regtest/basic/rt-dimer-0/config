@@ -1,3 +1,0 @@
-type=driver
-arg="--plumed plumed.dat --mf_pdb aladip.pdb"
-extra_files="../../trajectories/dimer/aladip.pdb"

@@ -1,6 +1,0 @@
-ignore:
-  - regtest
-  - src/lapack
-  - src/blas
-  - src/lepton
-  - src/molfile

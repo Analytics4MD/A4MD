@@ -1,2 +1,0 @@
-type=plumed
-arg="pathtools --path all.pdb --fixed 3,6 --metric OPTIMAL --out path-out.pdb" 

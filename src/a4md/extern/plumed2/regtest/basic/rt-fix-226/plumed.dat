@@ -1,2 +1,0 @@
-r: RMSD REFERENCE=ref.pdb  TYPE=SIMPLE
-PRINT ARG=r FILE=rmsd
