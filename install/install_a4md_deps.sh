@@ -60,23 +60,11 @@ spack install zlib
 echo ${progress_delimiter}
 # Create and activate spack environment
 echo ${progress_delimiter}
-spack env create ${spack_env} ./anacin_env.yaml
+spack env create ${spack_env} ./anacin_env.lock
 echo ${progress_delimiter}
 spack env activate ${spack_env}
 echo ${progress_delimiter}
 echo "Done Activating Spack Environment"
-echo
-
-
-echo "Link Spack to External Compiler and MPI"
-echo ${progress_delimiter}
-echo ${progress_delimiter}
-echo ${progress_delimiter}
-if [ ${has_mpi} = "yes" ]; then
-    spack external find ${mpi_name}
-fi
-echo ${progress_delimiter}
-echo "Done Linking Spack"
 echo
 
 # Spack concretize
@@ -88,3 +76,5 @@ echo ${progress_delimiter}
 # Spack install
 echo ${progress_delimiter}
 spack install
+
+
