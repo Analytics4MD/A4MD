@@ -1,7 +1,7 @@
 <h1 align="center">  
   A4MD
   <h4 align="center">
-  <a href="https://app.shippable.com/github/Analytics4MD/A4MD-project-a4md"><img src="https://api.shippable.com/projects/5bcf364bec335d0700dbc0ec/badge?branch=master"/></a>
+  <a href="https://analytics4md.org/"><img src="https://avatars.githubusercontent.com/u/32650548?s=200&v=4"/></a>
   </h4>
 </h1>
 
@@ -14,7 +14,7 @@
 
 ## About
 
-A framework that enables in situ molecular dynamic analytics via using in-memory staging areas
+The project's harnessed knowledge of molecular structures' transformations at runtime can be used to steer simulations to more promising areas of the simulation space, identify the data that should be written to congested parallel file systems, and index generated data for retrieval and post-simulation analysis. Supported by this knowledge, molecular dynamics workflows such as replica exchange simulations, Markov state models, and the string method with swarms of trajectories can be executed from the outside (i.e., without reengineering the molecular dynamics code) 
 
 ## Prerequisites
 
