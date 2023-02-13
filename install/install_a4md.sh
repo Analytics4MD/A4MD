@@ -1,9 +1,14 @@
-cd ~/test/a4md
+#!/usr/bin/env bash
+
+install_dir=$1
+dataspaces_install_dir=$2
+
+cd ${install_dir}
 mkdir build
-cd ~/test/a4md/build
-cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/test/a4md-test -DDATASPACES_PREFIX=$HOME/dataspaces
+cd ${install_dir}/build
+cmake .. -DCMAKE_INSTALL_PREFIX=${install_dir}/../a4md-test -DDATASPACES_PREFIX=${dataspaces_install_dir}
 make
 make install
-cd ~/test/a4md
+cd ${install_dir}
 pip install -e .
 

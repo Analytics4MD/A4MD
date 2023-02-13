@@ -1,5 +1,7 @@
-echo 'Cloning and building sample workflow' >> installingProcess
+#!/usr/bin/env bash
+echo 'Cloning and building sample workflow' 
 cd
+# TODO: Test this - Modify dataspaces installation dir
 # git clone https://github.com/Analytics4MD/A4MD-sample-workflow.git sampleEnsemble
 cd sampleEnsemble
 mkdir build

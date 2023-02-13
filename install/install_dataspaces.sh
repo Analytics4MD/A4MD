@@ -1,8 +1,13 @@
-echo 'Building DSpaces' >> installingProcess
+#!/usr/bin/env bash
+
+dataspaces_install_dir=$1
+install_dir=$2
+mkdir -p ${dataspaces_install_dir}
+echo 'Building DSpaces' 
 # Build and install dataspaces into $HOME/dataspaces
-cd ~/test/a4md/src/a4md/extern/dataspaces
+cd ${install_dir}/src/a4md/extern/dataspaces
 ./autogen.sh
-CC=$(which mpicc) CXX=$(which mpicxx) FC=$(which mpifort) CFLAGS=-fPIC ./configure --enable-shmem --enable-dart-tcp --prefix=$HOME/dataspaces
+CC=$(which mpicc) CXX=$(which mpicxx) FC=$(which mpifort) CFLAGS=-fPIC ./configure --enable-shmem --enable-dart-tcp --prefix=${dataspaces_install_dir}
 make
 make install
 
