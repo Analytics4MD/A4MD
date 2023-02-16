@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 
+# TODO: get repo dir to use it as root folder
+# TODO: remove spack termination
+
 # Introduction
 echo "Hello!  Thank you for downloading A4MD."
 echo
 echo "Before we can start installing the software, we'll need to determine which packages you'll need."
+
+a4md_root=$(pwd)
 
 # Verify user has ssh setup
 while true; do
@@ -36,18 +41,18 @@ while true; do
         [yY] | [yY][eE][sS] ) has_spack="yes"; break ;;
         [nN] | [nN][oO] ) echo "You will need to install Spack prior to installation."
             echo "Please review instructions for spack installation at https://spack.readthedocs.io/en/latest/getting_started.html"
-            exit ;;
+            break ;;
                 * ) echo "Please respond with either yes or no: " ;;
     esac
 done
-read -p "Please provide a name for a project spack environment.  It can be anything. (Press enter for default anacin_spack_env) " user_spack_name
+read -p "Please provide a name for a project spack environment.  It can be anything. (Press enter for default a4md_spack_env) " user_spack_name
 while true; do
 	read -p "Do you already have the Conda package manager installed? (yes/no) " user_has_conda
 	case ${user_has_conda} in
 		[yY] | [yY][eE][sS] ) has_conda="yes"; break ;;
 		[nN] | [nN][oO] ) echo "You will need to set up use of Anaconda prior to installation."
 			echo "Please review instructions for how to do so at https://conda.io/projects/conda/en/latest/user-guide/install/index.html"
-			exit ;;
+			break ;;
                 #[nN] | [nN][oO] ) has_conda="no";  read -p "Where would you like to install Conda? (Press enter for your home directory.) " user_conda; break ;;
                 * ) echo "Please respond with either yes or no: " ;;
 	esac
@@ -68,5 +73,5 @@ spack_env_name="${user_spack_name:="a4md_spack_env"}"
 
 #echo ${mpi_name}
 cd install
-. ./install_a4md_deps.sh ${mpi_name} ${os_for_conda} ${spack_env_name} ${has_spack} ${has_conda} ${has_c_comp} ${has_ssh_key} 
+. ./install_a4md_deps.sh ${mpi_name} ${os_for_conda} ${spack_env_name} ${user_has_spack} ${user_has_conda} ${has_c_comp} ${has_ssh_key} ${a4md_root}
 cd ..
