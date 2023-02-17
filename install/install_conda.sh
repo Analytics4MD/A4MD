@@ -5,7 +5,6 @@ os_for_conda=$2
 
 cd ${app_install_dir}
 
-if [ "yes" = "no" ]; then
 if [ ${os_for_conda} = "linux86" ]; then
     echo ${progress_delimiter}
     wget https://repo.anaconda.com/archive/Anaconda3-5.3.1-Linux-x86_64.sh
@@ -48,5 +47,4 @@ pip install --upgrade MDAnalysis
 
 export LD_LIBRARY_PATH="${app_install_dir}/anaconda3/envs/a4md_conda_env/lib:${LD_LIBRARY_PATH}"
 export LIBRARY_PATH="${app_install_dir}/anaconda3/envs/a4md_conda_env/lib:${LIBRARY_PATH}"
-
 cd -

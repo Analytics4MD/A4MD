@@ -4,6 +4,8 @@ a4md_root=$(pwd)
 # Options of mac, linux86, linuxP9
 os_for_conda="${user_os:="linux86"}"
 
+rm -rf log.*
+
 
 # Introduction
 echo "Hello!  Thank you for downloading A4MD."

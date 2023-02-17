@@ -14,7 +14,6 @@ has_c_comp=${6:-"yes"}
 has_ssh=${7:-"yes"}
 
 # Installation dirs
-dataspaces_install_dir="$HOME/dataspaces"
 app_install_dir="${a4md_root}/app"
 mkdir -p ${app_install_dir}
 
@@ -37,55 +36,6 @@ do
 done
 
 #   Don't find compilers here.  If user has specific c compiler, tell them to call spack compiler find prior to making environment and then update compilers.yaml file.
-
-# if [ ${has_spack} = "no" ]; then
-#     echo "Cloning and Activating Spack"
-#     echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
-#     # cd ${spack_path}
-#     git clone https://github.com/spack/spack.git ~/spack
-#     cd ~/spack
-#     git checkout releases/v0.18
-#     cd -
-#     echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
-# fi
-
-# # Add Spack to bashrc
-# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
-# echo ". ~/spack/share/spack/setup-env.sh" >> ~/.bashrc
-# . ~/spack/share/spack/setup-env.sh
-# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
-# echo "Done Preparing Spack"
-# echo
-
-
-# # Install zlib
-# echo
-# echo "Set up and Activate Spack Environment"
-# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
-# path_to_spack=$(which spack)
-# spack_root=${path_to_spack%/bin/spack}
-# . ${spack_root}/share/spack/setup-env.sh
-# spack install zlib
-# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
-# # Create and activate spack environment
-# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
-# spack env create ${spack_env} # ./a4md_env.lock
-# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
-# spack env activate ${spack_env}
-# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
-# echo "Done Activating Spack Environment"
-# echo
-
-# Spack concretize
-# echo
-# echo "Concretize and Install Spack Packages"
-# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
-# spack concretize
-# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
-# # Spack install
-# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
-# spack install
-
 
 echo
 echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
@@ -111,20 +61,6 @@ echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 echo "Done building conda." >> ${a4md_root}/log.installing_a4md_process
 echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 echo
-
-
-# echo
-# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
-# echo "Building a4md..." >> ${a4md_root}/log.installing_a4md_process
-# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
-# echo
-# . ./download_a4md.sh ${install_dir}
-# echo 
-# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
-# echo "Done building a4md." >> ${a4md_root}/log.installing_a4md_process
-# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
-# echo
-
 
 echo
 echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
@@ -152,3 +88,15 @@ echo $(pwd)
 echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 echo
 
+echo
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
+echo "Building sample workflow..." >> ${a4md_root}/log.installing_a4md_process
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
+echo
+. ./install_sample_ensemble.sh ${a4md_root} ${app_install_dir}
+echo 
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
+echo "Done building sample workflow." >> ${a4md_root}/log.installing_a4md_process
+echo $(pwd)
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
+echo
