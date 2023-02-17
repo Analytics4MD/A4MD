@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
+app_install_dir=$1
 
 echo "Downloading and installing Spack"
-git clone -c feature.manyFiles=true https://github.com/spack/spack.git ~/spack
-cd ~/spack
+git clone -c feature.manyFiles=true https://github.com/spack/spack.git ${app_install_dir}/spack
+cd ${app_install_dir}/spack
 git checkout releases/v0.18
 . share/spack/setup-env.sh
+echo ". ${app_install_dir}/spack/share/spack/setup-env.sh" >> ~/.bashrc
+
 
 echo "Creating spack environment"
 spack env create a4md_spack_env

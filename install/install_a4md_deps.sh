@@ -14,8 +14,9 @@ has_c_comp=${6:-"yes"}
 has_ssh=${7:-"yes"}
 
 # Installation dirs
-install_dir="~/test/a4md"
 dataspaces_install_dir="$HOME/dataspaces"
+app_install_dir="${a4md_root}/app"
+mkdir -p ${app_install_dir}
 
 
 
@@ -39,20 +40,20 @@ done
 
 # if [ ${has_spack} = "no" ]; then
 #     echo "Cloning and Activating Spack"
-#     echo ${progress_delimiter}
+#     echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 #     # cd ${spack_path}
 #     git clone https://github.com/spack/spack.git ~/spack
 #     cd ~/spack
 #     git checkout releases/v0.18
 #     cd -
-#     echo ${progress_delimiter}
+#     echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 # fi
 
 # # Add Spack to bashrc
-# echo ${progress_delimiter}
+# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 # echo ". ~/spack/share/spack/setup-env.sh" >> ~/.bashrc
 # . ~/spack/share/spack/setup-env.sh
-# echo ${progress_delimiter}
+# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 # echo "Done Preparing Spack"
 # echo
 
@@ -60,94 +61,94 @@ done
 # # Install zlib
 # echo
 # echo "Set up and Activate Spack Environment"
-# echo ${progress_delimiter}
+# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 # path_to_spack=$(which spack)
 # spack_root=${path_to_spack%/bin/spack}
 # . ${spack_root}/share/spack/setup-env.sh
 # spack install zlib
-# echo ${progress_delimiter}
+# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 # # Create and activate spack environment
-# echo ${progress_delimiter}
+# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 # spack env create ${spack_env} # ./a4md_env.lock
-# echo ${progress_delimiter}
+# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 # spack env activate ${spack_env}
-# echo ${progress_delimiter}
+# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 # echo "Done Activating Spack Environment"
 # echo
 
 # Spack concretize
 # echo
 # echo "Concretize and Install Spack Packages"
-# echo ${progress_delimiter}
+# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 # spack concretize
-# echo ${progress_delimiter}
+# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 # # Spack install
-# echo ${progress_delimiter}
+# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 # spack install
 
 
 echo
-echo ${progress_delimiter}
-echo "Building spack..." >> ${a4md_root}/installing_a4md_process
-echo ${progress_delimiter}
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
+echo "Building spack..." >> ${a4md_root}/log.installing_a4md_process
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 echo
-. ./install_spack_packages.sh
+. ./install_spack_packages.sh ${app_install_dir}
 echo 
-echo ${progress_delimiter}
-echo "Done building spack." >> ${a4md_root}/installing_a4md_process
-echo ${progress_delimiter}
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
+echo "Done building spack." >> ${a4md_root}/log.installing_a4md_process
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 echo
 
 
 echo
-echo ${progress_delimiter}
-echo "Building conda..." >> ${a4md_root}/installing_a4md_process
-echo ${progress_delimiter}
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
+echo "Building conda..." >> ${a4md_root}/log.installing_a4md_process
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 echo
-. ./install_conda.sh
+. ./install_conda.sh ${app_install_dir}
 echo 
-echo ${progress_delimiter}
-echo "Done building conda." >> ${a4md_root}/installing_a4md_process
-echo ${progress_delimiter}
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
+echo "Done building conda." >> ${a4md_root}/log.installing_a4md_process
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 echo
 
 
 # echo
-# echo ${progress_delimiter}
-# echo "Building a4md..." >> ${a4md_root}/installing_a4md_process
-# echo ${progress_delimiter}
+# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
+# echo "Building a4md..." >> ${a4md_root}/log.installing_a4md_process
+# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 # echo
 # . ./download_a4md.sh ${install_dir}
 # echo 
-# echo ${progress_delimiter}
-# echo "Done building a4md." >> ${a4md_root}/installing_a4md_process
-# echo ${progress_delimiter}
+# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
+# echo "Done building a4md." >> ${a4md_root}/log.installing_a4md_process
+# echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 # echo
 
 
 echo
-echo ${progress_delimiter}
-echo "Building dataspaces..." >> ${a4md_root}/installing_a4md_process
-echo ${progress_delimiter}
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
+echo "Building dataspaces..." >> ${a4md_root}/log.installing_a4md_process
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 echo
-. ./install_dataspaces.sh ${dataspaces_install_dir} ${a4md_root}
+. ./install_dataspaces.sh ${app_install_dir} ${a4md_root}
 echo 
-echo ${progress_delimiter}
-echo "Done building dataspaces." >> ${a4md_root}/installing_a4md_process
-echo ${progress_delimiter}
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
+echo "Done building dataspaces." >> ${a4md_root}/log.installing_a4md_process
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 echo 
 
 
 echo
-echo ${progress_delimiter}
-echo "Building a4md..." >> ${a4md_root}/installing_a4md_process
-echo ${progress_delimiter}
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
+echo "Building a4md..." >> ${a4md_root}/log.installing_a4md_process
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 echo
-. ./install_a4md.sh ${a4md_root} ${dataspaces_install_dir}
+. ./install_a4md.sh ${a4md_root} ${app_install_dir}
 echo 
-echo ${progress_delimiter}
-echo "Done building a4md." >> ${a4md_root}/installing_a4md_process
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
+echo "Done building a4md." >> ${a4md_root}/log.installing_a4md_process
 echo $(pwd)
-echo ${progress_delimiter}
+echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 echo
 

@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# TODO: get repo dir to use it as root folder
-# TODO: remove spack termination
-
 # Introduction
 echo "Hello!  Thank you for downloading A4MD."
 echo
