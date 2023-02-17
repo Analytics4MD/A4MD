@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 
+a4md_root=$(pwd)
+# Options of mac, linux86, linuxP9
+os_for_conda="${user_os:="linux86"}"
+
+
 # Introduction
 echo "Hello!  Thank you for downloading A4MD."
 echo
 echo "Before we can start installing the software, we'll need to determine which packages you'll need."
 
-a4md_root=$(pwd)
 
 # Verify user has ssh setup
 while true; do
@@ -57,18 +61,11 @@ done
 
 mpi_name="${user_mpi_name:="mpich"}"
 
-# Options of mac, linux86, linuxP9
-os_for_conda="${user_os:="linux86"}"
-
-# Needs to be correct path if on machine
-#conda_path="${user_conda:=""}"
-#spack_path="${user_spack:=""}"
 
 # Can be anything
 spack_env_name="${user_spack_name:="a4md_spack_env"}"
 
 
-#echo ${mpi_name}
 cd install
 . ./install_a4md_deps.sh ${mpi_name} ${os_for_conda} ${spack_env_name} ${user_has_spack} ${user_has_conda} ${has_c_comp} ${has_ssh_key} ${a4md_root}
 cd ..

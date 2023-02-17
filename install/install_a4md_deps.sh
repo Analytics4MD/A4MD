@@ -105,7 +105,7 @@ echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 echo "Building conda..." >> ${a4md_root}/log.installing_a4md_process
 echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 echo
-. ./install_conda.sh ${app_install_dir}
+. ./install_conda.sh ${app_install_dir} ${os_for_conda}
 echo 
 echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 echo "Done building conda." >> ${a4md_root}/log.installing_a4md_process
