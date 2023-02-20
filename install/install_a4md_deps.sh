@@ -93,6 +93,7 @@ echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 echo "Building sample workflow..." >> ${a4md_root}/log.installing_a4md_process
 echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
 echo
+cd ${a4md_root}/install
 . ./install_sample_ensemble.sh ${a4md_root} ${app_install_dir}
 echo 
 echo ${progress_delimiter} >> ${a4md_root}/log.installing_a4md_process
