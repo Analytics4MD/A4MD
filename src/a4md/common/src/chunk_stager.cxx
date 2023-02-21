@@ -27,7 +27,7 @@ bool ChunkStager::stage_chunks(int num_chunks)
 void ChunkStager::stage_chunks(unsigned long int chunk_id_from, unsigned long int chunk_id_to)
 {
     printf("---===== ChunkStager::stage_chunks() --> Stage chunks from %lu to %lu\n", chunk_id_from, chunk_id_to);
-    for (unsigned long int chunk_id = chunk_id_from; chunk_id <= chunk_id_from; chunk_id++)
+    for (unsigned long int chunk_id = chunk_id_from; chunk_id <= chunk_id_to; chunk_id++)
     {
         // Read chunks by ChunkReader
         std::vector<Chunk*> input_chunks = m_chunk_reader->read_chunks(chunk_id, chunk_id);

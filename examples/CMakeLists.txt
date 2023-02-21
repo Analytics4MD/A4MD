@@ -1,2 +1,1 @@
 add_subdirectory(sample_workflow)
-add_subdirectory(chain_workflow)
