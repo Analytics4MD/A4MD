@@ -55,6 +55,16 @@ git clone --recursive git@github.com:Analytics4MD/A4MD.git a4md
 cd a4md
 . setup_deps.sh
 ```
+The execution of previous script should create a folder called `a4md-test` in your home directory. This folder includes the binaries and examples to test A4MD.
+
+### Run sample workflow
+With all the installation process we have created a sample workflow, which consists of two consumers and two producers. To test this follow next steps
+
+```
+cd ~/a4md-test/examples/sample_workflow/
+sh local.dspaces.prod_con.sh
+```
+
 
 ### Additional data transport layer
  To build additional data transport layer based on Decaf, specify Decaf installation directory in the `install_a4md.sh` file as follows :
