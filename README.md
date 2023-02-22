@@ -100,4 +100,4 @@ Copyright (c) 2022, Global Computing Lab
 
 A4MD is distributed under terms of the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0) with LLVM Exceptions.
 
-See [LICENSE](https://github.com/TauferLab/ANACIN-X/blob/master/LICENSE) for more details.
+See [LICENSE](https://github.com/Analytics4MD/A4MD/blob/PASC/LICENSE) for more details.
