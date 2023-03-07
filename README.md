@@ -69,6 +69,18 @@ sh local.dspaces.prod_con.sh
 ```
 There are many things that can be customized in this script, e.g. the number of consumers, producers, and their execution scripts.
 
+**Number of ingesters** - `NWRITERS`
+**Ratio** - `NREADERS_PER_WRITER`
+**Number of consumers** - `NREADERS=$((NWRITERS*$NREADERS_PER_WRITER ))`
+**Number of producer processes** - `NP_WRITER`
+**Number of consumer processes** - `NP_READER`
+**Lock type** - `LOCK`
+**Number of DataSpaces servers** - `NSERVERS`
+**Number of steps** - `NSTEPS`
+**Window of frames to read** - `WINDOW`
+**Number of atoms** - `NATOMS`
+**Delay time** - `DELAY`
+
 ### Additional data transport layer
  To build additional data transport layer based on Decaf, specify Decaf installation directory in the `install_a4md.sh` file as follows :
 
@@ -92,6 +104,8 @@ There are many things that can be customized in this script, e.g. the number of 
 <b>A Survey of Algorithms for Transforming Molecular Dynamics Data into Metadata for In Situ Analytics based on Machine Learning Methods</b>
 <i>Issue of Philosophical Transactions A., 378(2166):1-11.</i>
 (2020). <a href="https://royalsocietypublishing.org/doi/full/10.1098/rsta.2019.0063" target="_blank">[link]</a>
+
+[More references](https://analytics4md.org/)
 
 ## Copyright and License
 
