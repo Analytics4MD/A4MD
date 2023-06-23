@@ -87,16 +87,18 @@ if (BUILD_EXAMPLES OR BUILD_TESTS)
 		install (TARGETS analyzer_decaf DESTINATION bin)
 	endif()
 
-	add_subdirectory(${PROJECT_SOURCE_DIR}/src/a4md/extern/catch2)
-	set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/src/a4md/extern/catch2/contrib" ${CMAKE_MODULE_PATH})
-	blt_add_exectuable(
-		NAME tests-main
-		SOURCES tests-main.cpp test-ingest.cpp
-		DEPENDS_ON Catch2::Catch2
-	)
-	enable_testing()
-	include(CTest)
-	include(ParseAndAddCatchTests)
-	ParseAndAddCatchTests(tests-main)
+	if (BUILD_TESTS)
+		add_subdirectory(${PROJECT_SOURCE_DIR}/src/a4md/extern/catch2)
+		set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/src/a4md/extern/catch2/contrib" ${CMAKE_MODULE_PATH})
+		blt_add_exectuable(
+			NAME tests-main
+			SOURCES tests-main.cpp test-ingest.cpp
+			DEPENDS_ON Catch2::Catch2
+		)
+		enable_testing()
+		include(CTest)
+		include(ParseAndAddCatchTests)
+		ParseAndAddCatchTests(tests-main)
+	endif (BUILD_TESTS)
 endif (BUILD_EXAMPLES OR BUILD_TESTS)
 	
