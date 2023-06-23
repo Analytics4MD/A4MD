@@ -23,3 +23,6 @@
 	path = src/a4md/extern/pybind11
 	url = ../../pybind/pybind11
 	branch = stable
+[submodule "src/a4md/extern/blt"]
+	path = src/a4md/extern/blt
+	url = https://github.com/LLNL/blt.git
