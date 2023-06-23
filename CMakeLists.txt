@@ -1,200 +1,200 @@
-# project name
-project (A4MD)
-set(A4MD_VERSION 1.0)
-cmake_minimum_required (VERSION 3.5)
+cmake_minimum_required(VERSION 3.9)
 
-option(dtl_dspaces "Build A4MD with Dataspaces data transport layer" ON)
-option(dtl_dimes "Build A4MD with DIMES data transport layer" OFF)
-option(dtl_decaf "Build A4MD with Decaf data transport layer" OFF)
-option(build_examples "Build examples" ON)
-option(build_tests "Build tests" OFF)
-option(build_wrap "Build MPI wrapper library for Decaf MPMD model" OFF)
+project(
+    A4MD
+    VERSION 1.0
+    LANGUAGES CXX
+)
 
+set(A4MD_VERSION ${PROJECT_VERSION})
+
+# A4MD uses C++11, so set the corresponding flag using CMAKE_CXX_STANDARD
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-#add_compile_options(-std=c++11)
-message(STATUS "CFLAGS : ${CMAKE_C_FLAGS}")
-message(STATUS "CXXFLAGS: ${CMAKE_CXX_FLAGS}")
-
-# Set Cmake verbose
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+# Disable verbose Makefiles
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
-# Custom CMake scripts
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+# Enable and disable certain features of BLT
+set(BLT_EXPORT_THIRDPARTY ON CACHE BOOL "")
+set(ENABLE_GIT ON CACHE BOOL "")
+set(ENABLE_FORTRAN ON CACHE BOOL "")
+set(ENABLE_MPI ON CACHE BOOL "")
+set(ENABLE_GTEST OFF CACHE BOOL "")
+set(ENABLE_GMOCK OFF CACHE BOOL "")
+set(ENABLE_FRUIT OFF CACHE BOOL "")
+set(ENABLE_FRUIT_MPI OFF CACHE BOOL "")
+set(ENABLE_GBENCHMARK OFF CACHE BOOL "")
 
-#################################
-
-## Update submodules
-set (UPDATE_SUBMODULES 1 CACHE BOOL "Update git submodules for dependency projects")
-
-## Add Git
-find_package(Git)
-if(GIT_FOUND)
-  message("git found: ${GIT_EXECUTABLE}")
-endif()
-if ((EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git) AND GIT_EXECUTABLE)
-    # only attempt to update submodules if this is a git repository and we have a git executable
-    if (UPDATE_SUBMODULES)
-      message(STATUS "Updating git submodules")
-      execute_process(COMMAND ${GIT_EXECUTABLE} submodule --quiet sync
-                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-      execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init
-                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+# Find BLT and include it
+#
+############################################################################
+# This code is obtained from:                                              #
+# https://llnl-blt.readthedocs.io/en/develop/tutorial/getting_started.html #
+############################################################################
+if (DEFINED BLT_SOURCE_DIR)
+    # Support having a shared BLT outside of the repository if given a BLT_SOURCE_DIR
+    if (NOT EXISTS ${BLT_SOURCE_DIR}/SetupBLT.cmake)
+        message(FATAL_ERROR "Given BLT_SOURCE_DIR does not contain SetupBLT.cmake")
     endif()
 else()
-    if (UPDATE_SUBMODULES)
-    message(STATUS "Current source directory is " ${CMAKE_CURRENT_SOURCE_DIR})
-    message(STATUS "UPDATE_SUBMODULES is set, but cmake cannot automatically update the submodules. "
-                   "The source directory is not a git clone or the git executable is not available.")
+    # Use internal BLT if no BLT_SOURCE_DIR is given
+    # NOTE: Change the path to point to the correct directory
+    set(BLT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/external/blt" CACHE PATH "")
+    if (NOT EXISTS ${BLT_SOURCE_DIR}/SetupBLT.cmake)
+        message(FATAL_ERROR
+            "The BLT git submodule is not present. "
+            "Either run the following two commands in your git repository: \n"
+            "    git submodule init\n"
+            "    git submodule update\n"
+            "Or add -DBLT_SOURCE_DIR=/path/to/blt to your CMake command." )
     endif()
 endif()
+include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
 
-# Add MPI
-find_package(MPI REQUIRED)
-if (MPI_FOUND)
-    include_directories(SYSTEM ${MPI_INCLUDE_PATH})
-    list(APPEND A4MD_INCLUDE_DIRS ${MPI_INCLUDE_PATH})
-    if (MPI_C_FOUND)
-        message(STATUS "--==MPI C COMPILER FOUND==--" ${MPI_C_COMPILER})
-        message(STATUS "MPI_C_COMPILE_FLAGS" ${MPI_C_COMPILE_FLAGS})
-        message(STATUS "MPI_C_INCLUDE_PATH" ${MPI_C_INCLUDE_PATH})
-        message(STATUS "MPI_C_LIBRARIES" ${MPI_C_LIBRARIES})
-    else (MPI_C_FOUND)
-        message(FATAL_ERROR "--==MPI C COMPILER NOT FOUND==--")
-    endif (MPI_C_FOUND)
-    if (MPI_CXX_FOUND)
-        message(STATUS "--==MPI CXX COMPILER FOUND==--" ${MPI_CXX_COMPILER})
-        message(STATUS "MPI_CXX_COMPILE_FLAGS" ${MPI_CXX_COMPILE_FLAGS})
-        message(STATUS "MPI_CXX_INCLUDE_PATH" ${MPI_CXX_INCLUDE_PATH})
-        message(STATUS "MPI_CXX_LIBRARIES" ${MPI_CXX_LIBRARIES})
-    else (MPI_CXX_FOUND)
-        message(FATAL_ERROR "--==MPI CXX COMPILER NOT FOUND==--")
-    endif (MPI_CXX_FOUND)
-    if (MPI_FORTRAN_FOUND)
-        message(STATUS "--==MPI FORTRAN COMPILER FOUND==--" ${MPI_FORTRAN_COMPILER})
-        message(STATUS "MPI_FORTRAN_COMPILE_FLAGS" ${MPI_Fortran_COMPILE_FLAGS})
-        message(STATUS "MPI_FORTRAN_INCLUDE_PATH" ${MPI_Fortran_INCLUDE_PATH})
-        message(STATUS "MPI_FORTRAN_LIBRARIES" ${MPI_Fortran_LIBRARIES})
-    else (MPI_FORTRAN_FOUND)
-        message(AUTHOR_WARNING "---===MPI FORTRAN COMPILER (typically mpif90) WAS NOT FOUND===---.
-                Dataspaces may not build successfully because of this. Not sure what to do about this yet.
-                If you are in a conda environment, switching to the system may work. Try it. Thats what worked for me.==--")
-    endif (MPI_FORTRAN_FOUND)
-else (MPI_FOUND)
-    message(SEND_ERROR "This application cannot compile without MPI")
-endif (MPI_FOUND)
-set (MPI_LIBRARIES ${MPI_LIBRARIES} ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
+option(ENABLE_DSPACES "Enable the DataSpaces Data Transport Layer" ON)
+option(ENABLE_DIMES "Enable the DIMES Data Transport Layer" OFF)
+option(ENABLE_DECAF "Enable the Decaf Data Transport Layer" OFF)
+option(ENABLE_TAU "Enable TAU annotations" OFF)
+option(BUILD_EXAMPLES "Build examples" ON)
+option(BUILD_TESTS "Build tests" OFF)
+option(BUILD_WRAP "Build MPI wrapper library for Decaf MPMD model" OFF)
+option(UPDATE_SUBMODULES "Update git submodules for dependencies" ON)
 
-# find Boost
-SET (BOOST_MIN_VERSION "1.55.0")
-FIND_PACKAGE(Boost ${BOOST_MIN_VERSION} REQUIRED COMPONENTS iostreams serialization)
-if (NOT Boost_FOUND)
-  message(FATAL_ERROR "Fatal error: Boost (version >= 1.55) required.")
-else()
-  message(STATUS "Setting up BOOST")
-  SET(${Boost_INCLUDE_DIRS} "/home/jmarque4/spack/opt/spack/linux-rhel7-power8le/gcc-5.5.0/boost-1.79.0-s2zgmdyz6pcraoym7ad7b6x62doyeqpi/include/")
-  message(STATUS " Boost Include Directories : ${Boost_INCLUDE_DIRS}")
-  message(STATUS " Boost Libraries : ${Boost_LIBRARIES}")
-  include_directories(${Boost_INCLUDE_DIRS})
-  list(APPEND A4MD_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
-  link_directories(${Boost_LIBRARY_DIRS})
-endif (NOT Boost_FOUND)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR/cmake})
 
-# Add Python
-# FindPythonInterp will search for an interpreter with 3.3 <= version <= 3.7
-set(Python_ADDITIONAL_VERSIONS 3.7 3.6 3.5 3.4 3.3)
-# find python interpreter (minimum version 3.3)
-find_package(PythonInterp 3.3 REQUIRED)
-# Reset Python_ADDITIONAL_VERSIONS so that FindPythonLibs only searches for the
-# same version as the Interpreter.
-unset(Python_ADDITIONAL_VERSIONS)
-set(Python_ADDITIONAL_VERSIONS ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
-# find python libs (minimum version matches the interpreter's version)
-find_package(PythonLibs ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR} REQUIRED)
-include_directories(${PYTHON_INCLUDE_DIRS})
-list(APPEND A4MD_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS})
+if (UPDATE_SUBMODULES)
+    blt_is_git_repo(OUTPUT_STATE is_valid_repo)
+    if (is_valid_repo)
+        blt_git(
+            SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
+            GIT_COMMAND "git submodule update --init --recursive"
+            OUTPUT_VARIABLE git_submod_update_out
+            RETURN_CODE git_submod_rc
+        )
+        if (NOT ${git_submod_rc} EQUAL 0)
+            message(WARNING "UPDATE_SUBMODULES was enabled, but corresponding git command failed!")
+        endif ()
+    endif (is_valid_repo)
+endif (UPDATE_SUBMODULES)
 
-# find Numpy
-find_package(NumPy REQUIRED)
-include_directories(${NUMPY_INCLUDE_DIR})
+find_package(
+    Boost 1.55.0
+    REQUIRED
+    COMPONENTS iostreams serialization
+)
+blt_import_library(
+    NAME boost
+    DEPENDS_ON Boost::boost Boost::iostreams Boost::serialization
+)
 
-# Pthread
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+if (${CMAKE_VERSION} VERSION_LESS "3.14.0")
+    find_package(PythonInterp 3.6 REQURIED)
+    set(Python_ADDITIONAL_VERSIONS ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
+    find_package(PythonLibs ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR} REQUIRED)
+    find_package(NumPy REQUIRED)
+    blt_import_library(
+        NAME python_dev
+        INCLUDES ${PYTHON_INCLUDE_DIRS} ${NUMPY_INCLUDE_DIR}
+        LIBRARIES ${PYTHON_LIBRARIES}
+        EXPORTABLE ON
+    )
+else ()
+    find_package(
+        Python3 3.6
+        REQUIRED
+        COMPONENTS Interpreter Development NumPy
+    )
+    blt_import_library(
+        NAME python_dev
+        INCLUDES ${Python3_INCLUDE_DIRS} ${Python3_NumPy_INCLUDE_DIRS}
+        LIBRARIES ${Python3_LIBRARIES}
+        EXPORTABLE ON
+    )
+endif ()
 
-if (dtl_dspaces)
+find_package(Threads REQUIRED)
+
+if (ENABLE_DSPACES)
     find_package(DataSpaces)
     if (DATASPACES_FOUND)
-        message(STATUS "Found external Dataspaces installed at: ${DATASPACES_PREFIX}")
-        message(STATUS "DATASPACES_VERSION: ${DATASPACES_VERSION}")
-        message(STATUS "DATASPACES_INCLUDE_DIR: ${DATASPACES_INCLUDE_DIR}")
-        message(STATUS "DATASPACES_LIBRARIES: ${DATASPACES_LIBRARIES}")
-        include_directories(${DATASPACES_INCLUDE_DIR})
-        list(APPEND A4MD_INCLUDE_DIRS ${DATASPACES_INCLUDE_DIR})
-        set(DATASPACES_LIBRARIES ${DATASPACES_LIBRARIES})
-        list(APPEND DTL_LIBRARIES ${DATASPACES_LIBRARIES})
-    endif ()
-endif ()
+        message(STATUS "Found external DataSpaces installated at: ${DATASPACES_PREFIX}")
+        message(STATUS "  * Version: ${DATASPACES_VERSION}")
+        message(STATUS "  * Include Directories: ${DATASPACES_INCLUDE_DIR}")
+        message(status "  * Libraries: ${DATASPACES_LIBRARIES}")
+        blt_import_library(
+            NAME dataspaces
+            INCLUDES ${DATASPACES_INCLUDE_DIR}
+            LIBRARIES ${DATASPACES_LIBRARIES}
+            EXPORTABLE ON
+        )
+    endif (DATASPACES_FOUND)
+endif (ENABLE_DSPACES)
 
-if (dtl_decaf)
-    # Find Decaf
+if (ENABLE_DECAF)
     find_package(Decaf REQUIRED)
     message(STATUS "Found external Decaf installed at: ${DECAF_PREFIX}")
-    message(STATUS "DECAF_CXX_INCLUDE_DIR: ${DECAF_CXX_INCLUDE_DIR}")
-    message(STATUS "DECAF_CXX_DATA_MODEL_LIBRARY: ${DECAF_CXX_DATA_MODEL_LIBRARY}")
-    message(STATUS "DECAF_CXX_TRANSPORT_LIBRARY: ${DECAF_CXX_TRANSPORT_LIBRARY}")
-    message(STATUS "DECAF_CXX_RUNTIME_LIBRARY: ${DECAF_CXX_RUNTIME_LIBRARY}")
+    message(STATUS "  * Include Dir: ${DECAF_CXX_INCLUDE_DIR}")
+    message(STATUS "  * Data Model Library: ${DECAF_CXX_DATA_MODEL_LIBRARY}")
+    message(STATUS "  * Transport Library: ${DECAF_CXX_DATA_TRANSPORT_LIBRARY}")
+    message(STATUS "  * Runtime Library: ${DECAF_CXX_RUNTIME_LIBRARY}")
     add_definitions(-DTRANSPORT_MPI)
-    include_directories(${DECAF_CXX_INCLUDE_DIR})
-    list(APPEND A4MD_INCLUDE_DIRS ${DECAF_CXX_INCLUDE_DIR})
-    set(DECAF_LIBRARIES ${DECAF_CXX_TRANSPORT_LIBRARY} ${DECAF_CXX_DATA_MODEL_LIBRARY} ${DECAF_CXX_RUNTIME_LIBRARY})
-    list(APPEND DTL_LIBRARIES ${DECAF_LIBRARIES})
-endif ()
+    blt_import_library(
+        NAME decaf
+        INCLUDES ${DECAF_CXX_INCLUDE_DIR}
+        LIBRARIES ${DECAF_CXX_DATA_MODEL_LIBRARY}
+                  ${DECAF_CXX_DATA_TRANSPORT_LIBRARY} 
+                  ${DECAF_CXX_RUNTIME_LIBRARY}
+        EXPORTABLE ON
+    )
+endif (ENABLE_DECAF)
 
-# Check TAU enabled
-set(TAU_LIBRARIES "")
-if(DEFINED ENV{TAU_LIBS})
-    set(TAU_LIBRARIES "$ENV{TAU_LIBS}")
-    message("TAU libraries " ${TAU_LIBRARIES})
-    #add_definitions(-DTAU_PERF)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
-    message(STATUS "CXXFLAGS: ${CMAKE_CXX_FLAGS}")
-endif()
+if (ENABLE_TAU)
+    if (DEFINED ENV{TAU_LIBS})
+        blt_import_library(
+            NAME tau
+            LIBRARIES "$ENV{TAU_LIBS}"
+            COMPILE_FLAGS "-g"
+            EXPORTABLE ON
+        )
+    else (DEFINED ENV{TAU_LIBS})
+        find_package(TAU REQUIRED)
+        blt_import_library(
+            NAME tau
+            LIBRARIES ${TAU_LIBRARIES}
+            INCLUDES ${TAU_INCLUDE_DIR}
+            COMPILE_FLAGS "-g"
+            EXPORTABLE ON
+        )
+    endif (DEFINED ENV{TAU_LIBS})
+endif (ENABLE_TAU)
 
-# Check BUILT_IN_PERF
-if(BUILT_IN_PERF)
-    message("BUILT_IN_PERF is enabled")
+if (BUILT_IN_PERF)
+    message(STATUS "BUILT_IN_PERF enabled")
     add_definitions(-DBUILT_IN_PERF)
-endif()
+endif (BUILT_IN_PERF)
 
-# Check COUNT_LOST_FRAMES feature
-if(COUNT_LOST_FRAMES)
-    message("COUNT_LOST_FRAMES is enabled")
+if (COUNT_LOST_FRAMES)
+    message(STATUS "COUNT_LOST_FRAMES enabled")
     add_definitions(-DCOUNT_LOST_FRAMES)
-endif()
+endif (COUNT_LOST_FRAMES)
 
-# Check DSPACES_DEBUG
-if(DSPACES_DEBUG)
-    message("DSPACES_DEBUG is enabled")
+if (DSPACES_DEBUG)
+    message(STATUS "DSPACES_DEBUG enabled")
     add_definitions(-DDEBUG)
-endif()
+endif (DSPACES_DEBUG)
 
-# Add include directories
-include_directories("${PROJECT_SOURCE_DIR}/src/a4md/common")
-include_directories("${PROJECT_SOURCE_DIR}/src/a4md/dtl")
-include_directories("${PROJECT_SOURCE_DIR}/src/a4md/ingest")
-include_directories("${PROJECT_SOURCE_DIR}/src/a4md/retrieve")
-
-# Import pybind11
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/a4md/extern/pybind11)
-# Build A4MD main sources
+
 add_subdirectory(src/a4md)
-if (build_examples)
+
+if (BUILD_EXAMPLES)
     add_subdirectory(examples)
-endif(build_examples)
-if(build_tests)
+endif (BUILD_EXAMPLES)
+if (BUILD_TESTS)
     add_subdirectory(tests)
-endif(build_tests)
-if (build_wrap)
+endif (BUILD_TESTS)
+if (BUILD_WRAP)
     add_subdirectory(wrap)
-endif(build_wrap)
+endif (BUILD_WRAP)
 add_subdirectory(config)
