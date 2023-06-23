@@ -34,7 +34,8 @@ blt_add_library(
     NAME a4md_cmn
     SOURCES ${_a4md_cmn_sources_}
     HEADERS ${_a4md_cmn_headers_}
-    INCLUDES include/
+    INCLUDES $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+             $<INSTALL_INTERFACE:include>
     DEPENDS_ON boost mpi python_dev
 )
 if (ENABLE_TAU)
