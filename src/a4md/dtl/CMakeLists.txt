@@ -1,41 +1,52 @@
 set(_a4md_dtl_sources_
-    src/dataspaces_writer.cxx
-    src/dataspaces_reader.cxx
-    # src/decaf_writer.cxx
-    # src/decaf_reader.cxx
-    # src/chunk_writer.cxx
-    # src/chunk_reader.cxx
     src/ims_reader.cxx
     src/ims_writer.cxx
-    )
-#include_directories(include/)
-set(_a4md_dtl_headers_
-    include/dataspaces_writer.h
-    include/dataspaces_reader.h
-    # include/decaf_writer.h
-    # include/decaf_reader.h
-    # include/chunk_writer.h
-    # include/chunk_reader.h
-    include/ims_writer.h
-    include/ims_reader.h
-    )
-add_library(a4md_dtl ${_a4md_dtl_sources_})
-target_include_directories(a4md_dtl PUBLIC include/)
-set_target_properties(a4md_dtl PROPERTIES
-    CXX_STANDARD 11
-    CXX_STANDARD_REQUIRED ON
-    CXX_EXTENSIONS OFF
-    POSITION_INDEPENDENT_CODE ON
 )
-add_dependencies(a4md_dtl a4md_cmn)
-target_link_libraries(a4md_dtl a4md_cmn)
+set(_a4md_dtl_headers_
+    include/ims_reader.h
+    include/ims_writer.h
+)
 
-if (dtl_dspaces)
+if (ENABLE_DECAF)
+    list(APPEND _a4md_dtl_sources_
+        src/decaf_writer.cxx
+        src/decaf_reader.cxx
+    )
+    list(APPEND _a4md_dtl_headers_
+        include/decaf_writer.h
+        include/decaf_reader.h
+    )
+endif (ENABLE_DECAF)
+
+blt_add_library(
+    NAME a4md_dtl
+    SOURCES ${_a4md_dtl_sources_}
+    HEADERS ${_a4md_dtl_headers_}
+    INCLUDES $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+             $<INSTALL_INTERFACE:include>
+    DEPENDS_ON a4md_cmn boost mpi
+)
+set_target_properties(
+    a4md_dtl
+    PROPERTIES POSITION_INDEPENDENT_CODE ON
+)
+
+if (ENABLE_DSPACES)
+    blt_add_library(
+        NAME a4md_dtl_dspaces
+        SOURCES src/dataspaces_writer.cxx
+                src/dataspaces_reader.cxx
+        HEADERS include/dataspaces_writer.h
+                include/dataspaces_reader.h
+        OBJECT TRUE
+    )
     if (DATASPACES_FOUND)
-        install(DIRECTORY "${DATASPACES_ROOT}/bin/" 
-            DESTINATION "${CMAKE_INSTALL_PREFIX}/bin"
-            USE_SOURCE_PERMISSIONS
-            PATTERN "test_*" EXCLUDE)
+        blt_patch_target(
+            NAME a4md_dtl_dspaces
+            DEPENDS_ON dataspaces
+            INCLUDES $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+                     $<INSTALL_INTERFACE:include>
+        )
     else()
         # Check TARGET_SYSTEM predefined macros
         # Todo: This macro should be removed later 
@@ -79,37 +90,6 @@ if (dtl_dspaces)
           BUILD_COMMAND ${MAKE}
         )
 
-        # Add Dataspaces libraries to 
-        add_library(dataspaces STATIC IMPORTED)
-        add_dependencies(dataspaces project_dataspaces)
-        set_property(TARGET dataspaces PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/lib/libdspaces.a)
-        set_target_properties(dataspaces PROPERTIES
-            CXX_STANDARD 11
-            CXX_STANDARD_REQUIRED ON
-            CXX_EXTENSIONS OFF
-            POSITION_INDEPENDENT_CODE ON
-        )
-        add_library(dataspaces_cmn STATIC IMPORTED)
-        add_dependencies(dataspaces_cmn project_dataspaces)
-        set_property(TARGET dataspaces_cmn PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/lib/libdscommon.a)
-        set_target_properties(dataspaces_cmn PROPERTIES
-            CXX_STANDARD 11
-            CXX_STANDARD_REQUIRED ON
-            CXX_EXTENSIONS OFF
-            POSITION_INDEPENDENT_CODE ON
-        )
-        add_library(dataspaces_dart STATIC IMPORTED)
-        add_dependencies(dataspaces_dart project_dataspaces)
-        set_property(TARGET dataspaces_dart PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/lib/libdart.a)
-        set_target_properties(dataspaces_dart PROPERTIES
-            CXX_STANDARD 11
-            CXX_STANDARD_REQUIRED ON
-            CXX_EXTENSIONS OFF
-            POSITION_INDEPENDENT_CODE ON
-        )
-        add_dependencies(a4md_dtl dataspaces dataspaces_cmn dataspaces_dart)
-        include_directories("${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/include")
-
         # Copy to installation directory
         install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/bin/" 
                 DESTINATION "${CMAKE_INSTALL_PREFIX}/bin"
@@ -121,44 +101,100 @@ if (dtl_dspaces)
         install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/include/" 
                 DESTINATION "${CMAKE_INSTALL_PREFIX}/include"
                 USE_SOURCE_PERMISSIONS)
+    
+        blt_import_library(
+            NAME dataspaces
+            DEPENDS_ON project_dataspaces
+            LIBRARIES ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/lib/libdspaces.a
+                      ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/lib/libdscommon.a
+                      ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/lib/libdart.a
+            INCLUDES ${CMAKE_CURRENT_BINARY_DIR}/extern/dataspaces/include
+            EXPORTABLE ON
+        )
+        set_target_properties(
+            dataspaces
+            PROPERTIES POSITION_INDEPENDENT_CODE ON
+        )
+    
+        blt_patch_target(
+            NAME a4md_dtl_dspaces
+            DEPENDS_ON dataspaces
+        )
 
         # find Cray-specific modules
         if (TARGET_SYSTEM STREQUAL "cori")
             find_package(CRAY REQUIRED)
-        endif()
-        set(DTL_BUILD_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${CRAY_INCLUDE_DIRS})
-        set(DTL_INSTALL_INCLUDE_DIRS "include" ${CRAY_INCLUDE_DIRS})
-        target_include_directories(
-            a4md_dtl PUBLIC
-            # Headers used from source/build location:
-            "$<BUILD_INTERFACE:${DTL_BUILD_INCLUDE_DIRS}>"
-            # Headers used from the installed location:
-            "$<INSTALL_INTERFACE:${DTL_INSTALL_INCLUDE_DIRS}>"
-        )
-        target_link_libraries(a4md_dtl dataspaces dataspaces_cmn dataspaces_dart m rt)
-        if (TARGET_SYSTEM STREQUAL "cori")
-            target_link_libraries(a4md_dtl ${CRAY_LDFLAGS} -dynamic)
+            set(DTL_BUILD_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include ${CRAY_INCLUDE_DIRS})
+            set(DTL_INSTALL_INCLUDE_DIRS "include" ${CRAY_INCLUDE_DIRS})
+            blt_patch_target(
+                NAME a4md_dtl_dspaces
+                INCLUDES $<BUILD_INTERFACE:${DTL_BUILD_INCLUDE_DIRS}>
+                         $<INSTALL_INTERFACE:${DTL_INSTALL_INCLUDE_DIRS}>
+                LIBRARIES m ${CRAY_LIBRARIES} # Tu's code also depended on rt, but that shouldn't be needed
+                LINK_FLAGS ${CRAY_LDFLAGS} -dynamic
+            )
         elseif ((TARGET_SYSTEM STREQUAL "tellico") OR (TARGET_SYSTEM STREQUAL "summit"))
-            target_link_libraries(a4md_dtl ibverbs rdmacm -dynamic)
+            find_package(ibverbs REQUIRED)
+            find_package(rdmacm REQUIRED)
+            set(
+                DTL_BUILD_INCLUDE_DIRS
+                ${CMAKE_CURRENT_SOURCE_DIR}/include
+                ${RDMACM_INCLUDE_DIR}
+                ${IBVERBS_INCLUDE_DIRS}
+            )
+            set(
+                DTL_INSTALL_INCLUDE_DIRS
+                include
+                ${RDMACM_INCLUDE_DIR}
+                ${IBVERBS_INCLUDE_DIRS}
+            )
+            blt_patch_target(
+                NAME a4md_dtl_dspaces
+                INCLUDES $<BUILD_INTERFACE:${DTL_BUILD_INCLUDE_DIRS}>
+                         $<INSTALL_INTERFACE:${DTL_INSTALL_INCLUDE_DIRS}
+                LIBRARIES ${RDMACM_LIBRARIES} ${IBVERBS_LIBRARIES}
+                LINK_FLAGS -dynamic
+            )
         endif ()
     endif()
-endif ()
+    blt_patch_target(
+        NAME a4md_dtl
+        DEPENDS_ON a4md_dtl_dspaces
+    )
+endif (ENABLE_DSPACES)
 
-if (dtl_dimes)
+if (ENABLE_DIMES)
     message(STATUS "Building with DIMES data transport layer")
     add_definitions(-DDTL_DIMES)
-endif ()
+endif (ENABLE_DIMES)
 
 if (dtl_decaf)
-    set(_decaf_dtl_sources_ decaf_writer.cxx decaf_reader.cxx)
-    target_sources(a4md_dtl PRIVATE ${_decaf_dtl_sources_})
-    set(_a4md_dtl_headers_ ${_a4md_dtl_headers_} decaf_writer.h decaf_reader.h)
+    blt_add_library(
+        NAME a4md_dtl_decaf
+        SOURCES src/decaf_writer.cxx
+                src/decaf_reader.cxx
+        INCLUDES include/decaf_writer.h
+                 include/decaf_reader.h
+        DEPENDS_ON decaf
+        OBJECT TRUE
+    )
+    blt_patch_target(
+        NAME a4md_dtl
+        DEPENDS_ON a4md_dtl_decaf
+    )
 endif ()
 
-target_link_libraries(a4md_dtl ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${TAU_LIBRARIES} ${DTL_LIBRARIES})
-get_target_property(A4MD_DTL_LIBRARIES a4md_dtl LINK_LIBRARIES)
-message(STATUS "A4MD_DTL_LIBRARIES = ${A4MD_DTL_LIBRARIES}")
+if (ENABLE_TAU)
+    blt_patch_target(
+        NAME a4md_dtl
+        DEPENDS_ON tau
+    )
+endif (ENABLE_TAU)
 
-add_subdirectory(test)
+if (BUILD_TESTS)
+    add_subdirectory(test)
+endif (BUILD_TESTS)
+
 install (TARGETS a4md_dtl DESTINATION lib)
+# Try replacing with PUBLIC_HEADER on a4md_dtl
 install (FILES ${_a4md_dtl_headers_} DESTINATION include)
