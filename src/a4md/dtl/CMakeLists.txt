@@ -80,6 +80,8 @@ if (ENABLE_DSPACES)
             set(MPI_FORTRAN_COMPILER "mpif90")
         endif()
         message(STATUS "DS_CONF_ENABLES ${DS_CONF_ENABLES}")
+        
+        find_package(MPI REQUIRED)
 
         # External project to build Dataspaces
         message(STATUS "Buiding Dataspaces")

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.9)
 project(
     A4MD
     VERSION 1.0
-    LANGUAGES CXX
+    LANGUAGES C CXX Fortran
 )
 
 set(A4MD_VERSION ${PROJECT_VERSION})
@@ -17,6 +17,8 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 # Enable and disable certain features of BLT
 set(BLT_EXPORT_THIRDPARTY ON CACHE BOOL "")
+set(ENABLE_TESTS OFF CACHE BOOL "")
+set(ENABLE_EXAMPLES OFF CACHE BOOL "")
 set(ENABLE_GIT ON CACHE BOOL "")
 set(ENABLE_FORTRAN ON CACHE BOOL "")
 set(ENABLE_MPI ON CACHE BOOL "")
@@ -40,7 +42,8 @@ if (DEFINED BLT_SOURCE_DIR)
 else()
     # Use internal BLT if no BLT_SOURCE_DIR is given
     # NOTE: Change the path to point to the correct directory
-    set(BLT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/external/blt" CACHE PATH "")
+    set(BLT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/src/a4md/extern/blt" CACHE PATH "")
+    message(STATUS "Searching for BLT in ${BLT_SOURCE_DIR}")
     if (NOT EXISTS ${BLT_SOURCE_DIR}/SetupBLT.cmake)
         message(FATAL_ERROR
             "The BLT git submodule is not present. "

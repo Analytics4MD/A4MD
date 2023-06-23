@@ -74,14 +74,14 @@ if (BUILD_EXAMPLES OR BUILD_TESTS)
 			DEPENDS_ON a4md_cmn a4md_dtl a4md_retrieve boost
 		)
 	    if (ENABLE_TAU)
-			blt_patch_target{
+			blt_patch_target(
 				NAME generator_decaf
 				DEPENDS_ON tau
-			}
-			blt_patch_target{
+			)
+			blt_patch_target(
 				NAME analyzer_decaf
 				DEPENDS_ON tau
-			}
+			)
 		endif (ENABLE_TAU)
 		install (TARGETS generator_decaf DESTINATION bin)
 		install (TARGETS analyzer_decaf DESTINATION bin)

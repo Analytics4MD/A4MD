@@ -1,6 +1,7 @@
 #ifndef __PY_RUNNER_H__
 #define __PY_RUNNER_H__
 #include <vector>
+#include <string>
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include "exceptions.h"
