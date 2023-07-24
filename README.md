@@ -1,7 +1,7 @@
 <h1 align="center">  
   A4MD
   <h4 align="center">
-  <a href="https://app.shippable.com/github/Analytics4MD/A4MD-project-a4md"><img src="https://api.shippable.com/projects/5bcf364bec335d0700dbc0ec/badge?branch=master"/></a>
+  <a href="https://globalcomputing.group/assets/img/research/a4md.png"><img src="https://globalcomputing.group/assets/img/research/a4md.png"/></a>
   </h4>
 </h1>
 
