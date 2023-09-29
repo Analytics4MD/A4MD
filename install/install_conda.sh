@@ -7,13 +7,13 @@ cd ${app_install_dir}
 
 if [ ${os_for_conda} = "linux86" ]; then
     echo ${progress_delimiter}
-    wget https://repo.anaconda.com/archive/Anaconda3-5.3.1-Linux-x86_64.sh
+    wget https://repo.anaconda.com/archive/Anaconda3-2023.07-2-Linux-x86_64.sh
     echo ${progress_delimiter}
     # Install conda with bash script
     echo ${progress_delimiter}
-    bash Anaconda3-5.3.1-Linux-x86_64.sh -b -p ${app_install_dir}/anaconda3
+    bash Anaconda3-2023.07-2-Linux-x86_64.sh -b -p ${app_install_dir}/anaconda3
     echo ${progress_delimiter}
-    rm -rf Anaconda3-5.3.1-Linux-x86_64.sh
+    rm -rf Anaconda3-2023.07-2-Linux-x86_64.sh
 
 fi
 if [ ${os_for_conda} = "linuxP9" ]; then
