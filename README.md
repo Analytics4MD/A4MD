@@ -1,7 +1,9 @@
 <h1 align="center">  
   A4MD
   <h4 align="center">
+
   <a href="https://analytics4md.org/"><img src="https://avatars.githubusercontent.com/u/32650548?s=200&v=4"/></a>
+
   </h4>
 </h1>
 
@@ -115,3 +117,11 @@ Copyright (c) 2022, Global Computing Lab
 A4MD is distributed under terms of the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0) with LLVM Exceptions.
 
 See [LICENSE](https://github.com/Analytics4MD/A4MD/blob/PASC/LICENSE) for more details.
+
+## Acknowledgments
+
+
+XSEDE -- This research was supported by the National Science Foundation (NSF) under grant numbers 1741057, 1841758, 2138811 and 2223704; 
+the Oak Ridge Leadership Computing Facility under allocation CSC427; 
+the Extreme Science and Engineering Discovery Environment (XSEDE) under allocation TG-CIS200053;
+and IBM through a Shared University Research Award.
