@@ -1,7 +1,9 @@
 <h1 align="center">  
   A4MD
   <h4 align="center">
-  <a href="https://globalcomputing.group/assets/img/research/a4md.png"><img src="https://globalcomputing.group/assets/img/research/a4md.png"/></a>
+
+  <a href="https://analytics4md.org/"><img src="https://avatars.githubusercontent.com/u/32650548?s=200&v=4"/></a>
+
   </h4>
 </h1>
 
@@ -9,13 +11,16 @@
   <a href="#about">About</a> •
   <a href="#prerequisites">Prerequisites</a> •
   <a href="#dependencies">Dependencies</a> •
-  <a href="#installation">Installation</a> 
+  <a href="#installation">Installation</a> •
+  <a href="#related-publications">Publications</a> •
+  <a href="#copyright-and-license">Copyright and License</a>
 </p>
 
 ## About
 
-A framework that enables in situ molecular dynamic analytics via using in-memory staging areas
+The project's harnessed knowledge of molecular structures' transformations at runtime can be used to steer simulations to more promising areas of the simulation space, identify the data that should be written to congested parallel file systems, and index generated data for retrieval and post-simulation analysis. Supported by this knowledge, molecular dynamics workflows such as replica exchange simulations, Markov state models, and the string method with swarms of trajectories can be executed from the outside (i.e., without reengineering the molecular dynamics code) 
 
+---
 ## Prerequisites
 
 In order to use this package, your system should have the following installed:
@@ -28,6 +33,7 @@ In order to use this package, your system should have the following installed:
 - mdtraj
 - freud
 
+---
 ## Dependencies
 
 The framework is also built on top the following third-party libraries: 
@@ -36,67 +42,86 @@ The framework is also built on top the following third-party libraries:
 
 We also use Catch2 as a test framework.
 
+---
 ## Installation
 
 Here is the extensive installation instructions. Please make sure the all the prerequisites are satisfied before proceeding the following steps.
+Make sure you are using ssh with GitHub and you have gcc compiler in your system. 
 
 1. Clone the source code from this repository
 
 ```
-git clone --recursive git@github.com:Analytics4MD/A4MD-project-a4md.git a4md
+git clone --recursive git@github.com:Analytics4MD/A4MD.git a4md
 ```
 
 2. Build A4MD package 
 
 ```
 cd a4md
-mkdir build
-cd build
-
-cmake .. \
--DCMAKE_INSTALL_PREFIX=${A4MD_ROOT} \
--DDATASPACES_PREFIX=${DATASPACES_ROOT}
-
-make
-make install
+. setup_deps.sh
 ```
+The execution of previous script should create a folder called `a4md-test` in your home directory. This folder includes the binaries and examples to test A4MD.
 
-> *Note that* on Cori at NERSC or Summit at OLCF, it is required to specify compiler wrappers (cc, CC, ftn) or MPI compilers (mpicc, mpicxx, mpifort), respectively.
+### Run sample workflow
+With all the installation process we created a sample workflow, which consists of two consumers and two producers. To test this follow next steps
 
-3. To build additional data transport layer based on Decaf, specify Decaf installation directory as follows:
+```
+cd ~/a4md-test/examples/sample_workflow/
+sh local.dspaces.prod_con.sh
+```
+There are many things that can be customized in this script, e.g. the number of consumers, producers, and their execution scripts.
+
+**Number of ingesters** - `NWRITERS`
+**Ratio** - `NREADERS_PER_WRITER`
+**Number of consumers** - `NREADERS=$((NWRITERS*$NREADERS_PER_WRITER ))`
+**Number of producer processes** - `NP_WRITER`
+**Number of consumer processes** - `NP_READER`
+**Lock type** - `LOCK`
+**Number of DataSpaces servers** - `NSERVERS`
+**Number of steps** - `NSTEPS`
+**Window of frames to read** - `WINDOW`
+**Number of atoms** - `NATOMS`
+**Delay time** - `DELAY`
+
+### Additional data transport layer
+ To build additional data transport layer based on Decaf, specify Decaf installation directory in the `install_a4md.sh` file as follows :
 
 ```
 -Ddtl_decaf=on -DDECAF_PREFIX=${DECAF_ROOT}
 ```
 
-4. Build A4MD built-in analysis package
+## Related Publications
 
-```
-cd a4md
-pip install -e .
-```
+<i class="fa fa-file-text-o"></i> Hector Carrillo-Cabada, Jeremy Benson, Asghar Razavi, Brianna Mulligan, Michel A. Cuendet, Harel Weinstein, Michela Taufer, and Trilce Estrada.
+<b>A Graphic Encoding Method for Quantitative Classification of Protein Structure and Representation of Conformational Changes</b>
+<i>IEEE/ACM Transactions on Computational Biology and Bioinformatics (IEEE/ACM TCBC).</i>
+(2020). <a href="https://ieeexplore.ieee.org/document/8859247/" target="_blank">[link]</a>
 
-5. (Optional) To use TAU profiling in the code the cmake command can include the following flags. Of course, TAU needs to be installed on the system.
+<i class="fa fa-file-text-o"></i> Tu Mai Anh Do, Loic Pottier, Stephen Thomas, Rafael Ferreira da Silva, Michel A. Cuendet, Harel Weinstein, Trilce Estrada, Michela Taufer, and Ewa Deelman.
+<b>A Novel Metric to Evaluate In Situ Workflows</b>
+<i>In Proceedings of the International Conference on Computational Science (ICCS), pp. 1 – 14.</i>
+(2020). <a href="https://scitech.isi.edu/wordpress/wp-content/papercite-data/pdf/do2020iccs.pdf" target="_blank">[link]</a>
 
-```
--DCMAKE_C_COMPILER=$(which tau_cc.sh) -DCMAKE_CXX_COMPILER=$(which tau_cxx.sh)
-```
+<i class="fa fa-file-text-o"></i> Michela Taufer, Trilce Estrada, and Travis Johnston.
+<b>A Survey of Algorithms for Transforming Molecular Dynamics Data into Metadata for In Situ Analytics based on Machine Learning Methods</b>
+<i>Issue of Philosophical Transactions A., 378(2166):1-11.</i>
+(2020). <a href="https://royalsocietypublishing.org/doi/full/10.1098/rsta.2019.0063" target="_blank">[link]</a>
 
-> Please remember to unload darshan before installing TAU on Cori at NERSC as this package prevents TAU to work properly.
+[More references](https://analytics4md.org/)
 
-To use TAU manual instrumentation:
+## Copyright and License
 
-```
-export TAU_TRACK_HEAP=1
-export TAU_INTERRUPT_INTERVAL=1
-export TAU_METRICS=TIME,PAPI_TOT_CYC,PAPI_TOT_INS,ENERGY
-export TAU_LIBS=$(tau_cxx.sh -tau:showlibs)
-export CXXFLAGS="-g -DPROFILING_ON -DTAU_STDCXXLIB -I${TAU_ROOT}/include"
-```
 
-6. (Optional) To use built-in performance scheme via predefined timers, run cmake command with the following flag:
+Copyright (c) 2022, Global Computing Lab
 
-```
--DBUILT_IN_PERF=ON
-```
+A4MD is distributed under terms of the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0) with LLVM Exceptions.
 
+See [LICENSE](https://github.com/Analytics4MD/A4MD/blob/PASC/LICENSE) for more details.
+
+## Acknowledgments
+
+
+XSEDE -- This research was supported by the National Science Foundation (NSF) under grant numbers 1741057, 1841758, 2138811 and 2223704; 
+the Oak Ridge Leadership Computing Facility under allocation CSC427; 
+the Extreme Science and Engineering Discovery Environment (XSEDE) under allocation TG-CIS200053;
+and IBM through a Shared University Research Award.

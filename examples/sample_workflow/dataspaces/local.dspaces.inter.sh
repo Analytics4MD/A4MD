@@ -3,7 +3,7 @@
 ## -----------=========== PARAMETERS =========-------------
 
 ## A4MD installation directory
-A4MD=$SCRATCH/application/a4md/a4md/bin
+A4MD=$HOME/a4md-test/bin
 ## Number of producers
 NWRITERS=1
 ## Number of intermediators per writer

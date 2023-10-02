@@ -3,7 +3,7 @@
 ## -----------=========== PARAMETERS =========-------------
 
 ## A4MD installation directory
-A4MD=$SCRATCH/application/a4md/a4md/bin
+A4MD=$HOME/a4md-test/bin
 ## Number of ingesters
 NWRITERS=2
 ## Ratio
@@ -20,6 +20,7 @@ LOCK=2
 NSERVERS=1
 ## Number of steps
 NSTEPS=10
+WINDOW=1
 ## Number of atoms
 NATOMS=200
 ## Delay time
@@ -86,7 +87,7 @@ do
     do
         ((client_id=client_id+1))
         echo "-- Start consumer application id ${j} with respect to producer application id ${i}"
-        consumer_cmd="mpirun -np $NP_READER ./consumer dataspaces $client_id $group_id ./compute.py analyze $NSTEPS"
+        consumer_cmd="mpirun -np $NP_READER ./consumer dataspaces $client_id $group_id ./compute.py analyze $NSTEPS $WINDOW"
         echo ${consumer_cmd}
         eval ${consumer_cmd} &> log.consumer${i}_${j} &
         declare consumer${i}_${j}_pid=$!

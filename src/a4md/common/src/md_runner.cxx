@@ -216,7 +216,7 @@ Chunk* MDRunner::output_chunk(unsigned long int chunk_id)
             PyObject* py_file = Py_BuildValue("s", m_trajectory_path.c_str());
             PyTuple_SetItem(py_args, 0, py_file);
         
-            PyObject* py_position = Py_BuildValue("i", m_position);
+            PyObject* py_position = Py_BuildValue("i", chunk_id);
             PyTuple_SetItem(py_args, 1, py_position);
         
             PyObject* py_natoms = Py_BuildValue("i", m_num_atoms);

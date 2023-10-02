@@ -4,11 +4,11 @@
 #include "decaf_reader.h"
 #include <bredala/data_model/boost_macros.h>
 #endif
-#include "../../../src/a4md/dtl/include/dataspaces_reader.h"
-#include "../../../src/a4md/common/include/md_stager.h"
-#include "../../../src/a4md/common/include/timer.h"
-#include "../../../src/a4md/retrieve/include/md_analyzer.h"
-#include "../../../src/a4md/retrieve/include/md_retriever.h"
+#include "dataspaces_reader.h"
+#include "md_stager.h"
+#include "md_analyzer.h"
+#include "md_retriever.h"
+#include "timer.h"
 
 #define DTL_COLOR 0
 #define NON_DTL_COLOR 1
@@ -17,24 +17,28 @@
 int main (int argc, const char** argv)
 {
     MPI_Init(NULL,NULL);
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    printf("rank = %d\n", rank);
-    int color = (rank == 0) ? 0 : 1;
-    MPI_Comm dtl_comm;
-    MPI_Comm_split(MPI_COMM_WORLD, color, rank, &dtl_comm);
-    /*MPI_Group world_group;
-    MPI_Comm_group(MPI_COMM_WORLD, &world_group);
-    int ranks[1] = {0};
-    MPI_Group dtl_group;
-    MPI_Group_incl(world_group, 1, ranks, &dtl_group);
-    MPI_Comm dtl_comm;
-    MPI_Comm_create(MPI_COMM_WORLD, dtl_group, &dtl_comm);*/
-    if (rank == 0)
+    int rank, app_rank;
+    MPI_Comm global_comm = MPI_COMM_WORLD;
+    MPI_Comm app_comm, dtl_comm;
+    int color;
+    int *appnum, present;
+    MPI_Comm_rank(global_comm, &rank);
+    MPI_Comm_get_attr(global_comm, MPI_APPNUM, &appnum, &present);
+    MPI_Comm_split(global_comm, *appnum, rank, &app_comm);
+    MPI_Comm_rank(app_comm, &app_rank);
+    MPI_Comm_free(&app_comm);
+    if (app_rank == ROOT) 
     {
-        int dtl_rank;
-        MPI_Comm_rank(dtl_comm, &dtl_rank);
-        printf("dtl_rank = %d\n", dtl_rank);
+        color = DTL_COLOR;
+    } 
+    else
+    {
+        color = NON_DTL_COLOR; 
+    }
+    MPI_Comm_split(global_comm, color, rank, &dtl_comm);
+
+    if (app_rank == ROOT)
+    {
         printf("---======== In Consummer::main()\n");
         if (argc < 2)
         {
@@ -62,9 +66,10 @@ int main (int argc, const char** argv)
         int client_id;
         int group_id;
         int n_frames;
+        int n_window_width;
         if (dtl_type.compare("decaf") == 0)
         {
-            if (argc != 6)
+            if (argc != 7)
             {
                 fprintf(stderr, "ERROR: ./consumer decaf json_conf py_path py_func n_frames\n"); 
                 return -1;
@@ -73,12 +78,13 @@ int main (int argc, const char** argv)
             json_conf = (char*)argv[2];
             py_path = (char*)argv[3];
             py_func = (char*)argv[4];
-            n_frames = atoi(argv[5]);   
+            n_frames = atoi(argv[5]);  
+            n_window_width = atoi(argv[6]); 
         }
 
         if (dtl_type.compare("dataspaces") == 0)
         {
-            if (argc != 7)
+            if (argc != 8)
             {
                 fprintf(stderr, "ERROR: ./consumer dataspaces client_id group_id py_path py_func n_frames\n"); 
                 return -1;
@@ -89,8 +95,8 @@ int main (int argc, const char** argv)
             py_path = (char*)argv[4];
             py_func = (char*)argv[5];
             n_frames = atoi(argv[6]);
+            n_window_width = atoi(argv[7]);
         }
-
         // Number of chunks
         unsigned long int total_chunks = n_frames;// +1 for the call before simulation starts
 
@@ -126,9 +132,8 @@ int main (int argc, const char** argv)
         ChunkWriter *chunk_writer = new MDAnalyzer((char*)py_name.c_str(), (char*)py_func.c_str(), (char*)py_dir.c_str());
 
         ChunkStager *chunk_stager = new MDStager(chunk_reader, chunk_writer);
-        int n_window_width = 1;
-        Retriever *retriever = new MDRetriever(*chunk_stager, n_frames, n_window_width);
         
+        Retriever *retriever = new MDRetriever(*chunk_stager, n_frames, n_window_width);
         // Main run
         TimeVar t_start = timeNow();
         retriever->run();
@@ -143,7 +148,7 @@ int main (int argc, const char** argv)
         delete chunk_reader;
     }
 
-    //MPI_Comm_free(&dtl_comm);
+    MPI_Comm_free(&dtl_comm);
     MPI_Finalize();
     return 0;
 }
