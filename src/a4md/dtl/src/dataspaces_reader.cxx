@@ -53,7 +53,10 @@ DataSpacesReader::DataSpacesReader(int client_id, int group_id, unsigned long in
     // Pointer to the MPI Communicator, allows DS Layer to use MPI barrier func
     // Addt'l parameters: Placeholder for future arguments, currently NULL.
     printf("---===== Initializing dpsaces client id %d\n", m_client_id);
-    dspaces_init_mpi(m_gcomm, &m_client);
+    int error = dspaces_init(m_client_id, &m_client);
+    if (error != dspaces_SUCCESS) {
+        throw DataLayerException("Could not initialize DataSpaces");
+    }
     printf("---===== Initialized dspaces client id #%d in DataSpacesReader, total_chunks: %u \n", m_client_id, m_total_chunks);
 }
 
@@ -149,6 +152,7 @@ std::vector<Chunk*> DataSpacesReader::read_chunks(unsigned long int chunks_from,
 #endif
         lb = 0;
         ub = sizeof(std::size_t) - 1;
+        printf("Reading size of chunk %lu from DataSpaces\n", chunk_id);
         error = dspaces_get(m_client,
                             m_size_var_name.c_str(),
                             chunk_id,
@@ -175,6 +179,7 @@ std::vector<Chunk*> DataSpacesReader::read_chunks(unsigned long int chunks_from,
         //else
         //    printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
         // printf("chunk_size =  %i for chunk id %i\n",chunk_size, chunk_id);
+        printf("Successfully read size of chunk %lu from DataSpaces\n", chunk_id);
 
 #ifdef TAU_PERF
         TAU_DYNAMIC_TIMER_STOP("step_read_size_time");
@@ -216,6 +221,7 @@ std::vector<Chunk*> DataSpacesReader::read_chunks(unsigned long int chunks_from,
 
         lb = 0;
         ub = chunk_size-1;
+        printf("Reading chunk %lu from DataSpaces\n", chunk_id);
         error = dspaces_get(m_client,
                             m_chunk_var_name.c_str(),
                             chunk_id,
@@ -243,7 +249,8 @@ std::vector<Chunk*> DataSpacesReader::read_chunks(unsigned long int chunks_from,
         }
         //else
         //    printf("Read chunk id %i from dataspacess successfull\n",chunk_id);
-        
+        printf("Successfully read chunk %lu from DataSpaces\n", chunk_id);
+
 #ifdef BUILT_IN_PERF
         DurationMilli read_chunk_time_ms = timeNow()-t_rcstart;
         m_step_chunk_read_time_ms[chunk_id] = read_chunk_time_ms.count();

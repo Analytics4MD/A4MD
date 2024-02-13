@@ -43,7 +43,10 @@ DataSpacesWriter::DataSpacesWriter(int client_id, int group_id, unsigned long in
     // Pointer to the MPI Communicator, allows DS Layer to use MPI barrier func
     // Addt'l parameters: Placeholder for future argumenchunk_id, currently NULL.
     printf("---===== Initializing dpsaces client id %d\n", m_client_id);
-    dspaces_init_mpi(m_gcomm, &m_client);
+    int error = dspaces_init(m_client_id, &m_client);
+    if (error != dspaces_SUCCESS) {
+        throw DataLayerException("Could not initialize DataSpaces");
+    }
     printf("---===== Initialized dspaces client id #%d and group id #%d in DataSpacesWriter, total_chunks: %u\n",m_client_id, m_group_id, m_total_chunks);
 }
 
@@ -143,6 +146,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
 #endif
 
         int error;
+        printf("Writing size of chunk %lu to DataSpaces\n", chunk_id);
 #ifdef DTL_DIMES
         error = dspaces_put_local(m_client,
                                   m_size_var_name.c_str(),
@@ -167,6 +171,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
             printf("----====== ERROR: Did not write size of chunk id: %lu to dataspaces successfully\n",chunk_id);
         //else
         //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
+        printf("Successfully wrote size of chunk %lu to DataSpaces\n", chunk_id);
 
 #ifdef BUILT_IN_PERF
         DurationMilli size_write_time_ms = timeNow() - t_wsstart;
@@ -210,6 +215,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
 lb = 0;
 ub = c_size-1;
 
+        printf("Writing chunk %lu to DataSpaces\n", chunk_id);
 #ifdef DTL_DIMES
         error = dspaces_put_local(m_client,
                                   m_chunk_var_name.c_str(),
@@ -233,6 +239,7 @@ ub = c_size-1;
             printf("----====== ERROR: Did not write chunk id: %i to dataspaces successfully\n",chunk_id);
         //else
         //   printf("Wrote char array of length %i for chunk id %i to dataspaces successfull\n",data.length(), chunk_id);
+        printf("Successfully wrote chunk %lu to DataSpaces\n", chunk_id);
 
 #ifdef TAU_PERF
         TAU_DYNAMIC_TIMER_STOP("step_write_chunk_time");
