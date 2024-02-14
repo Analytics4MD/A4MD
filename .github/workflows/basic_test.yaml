@@ -1,0 +1,326 @@
+name: Compilation and Basic Run Testing for A4MD
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-test-a4md:
+    strategy:
+      fail-fast: true
+      matrix:
+        flux: [ 0.52.0 ]
+        os: [ ubuntu-20.04 ]
+        compiler: [ gcc ]
+        gcc_version: [ 10 ]
+        mercury_connection_str: [ "sockets" ]
+    name: ${{ matrix.os }}-${{ matrix.compiler }}-${{ matrix.gcc_version }}-${{ matrix.flux }}
+    runs-on: ${{ matrix.os }}
+    env:
+      FLUX_VERSION: ${{ matrix.flux }}
+      CC: gcc-${{ matrix.gcc_version }}
+      CXX: g++-${{ matrix.gcc_version }}
+      MERCURY_CONNECTION_STRING: ${{ matrix.mercury_connection_str }}
+      PYTHON_PREFIX_PATH: "/opt/hostedtoolcache/Python/3.10.12/x64"
+      SPACK_DIR: "/home/runner/work/spack"
+      DSPACES_SPACK_REPO_DIR: "/home/runner/work/dspaces-spack"
+      A4MD_INSTALL_PREFIX: "/home/runner/work/a4md/install"
+    steps:
+      - name: Checkout push
+        if: github.event_name == 'push'
+        uses: actions/checkout@v3
+      - name: Checkout PR
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Setup GCC
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: ${{ matrix.gcc_version }}
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends  \
+                              gcc g++ gfortran \
+                              cmake \
+                              autoconf \
+                              automake \
+                              libtool \
+                              libtool-bin \
+                              openmpi-bin \
+                              libopenmpi-dev \
+                              libarchive-dev \
+                              ncurses-bin \
+                              hwloc \
+                              lua5.3 liblua5.3-dev \
+                              libczmq-dev \
+                              lua-posix-dev \
+                              lz4 \
+                              pkgconf \
+                              libzmq5 \
+                              sqlite
+          # sudo chmod 777 /usr -R
+          # sudo chmod 777 ${PYTHON_PREFIX_PATH} -R
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10.12'
+      - name: Install Python dependencies
+        run: |
+          python3 -m pip install jsonschema==4.17.3 cffi==1.15.1 ply==3.11 pyyaml==6.0.1 numpy
+      - name: Check Python packages
+        run: |
+          python3 -m pip list
+          ls ${PYTHON_PREFIX_PATH}/lib
+          ls ${PYTHON_PREFIX_PATH}/include/python3.10
+      - name: Install Spack
+        run: |
+          git clone https://github.com/spack/spack.git ${SPACK_DIR}
+      - name: Register system dependencies with Spack
+        run: |
+          . ${SPACK_DIR}/share/spack/setup-env.sh
+          mkdir -p /home/runner/.spack
+          GCC_VERSION="9.3.0"
+          if [[ $CC == 'gcc-10' ]]; then
+              GCC_VERSION="10.3.0"
+          fi
+          cat > /home/runner/.spack/packages.yaml <<EOF
+          packages:
+            all:
+              target: [x86_64]
+              providers:
+                mpi: [openmpi]
+            python:
+              buildable: False
+              externals:
+                - spec: "python@3.10.12"
+                  prefix: ${PYTHON_PREFIX_PATH}
+            py-cffi:
+              buildable: False
+              externals:
+                - spec: "py-cffi@1.15.1"
+                  prefix: ${PYTHON_PREFIX_PATH}
+            py-jsonschema:
+              buildable: False
+              externals:
+                - spec: "py-jsonschema@4.17.3"
+                  prefix: ${PYTHON_PREFIX_PATH} 
+            py-ply:
+              buildable: False
+              externals:
+                - spec: "py-ply@3.11"
+                  prefix: ${PYTHON_PREFIX_PATH} 
+            py-pyyaml:
+              buildable: False
+              externals:
+                - spec: "py-pyyaml@6.0.1"
+                  prefix: ${PYTHON_PREFIX_PATH}
+            czmq:
+              buildable: False
+              externals:
+                - spec: "czmq@4.2.1"
+                  prefix: /usr
+            sqlite:
+              buildable: False
+              externals:
+                - spec: "sqlite@3.37.2"
+                  prefix: /usr
+            libzmq:
+              buildable: False
+              externals:
+                - spec: "libzmq@4.3.4"
+                  prefix: /usr
+            lua:
+              buildable: False
+              externals:
+                - spec: "lua@5.3.6"
+                  prefix: /usr
+            lua-luaposix:
+              buildable: False
+              externals:
+                - spec: "lua-luaposix@33.4.0"
+                  prefix: /usr
+            lz4:
+              buildable: False
+              externals:
+                - spec: "lz4@1.9.3"
+                  prefix: /usr
+            ncurses:
+              buildable: False
+              externals:
+                - spec: "ncurses@6.3.2"
+                  prefix: /usr
+            pkgconf:
+              buildable: False
+              externals:
+                - spec: "pkgconf@1.8.0"
+                  prefix: /usr
+            hwloc:
+              buildable: False
+              externals:
+                - spec: "hwloc@2.7.0"
+                  prefix: /usr
+            libarchive:
+              buildable: False
+              externals:
+                - spec: "libarchive@3.6.0"
+                  prefix: /usr
+            autoconf:
+              buildable: False
+              externals:
+                - spec: "autoconf@2.69"
+                  prefix: /usr
+            automake:
+              buildable: False
+              externals:
+                - spec: "automake@1.16.1"
+                  prefix: /usr
+            libtool:
+              buildable: False
+              externals:
+                - spec: "libtool@2.4.6"
+                  prefix: /usr
+            m4:
+              buildable: False
+              externals:
+                - spec: "m4@1.4.18"
+                  prefix: /usr
+            openmpi:
+              buildable: False
+              externals:
+                - spec: "openmpi@4.0.3"
+                  prefix: /usr
+            openssl:
+              buildable: False
+              externals:
+                - spec: "openssl@1.1.1f"
+                  prefix: /usr
+            pkg-config:
+              buildable: False
+              externals:
+                - spec: "pkg-config@0.29.1"
+                  prefix: /usr
+            gcc:
+              externals:
+              - spec: gcc@${GCC_VERSION} languages=c,c++
+                prefix: /usr
+                extra_attributes:
+                  compilers:
+                    c: ${CC}
+                    cxx: ${CXX}
+              buildable: False
+          EOF
+          echo "-------------------------------"
+          cat /home/runner/.spack/packages.yaml
+          echo "-------------------------------"
+          spack compiler find --scope=user
+          if [[ $CC == 'gcc-10' ]]; then
+              spack config add "packages:all:compiler:[gcc@10.3.0]"
+          else
+              spack config add "packages:all:compiler:[gcc@9.3.0]"
+          fi
+          spack external find
+          spack spec flux-core@${FLUX_VERSION}
+          # spack spec ucx@1.15.0
+          # spack spec libfabric@1.20.0 fabrics=sockets,tcp,udp,shm
+          # spack spec mercury+mpi+ofi+sm+ucx ^ucx@1.15.0 ^libfabric@1.20.0 fabrics=sockets,tcp,udp,shm
+      - name: Setup DataSpaces' Spack repo
+        run: |
+          git clone https://github.com/Analytics4MD/dspaces-spack.git ${DSPACES_SPACK_REPO_DIR}
+          curr_dir=$(pwd)
+          cd ${DSPACES_SPACK_REPO_DIR}
+          git checkout dspaces_2.2.0_upgrade
+          cd $curr_dir
+          . ${SPACK_DIR}/share/spack/setup-env.sh
+          spack repo add ${DSPACES_SPACK_REPO_DIR}
+          # Have to use master here because the actual DataSpaces 2 releases are not yet in the repo
+          spack spec dataspaces@2.2.0~pybind \
+              ^mercury+mpi+ofi+sm+ucx \
+              ^ucx@1.15.0 \
+              ^libfabric@1.20.0 fabrics=sockets,tcp,udp,shm \
+              ^boost+iostreams+serialization
+      - name: Install dependencies
+        run: |
+          mkdir -p ${A4MD_INSTALL_PREFIX}
+          python3 -m venv ${A4MD_INSTALL_PREFIX}
+          . ${SPACK_DIR}/share/spack/setup-env.sh
+          spack install -j4 flux-core@${FLUX_VERSION}
+          # spack install -j4 ucx@1.15.0
+          # spack install -j4 libfabric@1.20.0 fabrics=sockets,tcp,udp,shm
+          # spack install -j4 mercury+mpi+ofi+sm+ucx ^ucx@1.15.0 ^libfabric@1.20.0 fabrics=sockets,tcp,udp,shm
+          spack install -j4 dataspaces@2.2.0~pybind \
+              ^mercury+mpi+ofi+sm+ucx \
+              ^ucx@1.15.0 \
+              ^libfabric@1.20.0 fabrics=sockets,tcp,udp,shm \
+              ^boost+iostreams+serialization
+          spack view --verbose symlink ${A4MD_INSTALL_PREFIX} \
+              flux-core@${FLUX_VERSION} \
+              ucx@1.15.0 \
+              libfabric@1.20.0 fabrics=sockets,tcp,udp,shm \
+              boost+iostreams+serialization \
+              mercury+mpi+ofi+sm+ucx \
+              dataspaces@2.2.0~pybind ^mercury+mpi+ofi+sm+ucx ^ucx@1.15.0 ^libfabric@1.20.0 fabrics=sockets,tcp,udp,shm ^boost+iostreams+serialization
+      - name: Compile A4MD
+        run: |
+          echo "Activating Spack"
+          . ${SPACK_DIR}/share/spack/setup-env.sh
+          echo "Build and Install A4MD"
+          cd ${GITHUB_WORKSPACE}
+          ls && pwd
+          mkdir build
+          cd build
+          export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:${A4MD_INSTALL_PREFIX}/lib/pkgconfig
+          cmake --version
+          cmake \
+              -DCMAKE_INSTALL_PREFIX=${A4MD_INSTALL_PREFIX} \
+              -DCMAKE_PREFIX_PATH=${A4MD_INSTALL_PREFIX} \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DPython3_ROOT_DIR=${PYTHON_PREFIX_PATH}/bin \
+              -Ddtl_dspaces=ON \
+              -Ddtl_dimes=OFF \
+              -Ddtl_decaf=OFF \
+              -Dbuild_examples=ON \
+              -Dbuild_tests=OFF \
+              -Dbuild_wrap=OFF \
+              ..
+          make VERBOSE=1 install -j
+      - name: Build A4MD Test
+        run: |
+          . ${SPACK_DIR}/share/spack/setup-env.sh
+          cd ${GITHUB_WORKSPACE}/.github/basic_test
+          mkdir -p build
+          mkdir -p test_install
+          cd build
+          cmake \
+              -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/.github/basic_test/test_install \
+              -DCMAKE_PREFIX_PATH=${A4MD_INSTALL_PREFIX} \
+              -DA4MD_PREFIX=${A4MD_INSTALL_PREFIX} \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DPython3_ROOT_DIR=${PYTHON_PREFIX_PATH}/bin \
+              ..
+          make VERBOSE=1 install -j
+      - name: Test A4MD
+        run: |
+          . ${SPACK_DIR}/share/spack/setup-env.sh
+          export PATH=${PATH}:${A4MD_INSTALL_PREFIX}/bin:${A4MD_INSTALL_PREFIX}/sbin
+          export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${A4MD_INSTALL_PREFIX}/lib:${A4MD_INSTALL_PREFIX}/lib64
+          echo "Launching basic prod-cons test"
+          cd ${GITHUB_WORKSPACE}/.github/basic_test/test_install/bin
+          ./local_prod_cons.sh "${A4MD_INSTALL_PREFIX}" "${A4MD_INSTALL_PREFIX}" "${MERCURY_CONNECTION_STRING}"
+          # flux start --test-size=1 /bin/bash ./flux_prod_cons.sh "${A4MD_INSTALL_PREFIX}" "${A4MD_INSTALL_PREFIX}" "${MERCURY_CONNECTION_STRING}"
+        timeout-minutes: 5
+        # continue-on-error: true
+      - name: Check contents of test directory
+        run: |
+          ls -lah ${GITHUB_WORKSPACE}/.github/basic_test/test_install/bin
+      - name: Upload log files as artifact for inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}_${{ matrix.compiler }}_${{ matrix.gcc_version }}_${{ matrix.flux }}_outputs
+          compression-level: 9
+          if-no-files-found: warn
+          path: |
+            ${GITHUB_WORKSPACE}/.github/basic_test/test_install/bin/*

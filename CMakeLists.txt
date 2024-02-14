@@ -1,7 +1,7 @@
 # project name
 project (A4MD)
 set(A4MD_VERSION 1.0)
-cmake_minimum_required (VERSION 3.5)
+cmake_minimum_required (VERSION 3.12)
 
 option(dtl_dspaces "Build A4MD with Dataspaces data transport layer" ON)
 option(dtl_dimes "Build A4MD with DIMES data transport layer" OFF)
@@ -9,6 +9,8 @@ option(dtl_decaf "Build A4MD with Decaf data transport layer" OFF)
 option(build_examples "Build examples" ON)
 option(build_tests "Build tests" OFF)
 option(build_wrap "Build MPI wrapper library for Decaf MPMD model" OFF)
+
+set(BUILD_SHARED_LIBS ON CACHE BOOL "Build libraries as .so")
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -100,28 +102,33 @@ else()
 endif (NOT Boost_FOUND)
 
 # Add Python
-# FindPythonInterp will search for an interpreter with 3.3 <= version <= 3.7
-set(Python_ADDITIONAL_VERSIONS 3.7 3.6 3.5 3.4 3.3)
-# find python interpreter (minimum version 3.3)
-find_package(PythonInterp 3.3 REQUIRED)
-# Reset Python_ADDITIONAL_VERSIONS so that FindPythonLibs only searches for the
-# same version as the Interpreter.
-unset(Python_ADDITIONAL_VERSIONS)
-set(Python_ADDITIONAL_VERSIONS ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
-# find python libs (minimum version matches the interpreter's version)
-find_package(PythonLibs ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR} REQUIRED)
-include_directories(${PYTHON_INCLUDE_DIRS})
-list(APPEND A4MD_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS})
+# This policy forces CMake to find Python based on location. In this case,
+# use of `Python3_ROOT_DIR` should work as expected. If this wasn't set,
+# CMake may grab a completely different Python than the one requested.
+cmake_policy(SET CMP0094 NEW)
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+if (NOT ${Python3_VERSION_MAJOR} EQUAL 3)
+    message(FATAL_ERROR "FindPython3 somehow found a Python install that wasn't Python 3")
+endif ()
+if (${Python3_VERSION_MINOR} LESS_EQUAL 3)
+    message(FATAL_ERROR "Found Python 3.${Python3_VERSION_MINOR}.${Python3_VERSION_PATCH}, which has a version less than minimum allowed of 3.3")
+endif ()
+set(PYTHON_LIBRARIES Python3::Python)
 
+# NOTE: Search for NumPy is commented out because NumPy is no longer used
+#       in C++ files, and we do not need anything in CMake for a Python import of NumPy.
 # find Numpy
-find_package(NumPy REQUIRED)
-include_directories(${NUMPY_INCLUDE_DIR})
+# find_package(NumPy REQUIRED)
+# include_directories(${NUMPY_INCLUDE_DIR})
 
 # Pthread
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 if (dtl_dspaces OR dtl_dimes)
     find_package(dspaces CONFIG REQUIRED)
+endif ()
+if (dtl_dimes)
+    add_definitions(-DDTL_DIMES=1)
 endif ()
 
 if (dtl_decaf)
