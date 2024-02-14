@@ -118,7 +118,7 @@ void DataSpacesWriter::write_chunks(std::vector<Chunk*> chunks)
         printf("Chunk size %zu\n", c_size);
         m_total_size += c_size;
         int ndim = 1;
-        uint64_t lb = 0, ub = sizeof(std::size_t)-1;
+        uint64_t lb = 0, ub = 0;
 #ifdef BUILT_IN_PERF
         TimeVar t_istart = timeNow();
 #endif
@@ -220,7 +220,7 @@ ub = c_size-1;
         error = dspaces_put_local(m_client,
                                   m_chunk_var_name.c_str(),
                                   chunk_id,
-                                  c_size,
+                                  sizeof(char),
                                   ndim,
                                   &lb,
                                   &ub,
@@ -229,7 +229,7 @@ ub = c_size-1;
         error = dspaces_put(m_client,
                             m_chunk_var_name.c_str(),
                             chunk_id,
-                            c_size,
+                            sizeof(char),
                             ndim,
                             &lb,
                             &ub,
@@ -260,7 +260,7 @@ ub = c_size-1;
 
 #ifdef COUNT_LOST_FRAMES
         lb = 0;
-        ub = sizeof(unsigned long int) - 1;
+        ub = 0;
         error = dspaces_put(m_client,
                             "last_written_chunk",
                             0,

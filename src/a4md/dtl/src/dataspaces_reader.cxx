@@ -70,7 +70,7 @@ std::vector<Chunk*> DataSpacesReader::read_chunks(unsigned long int chunks_from,
     {
         int error;
         int ndim = 1;
-        uint64_t lb = 0, ub = sizeof(unsigned long int) - 1;
+        uint64_t lb = 0, ub = 0;
 #ifdef BUILT_IN_PERF
         TimeVar t_start = timeNow();
 #endif
@@ -151,7 +151,7 @@ std::vector<Chunk*> DataSpacesReader::read_chunks(unsigned long int chunks_from,
         TAU_DYNAMIC_TIMER_START("step_read_size_time");
 #endif
         lb = 0;
-        ub = sizeof(std::size_t) - 1;
+        ub = 0;
         printf("Reading size of chunk %lu from DataSpaces\n", chunk_id);
         error = dspaces_get(m_client,
                             m_size_var_name.c_str(),
@@ -225,7 +225,7 @@ std::vector<Chunk*> DataSpacesReader::read_chunks(unsigned long int chunks_from,
         error = dspaces_get(m_client,
                             m_chunk_var_name.c_str(),
                             chunk_id,
-                            chunk_size,
+                            sizeof(char),
                             ndim,
                             &lb,
                             &ub,
