@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function usage {
-  echo "Usage: flux start flux_prod_cons.sh <A4MD_INSTALL_PREFIX> <SPACK_VIEW> <HG_CONNECTION_STR>"
+  echo "Usage: ./local_prod_cons.sh <A4MD_INSTALL_PREFIX> <SPACK_VIEW> <HG_CONNECTION_STR>"
 }
 
 # Parse command line arguments
