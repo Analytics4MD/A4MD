@@ -1,11 +1,6 @@
 [submodule "a4md/extern/argparse"]
 	path = src/a4md/extern/argparse
 	url = https://github.com/hbristow/argparse.git
-[submodule "a4md/extern/dataspaces"]
-	path = src/a4md/extern/dataspaces
-    #url = git@github.com:Analytics4MD/dataspaces.git
-    url = ../dataspaces.git
-    #branch = cori_deployment
 [submodule "a4md/extern/plumed2"]
 	path = src/a4md/extern/plumed2
     #url = https://github.com/Analytics4MD/plumed2.git

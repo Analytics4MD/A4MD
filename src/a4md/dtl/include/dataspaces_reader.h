@@ -2,17 +2,17 @@
 #define __DATASPACES_READER_H__
 #include "chunk_reader.h"
 #include "mpi.h"
+#include <dspaces.h>
 
 class DataSpacesReader : public ChunkReader
 {
     private:
         int m_client_id;
         int m_group_id;
-        std::string m_chunk_lock_name;
-        std::string m_size_lock_name;
         std::string m_chunk_var_name;
         std::string m_size_var_name;
         unsigned int m_total_chunks;
+        dspaces_client_t m_client;
 #ifdef BUILT_IN_PERF
         double m_total_data_read_time_ms;
         double m_total_chunk_read_time_ms;
