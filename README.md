@@ -92,6 +92,27 @@ There are many things that can be customized in this script, e.g. the number of 
 
 ## Related Publications
 
+<i class="fa fa-file-text-o"></i> Marquez, Jack, Michel A. Cuendet, Silvina Caino-Lores, Trilce Estrada, Ewa Deelman, Harel Weinstein, and Michela Taufer. 
+<b>Increasing the Efficiency of Ensemble Molecular Dynamics Simulations with Termination of Unproductive Trajectories Identified at Runtime.</b>
+<i>The Journal of Physical Chemistry A (2025).</i>
+
+<i class="fa fa-file-text-o"></i> Harshita Sahni, Hector Carrillo-Cabada, Ekaterina Kots, Silvina Caino-Lores, Jack Marquez, Ewa Deelman, Michel Cuendet Harel Weinstein, Michela Taufer, and Trilce Estrada.
+<b>Online Boosted Gaussian Learners for in-situ Detection and Characterization of Protein Folding States in Molecular Dynamics Simulations.</b>
+<i>In Proceedings of the 19th IEEE International Conference on e-Science (eScience) (2023).</i>
+
+<i class="fa fa-file-text-o"></i> Silvina Caino-Lores, Michel A. Cuendet, Jack Marquez* Trilce Estrada, Ewa Deelman, Harel Weinstein, and Michela Taufer. 
+<b>Runtime Steering of Molecular Dynamics Simulations Through In Situ Analysis and Annotation of Collective Variables.</b>
+<i>In Proceedings of Platform for Advanced Scientific Computing (PASC) Conference (2023).</i>
+
+<i class="fa fa-file-text-o"></i> Tu Mai Anh Do, Lo ̈ıc Pottier, Rafael Ferreira da Silva, Silvina Ca ́ıno-Lores, Michela Taufer, and Ewa Deelman. 
+<b>Performance Assessment of Ensembles of In Situ Workflows under Re- source Constraints.</b>
+<i>Journal of Concurrency and Computation: Practice and Experience (CCPE). (2023).</i>
+
+<i class="fa fa-file-text-o"></i> Silvina Caino-Lores, Michel Cuendet, Trilce Estrada, Ewa Deelman, Harel Weinstein, and Taufer, Michela. 
+<b>High-Throughput In-Situ Workflows for Ensemble Molecular Dynamics.</b>
+<i>In Proceedings of the 18th IEEE International Conference on e-Science (eScience) (2022).</i>
+
+
 <i class="fa fa-file-text-o"></i> Hector Carrillo-Cabada, Jeremy Benson, Asghar Razavi, Brianna Mulligan, Michel A. Cuendet, Harel Weinstein, Michela Taufer, and Trilce Estrada.
 <b>A Graphic Encoding Method for Quantitative Classification of Protein Structure and Representation of Conformational Changes</b>
 <i>IEEE/ACM Transactions on Computational Biology and Bioinformatics (IEEE/ACM TCBC).</i>
